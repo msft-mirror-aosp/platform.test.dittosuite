@@ -14,22 +14,21 @@
 
 #pragma once
 
+#include <ditto/instruction.h>
+
 #include <string>
 
-#include "instruction.h"
+#include "test/dittosuite/schema/benchmark.pb.h"
 
 namespace dittosuite {
 
-class CreateFile : public Instruction {
+class InstructionFactory {
  public:
-  explicit CreateFile(const std::string& file);
-
-  void setup() override;
-  void run() override;
-  void teardown() override;
+  static std::unique_ptr<Instruction> createFromProtoInstruction(
+      const dittosuiteproto::Instruction& proto_instruction);
 
  private:
-  std::string file_;
+  InstructionFactory();
 };
 
 } // namespace dittosuite
