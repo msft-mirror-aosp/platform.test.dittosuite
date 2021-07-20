@@ -21,7 +21,7 @@ TEST(CreateFileTest, CreateFileTestRun) {
     std::string file = "/data/local/tmp/newfile.txt";
 
     dittosuite::CreateFile create_file_instruction(file);
-    create_file_instruction.run();
+    create_file_instruction.Run();
 
     ASSERT_EQ(access(file.c_str(), F_OK), 0);
 }

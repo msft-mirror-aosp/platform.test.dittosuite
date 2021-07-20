@@ -24,7 +24,7 @@ namespace dittosuite {
 
 class InstructionFactory {
  public:
-  static std::unique_ptr<Instruction> createFromProtoInstruction(
+  static std::unique_ptr<Instruction> CreateFromProtoInstruction(
       const dittosuiteproto::Instruction& proto_instruction);
 
  private:
