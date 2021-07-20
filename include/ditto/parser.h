@@ -14,16 +14,15 @@
 
 #pragma once
 
-#include <ditto/instruction.h>
-
-#include <queue>
 #include <string>
+
+#include <ditto/instruction_set.h>
 
 namespace dittosuite {
 
 class Parser {
  public:
-  static std::queue<std::unique_ptr<Instruction> > Parse(std::string& file_name);
+  static std::unique_ptr<InstructionSet> Parse(std::string& file_name);
 
  private:
   Parser();

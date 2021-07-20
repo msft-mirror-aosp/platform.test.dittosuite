@@ -14,15 +14,15 @@
 
 #pragma once
 
-#include <string>
+#include <vector>
 
 #include <ditto/instruction.h>
 
 namespace dittosuite {
 
-class CreateFile : public Instruction {
+class InstructionSet : public Instruction {
  public:
-  explicit CreateFile(int repeat, const std::string& file);
+  explicit InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions);
 
   void SetUp() override;
   void TearDown() override;
@@ -30,7 +30,7 @@ class CreateFile : public Instruction {
  private:
   void RunSingle() override;
 
-  std::string file_;
+  std::vector<std::unique_ptr<Instruction>> instructions_;
 };
 
-} // namespace dittosuite
+}  // namespace dittosuite

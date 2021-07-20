@@ -18,11 +18,16 @@ namespace dittosuite {
 
 class Instruction {
  public:
+  explicit Instruction(int repeat);
   virtual ~Instruction() = default;
 
   virtual void SetUp() = 0;
-  virtual void Run() = 0;
+  void Run();
   virtual void TearDown() = 0;
+
+ private:
+  virtual void RunSingle() = 0;
+  int repeat_;
 };
 
 } // namespace dittosuite

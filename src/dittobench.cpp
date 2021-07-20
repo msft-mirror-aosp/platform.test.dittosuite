@@ -12,7 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-int main() {
+#include <string>
 
+#include <ditto/parser.h>
+
+int main() {
+  std::string file = "create_file.ditto";
+  auto instruction_set = dittosuite::Parser::Parse(file);
+
+  instruction_set->SetUp();
+  instruction_set->Run();
+  instruction_set->TearDown();
   return 0;
 }

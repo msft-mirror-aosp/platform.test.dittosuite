@@ -18,10 +18,11 @@
 #include <ditto/create_file.h>
 
 TEST(CreateFileTest, CreateFileTestRun) {
-    std::string file = "/data/local/tmp/newfile.txt";
+  int repeat = 1;
+  std::string file = "/data/local/tmp/newfile.txt";
 
-    dittosuite::CreateFile create_file_instruction(file);
-    create_file_instruction.Run();
+  dittosuite::CreateFile create_file_instruction(repeat, file);
+  create_file_instruction.Run();
 
-    ASSERT_EQ(access(file.c_str(), F_OK), 0);
+  ASSERT_EQ(access(file.c_str(), F_OK), 0);
 }

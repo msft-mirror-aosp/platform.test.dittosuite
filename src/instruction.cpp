@@ -12,25 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
-
-#include <string>
-
 #include <ditto/instruction.h>
 
 namespace dittosuite {
 
-class CreateFile : public Instruction {
- public:
-  explicit CreateFile(int repeat, const std::string& file);
+Instruction::Instruction(int repeat) : repeat_(repeat) {}
 
-  void SetUp() override;
-  void TearDown() override;
+void Instruction::Run() {
+  for (int i = 0; i < repeat_; i++) {
+    RunSingle();
+  }
+}
 
- private:
-  void RunSingle() override;
-
-  std::string file_;
-};
-
-} // namespace dittosuite
+}  // namespace dittosuite
