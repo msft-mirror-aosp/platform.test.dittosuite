@@ -25,20 +25,15 @@ namespace dittosuite{
         public:
             static Logger getInstance();
             void setLevel(LOG_LEVEL newLogLevel);
+            LOG_LEVEL GetLevel() const;
             void writeLogMessage(const std::string message, const std::string prefix);
             LOG_LEVEL logLevel;
     };
-}
-
-using dittosuite::Logger;
-using dittosuite::LOG_LEVEL_ERROR;
-using dittosuite::LOG_LEVEL_WARNING;
-using dittosuite::LOG_LEVEL_INFO;
-using dittosuite::LOG_LEVEL_DEBUG;
-using dittosuite::LOG_LEVEL_VERBOSE;
 
 #define LOGE(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_ERROR) {Logger::getInstance().writeLogMessage(X, "ERROR");}
 #define LOGW(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_WARNING) {Logger::getInstance().writeLogMessage(X, "WARNING");}
 #define LOGI(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_INFO) {Logger::getInstance().writeLogMessage(X, "INFO");}
 #define LOGD(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_DEBUG) {Logger::getInstance().writeLogMessage(X, "DEBUG");}
 #define LOGV(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_VERBOSE) {Logger::getInstance().writeLogMessage(X, "VERBOSE");}
+
+}
