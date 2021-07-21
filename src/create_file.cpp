@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fstream>
-
 #include <ditto/create_file.h>
+
+#include <fstream>
 
 namespace dittosuite {
 
-  CreateFile::CreateFile(const std::string& file) : file_(file) {}
+CreateFile::CreateFile(int repeat, const std::string& file) : Instruction(repeat), file_(file) {}
 
-  void CreateFile::SetUp() {}
+void CreateFile::SetUp() {}
 
-  void CreateFile::Run() {
-    std::ofstream output(file_);
-  }
+void CreateFile::RunSingle() {
+  std::ofstream output(file_);
+}
 
-  void CreateFile::TearDown() {}
+void CreateFile::TearDown() {}
 
 } // namespace dittosuite
 

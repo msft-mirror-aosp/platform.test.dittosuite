@@ -13,32 +13,29 @@
 // limitations under the License.
 
 #include <ditto/parser.h>
-#include <ditto/instruction_factory.h>
+
 #include <fcntl.h>
 
 #include <fstream>
 
+#include <ditto/instruction_factory.h>
+
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+
 #include "test/dittosuite/schema/benchmark.pb.h"
 
 namespace dittosuite {
 
-  std::queue<std::unique_ptr<Instruction> > Parser::Parse(std::string& file_name) {
-    std::queue<std::unique_ptr<Instruction> > instruction_queue;
+std::unique_ptr<InstructionSet> Parser::Parse(std::string& file_name) {
+  std::unique_ptr<dittosuiteproto::Benchmark> benchmark =
+      std::make_unique<dittosuiteproto::Benchmark>();
+  google::protobuf::io::FileInputStream file_input(open(file_name.c_str(), O_CLOEXEC));
+  google::protobuf::TextFormat::Parse(&file_input, benchmark.get());
 
-    dittosuiteproto::Benchmark* benchmark = new dittosuiteproto::Benchmark;
-    google::protobuf::io::FileInputStream file_input(open(file_name.c_str(), O_CLOEXEC));
-    google::protobuf::TextFormat::Parse(&file_input, benchmark);
-
-    // TODO(robertasn): handle Global directive
-
-    for (const auto& instruction : benchmark->main().instructions()) {
-      instruction_queue.push(InstructionFactory::CreateFromProtoInstruction(instruction));
-    }
-
-    return instruction_queue;
-  }
+  return InstructionFactory::CreateFromProtoInstructionSet(benchmark->repeat(),
+                                                           benchmark->benchmark());
+}
 
 } // namespace dittosuite
 
