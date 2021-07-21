@@ -27,14 +27,23 @@
 
 namespace dittosuite {
 
-std::unique_ptr<InstructionSet> Parser::Parse(std::string& file_name) {
+Parser& Parser::GetParser() {
+  static Parser parser;
+  return parser;
+}
+
+std::unique_ptr<InstructionSet> Parser::Parse() {
   std::unique_ptr<dittosuiteproto::Benchmark> benchmark =
       std::make_unique<dittosuiteproto::Benchmark>();
-  google::protobuf::io::FileInputStream file_input(open(file_name.c_str(), O_CLOEXEC));
+  google::protobuf::io::FileInputStream file_input(open(file_path_.c_str(), O_CLOEXEC));
   google::protobuf::TextFormat::Parse(&file_input, benchmark.get());
 
   return InstructionFactory::CreateFromProtoInstructionSet(benchmark->repeat(),
                                                            benchmark->benchmark());
+}
+
+void Parser::SetFilePath(const std::string& file_path) {
+  file_path_ = file_path;
 }
 
 } // namespace dittosuite
