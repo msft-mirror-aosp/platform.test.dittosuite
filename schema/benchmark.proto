@@ -3,13 +3,18 @@ syntax = "proto2";
 package dittosuiteproto;
 
 message InstructionCreateFile {
-  required string file = 6;
+  required string file = 8;
+}
+
+message InstructionDeleteFile {
+  required string file = 9;
 }
 
 message Instruction {
   oneof instruction_oneof {
     InstructionSet instruction_set = 4;
     InstructionCreateFile instruction_create_file = 5;
+    InstructionDeleteFile instruction_delete_file = 6;
   }
   required int32 repeat = 7;
 }
