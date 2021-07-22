@@ -1,8 +1,8 @@
 cc_defaults {
     name: "dittobench_defaults",
     include_dirs: ["test/dittosuite/include"],
-    static_libs: ["dittosuite-proto"],
-    shared_libs: ["libprotobuf-cpp-full"],
+    static_libs: ["dittosuite-proto", "libbase_ndk"],
+    shared_libs: ["libprotobuf-cpp-full", "liblog"],
     srcs: [
       "src/create_file.cpp",
       "src/delete_file.cpp",
