@@ -36,8 +36,13 @@ LOG_LEVEL Logger::GetLogLevel() const {
   return log_level_;
 }
 
-void Logger::WriteLogMessage(std::string message, std::string prefix) {
-  std::cout << prefix << ": " << message << '\n';
+std::string LogLevelToString(LOG_LEVEL log_level) {
+  std::string prefixes[] = {"VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR"};
+  return prefixes[log_level];
+}
+
+void Logger::WriteLogMessage(const std::string message, LOG_LEVEL log_level) {
+  std::cout << LogLevelToString(log_level) << ": " << message << '\n';
 }
 
 }  // namespace dittosuite
