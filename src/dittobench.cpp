@@ -50,15 +50,15 @@ static void ParseArguments(int argc, char** argv) {
         break;
       case 5:
         if (strcmp(optarg, "VERBOSE") == 0 || strcmp(optarg, "0") == 0) {
-          dittosuite::Logger::GetInstance().setLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_VERBOSE);
+          dittosuite::Logger::GetInstance().SetLogLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_VERBOSE);
         } else if (strcmp(optarg, "DEBUG") == 0 || strcmp(optarg, "1") == 0) {
-          dittosuite::Logger::GetInstance().setLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_DEBUG);
+          dittosuite::Logger::GetInstance().SetLogLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_DEBUG);
         } else if (strcmp(optarg, "INFO") == 0 || strcmp(optarg, "2") == 0) {
-          dittosuite::Logger::GetInstance().setLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_INFO);
+          dittosuite::Logger::GetInstance().SetLogLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_INFO);
         } else if (strcmp(optarg, "WARNING") == 0 || strcmp(optarg, "3") == 0) {
-          dittosuite::Logger::GetInstance().setLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_WARNING);
+          dittosuite::Logger::GetInstance().SetLogLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_WARNING);
         } else if (strcmp(optarg, "ERROR") == 0 || strcmp(optarg, "4") == 0) {
-          dittosuite::Logger::GetInstance().setLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_ERROR);
+          dittosuite::Logger::GetInstance().SetLogLevel(dittosuite::LOG_LEVEL::LOG_LEVEL_ERROR);
         }
         break;
       default:
