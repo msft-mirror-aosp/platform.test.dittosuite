@@ -80,14 +80,15 @@ static void ParseArguments(int argc, char** argv) {
 int main(int argc, char** argv) {
   dittosuite::ParseArguments(argc, argv);
 
-  auto instruction_set = dittosuite::Parser::GetParser().Parse();
+  auto main = dittosuite::Parser::GetParser().Parse();
 
-  if (instruction_set == nullptr) {
+  if (main == nullptr) {
     return 0;
   }
 
-  instruction_set->SetUp();
-  instruction_set->Run();
-  instruction_set->TearDown();
+  main->SetUp();
+  main->Run();
+  main->TearDown();
+
   return 0;
 }

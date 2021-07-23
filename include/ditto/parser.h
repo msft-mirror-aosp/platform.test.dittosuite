@@ -26,7 +26,7 @@ class Parser {
   void operator=(const Parser&) = delete;
 
   static Parser& GetParser();
-  std::unique_ptr<InstructionSet> Parse();
+  std::unique_ptr<Instruction> Parse();
   void SetFilePath(const std::string& file_path);
 
  private:
