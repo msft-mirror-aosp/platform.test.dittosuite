@@ -21,7 +21,8 @@
 
 namespace dittosuite {
 
-CreateFile::CreateFile(int repeat, const std::string& file) : Instruction(repeat), file_(file) {}
+CreateFile::CreateFile(int repeat, const std::string& file)
+    : Instruction(repeat), file_(Instruction::GetAbsolutePath() + file) {}
 
 void CreateFile::SetUp() {}
 

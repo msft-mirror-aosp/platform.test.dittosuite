@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <string>
+
 namespace dittosuite {
 
 class Instruction {
@@ -25,8 +27,13 @@ class Instruction {
   void Run();
   virtual void TearDown() = 0;
 
+  static void SetAbsolutePath(const std::string& absolute_path);
+  static std::string GetAbsolutePath();
+
  private:
   virtual void RunSingle() = 0;
+
+  static std::string absolute_path_;
   int repeat_;
 };
 

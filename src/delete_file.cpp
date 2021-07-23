@@ -20,7 +20,8 @@
 
 namespace dittosuite {
 
-DeleteFile::DeleteFile(int repeat, const std::string& file) : Instruction(repeat), file_(file) {}
+DeleteFile::DeleteFile(int repeat, const std::string& file)
+    : Instruction(repeat), file_(Instruction::GetAbsolutePath() + file) {}
 
 void DeleteFile::SetUp() {}
 
