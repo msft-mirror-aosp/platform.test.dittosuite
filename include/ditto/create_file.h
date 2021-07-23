@@ -27,10 +27,14 @@ class CreateFile : public Instruction {
   void SetUp() override;
   void TearDown() override;
 
+  int GetOutputFdKey();
+  void SetOutputFdKey(int output_fd_key);
+
  private:
   void RunSingle() override;
 
   std::string file_;
+  int output_fd_key_;
 };
 
 } // namespace dittosuite

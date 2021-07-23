@@ -4,6 +4,7 @@ package dittosuiteproto;
 
 message InstructionCreateFile {
   required string file = 1;
+  optional string output_fd = 2;
 }
 
 message InstructionDeleteFile {
