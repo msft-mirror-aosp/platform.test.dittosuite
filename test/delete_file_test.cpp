@@ -18,10 +18,13 @@
 
 #include <ditto/create_file.h>
 #include <ditto/delete_file.h>
+#include <ditto/shared_variables.h>
 
 TEST(DeleteFileTest, DeleteFileTestRun) {
   int repeat = 1;
   std::string file = "/data/local/tmp/newfile.txt";
+
+  dittosuite::SharedVariables::Set("absolute_path", "");
 
   dittosuite::CreateFile create_file_instruction(repeat, file);
   create_file_instruction.Run();
