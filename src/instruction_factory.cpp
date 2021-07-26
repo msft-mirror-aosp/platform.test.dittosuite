@@ -21,6 +21,7 @@
 #include <ditto/shared_variables.h>
 
 namespace dittosuite {
+typedef dittosuiteproto::Instruction::InstructionOneofCase InstructionType;
 
 std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSet(
     const int& repeat, const dittosuiteproto::InstructionSet& proto_instruction_set) {
@@ -33,30 +34,37 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
 
 std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     const dittosuiteproto::Instruction& proto_instruction) {
+  int repeat = proto_instruction.repeat();
+
   switch (proto_instruction.instruction_oneof_case()) {
-    case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionSet:
-      return InstructionFactory::CreateFromProtoInstructionSet(proto_instruction.repeat(),
+    case InstructionType::kInstructionSet: {
+      return InstructionFactory::CreateFromProtoInstructionSet(repeat,
                                                                proto_instruction.instruction_set());
-    case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionOpenFile: {
-      std::unique_ptr<OpenFile> open_file_instruction = std::make_unique<OpenFile>(
-          proto_instruction.repeat(), proto_instruction.instruction_open_file().file(),
-          proto_instruction.instruction_open_file().create());
-      if (proto_instruction.instruction_open_file().has_output_fd()) {
-        auto output_fd_key =
-            SharedVariables::GetKey(proto_instruction.instruction_open_file().output_fd());
-        open_file_instruction->SetOutputFdKey(output_fd_key);
-      }
-      return open_file_instruction;
     }
-    case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionDeleteFile:
-      return std::make_unique<DeleteFile>(proto_instruction.repeat(),
-                                          proto_instruction.instruction_delete_file().file());
-    case dittosuiteproto::Instruction::InstructionOneofCase::INSTRUCTION_ONEOF_NOT_SET:
+    case InstructionType::kInstructionOpenFile: {
+      const auto& options = proto_instruction.instruction_open_file();
+
+      auto instruction = std::make_unique<OpenFile>(repeat, options.file(), options.create());
+
+      if (options.has_output_fd()) {
+        instruction->SetOutputFdKey(SharedVariables::GetKey(options.output_fd()));
+      }
+
+      return instruction;
+    }
+    case InstructionType::kInstructionDeleteFile: {
+      const auto& options = proto_instruction.instruction_delete_file();
+
+      return std::make_unique<DeleteFile>(repeat, options.file());
+    }
+    case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGE("Instruction was not set in .ditto file");
       return nullptr;
-    default:
+    }
+    default: {
       LOGE("Invalid instruction was set in .ditto file");
       return nullptr;
+    }
   }
 }
 
