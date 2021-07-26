@@ -18,10 +18,14 @@
 
 #include <fstream>
 
+#include <ditto/shared_variables.h>
+
 namespace dittosuite {
 
 DeleteFile::DeleteFile(int repeat, const std::string& file)
-    : Instruction(repeat), file_(Instruction::GetAbsolutePath() + file) {}
+    : Instruction(repeat),
+      file_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) + file) {
+}
 
 void DeleteFile::SetUp() {}
 
