@@ -14,6 +14,7 @@
 
 #include <ditto/instruction_factory.h>
 
+#include <ditto/close_file.h>
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
 #include <ditto/logger.h>
@@ -56,6 +57,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       const auto& options = proto_instruction.instruction_delete_file();
 
       return std::make_unique<DeleteFile>(repeat, options.file());
+    }
+    case InstructionType::kInstructionCloseFile: {
+      const auto& options = proto_instruction.instruction_close_file();
+
+      auto instruction = std::make_unique<CloseFile>(repeat);
+      instruction->SetInputFdKey(SharedVariables::GetKey(options.input_fd()));
+
+      return instruction;
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGE("Instruction was not set in .ditto file");

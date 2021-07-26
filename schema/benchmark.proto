@@ -12,12 +12,17 @@ message InstructionDeleteFile {
   required string file = 1;
 }
 
+message InstructionCloseFile {
+  required string input_fd = 1;
+}
+
 message Instruction {
   optional int32 repeat = 1 [default = 1];
   oneof instruction_oneof {
     InstructionSet instruction_set = 2;
     InstructionOpenFile instruction_open_file = 3;
     InstructionDeleteFile instruction_delete_file = 4;
+    InstructionCloseFile instruction_close_file = 5;
   }
 }
 

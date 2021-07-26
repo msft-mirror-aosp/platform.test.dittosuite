@@ -1,0 +1,20 @@
+main: {
+  instruction_set: {
+    instructions: [
+      {
+        instruction_open_file: {
+          file: "newfile2.txt",
+          output_fd: "test_file"
+        }
+      },
+      {
+        instruction_close_file: {
+          input_fd: "test_file"
+        }
+      }
+    ]
+  }
+},
+global {
+  absolute_path: "/data/local/tmp/";
+}
