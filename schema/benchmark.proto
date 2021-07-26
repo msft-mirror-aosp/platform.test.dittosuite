@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package dittosuiteproto;
 
-message InstructionCreateFile {
+message InstructionOpenFile {
   required string file = 1;
   optional string output_fd = 2;
 }
@@ -15,7 +15,7 @@ message Instruction {
   optional int32 repeat = 1 [default = 1];
   oneof instruction_oneof {
     InstructionSet instruction_set = 2;
-    InstructionCreateFile instruction_create_file = 3;
+    InstructionOpenFile instruction_open_file = 3;
     InstructionDeleteFile instruction_delete_file = 4;
   }
 }

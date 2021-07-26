@@ -2,7 +2,7 @@ main: {
   instruction_set: {
     instructions: [
       {
-        instruction_create_file: {
+        instruction_open_file: {
           file: "newfile2.txt"
         }
       },
