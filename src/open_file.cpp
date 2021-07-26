@@ -17,8 +17,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <cstdlib>
 #include <fstream>
 
+#include <ditto/logger.h>
 #include <ditto/shared_variables.h>
 
 namespace dittosuite {
@@ -32,6 +34,11 @@ void OpenFile::SetUp() {}
 
 void OpenFile::RunSingle() {
   int fd = open(file_.c_str(), O_CREAT | O_CLOEXEC, O_RDWR);
+
+  if (fd == -1) {
+    LOGE("Error while trying to open the file");
+    exit(EXIT_FAILURE);
+  }
 
   if (output_fd_key_ != -1) {
     SharedVariables::Set(output_fd_key_, fd);
