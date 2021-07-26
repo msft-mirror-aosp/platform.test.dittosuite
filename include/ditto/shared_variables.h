@@ -15,26 +15,25 @@
 #pragma once
 
 #include <string>
-
-#include <ditto/instruction.h>
+#include <unordered_map>
+#include <variant>
+#include <vector>
 
 namespace dittosuite {
 
-class CreateFile : public Instruction {
+class SharedVariables {
  public:
-  explicit CreateFile(int repeat, const std::string& file);
+  typedef std::variant<int, std::string> Variant;
 
-  void SetUp() override;
-  void TearDown() override;
-
-  int GetOutputFdKey();
-  void SetOutputFdKey(int output_fd_key);
+  static int GetKey(const std::string& variable_name);
+  static Variant Get(int key);
+  static void Set(int key, const Variant& value);
+  static void Set(const std::string& variable_name, const Variant& value);
+  static void ClearKeys();
 
  private:
-  void RunSingle() override;
-
-  std::string file_;
-  int output_fd_key_;
+  static std::vector<Variant> variables_;
+  static std::unordered_map<std::string, int> keys_;
 };
 
-} // namespace dittosuite
+}  // namespace dittosuite

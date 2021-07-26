@@ -19,19 +19,32 @@
 
 #include <fstream>
 
+#include <ditto/shared_variables.h>
+
 namespace dittosuite {
 
 CreateFile::CreateFile(int repeat, const std::string& file)
-    : Instruction(repeat), file_(Instruction::GetAbsolutePath() + file) {}
+    : Instruction(repeat), file_(Instruction::GetAbsolutePath() + file), output_fd_key_(-1) {}
 
 void CreateFile::SetUp() {}
 
 void CreateFile::RunSingle() {
   int fd = open(file_.c_str(), O_CREAT | O_CLOEXEC, O_RDWR);
-  close(fd);
+
+  if (output_fd_key_ != -1) {
+    SharedVariables::Set(output_fd_key_, fd);
+  }
 }
 
 void CreateFile::TearDown() {}
+
+int CreateFile::GetOutputFdKey() {
+  return output_fd_key_;
+}
+
+void CreateFile::SetOutputFdKey(int output_fd_key) {
+  output_fd_key_ = output_fd_key;
+}
 
 } // namespace dittosuite
 
