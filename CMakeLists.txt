@@ -23,6 +23,7 @@ add_executable(dittobench
 	src/parser.cpp
 	src/resize_file.cpp
 	src/shared_variables.cpp
+	src/write_file.cpp
 )
 
 target_link_libraries(dittobench

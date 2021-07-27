@@ -14,6 +14,7 @@ cc_defaults {
       "src/parser.cpp",
       "src/resize_file.cpp",
       "src/shared_variables.cpp",
+      "src/write_file.cpp",
     ],
     cflags: [
       "-Wall",

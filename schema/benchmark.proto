@@ -2,6 +2,11 @@ syntax = "proto2";
 
 package dittosuiteproto;
 
+enum ReadWriteType {
+  sequential = 0;
+  random = 1;
+}
+
 message InstructionOpenFile {
   required string file = 1;
   optional string output_fd = 2;
@@ -21,6 +26,14 @@ message InstructionResizeFile {
   required int64 size = 2;
 }
 
+message InstructionWriteFile {
+  required string input_fd = 1;
+  required int64 size = 2;
+  optional int64 block_size = 3 [default = 4096];
+  optional ReadWriteType type = 4 [default = sequential];
+  optional uint32 seed = 5;
+}
+
 message Instruction {
   optional int32 repeat = 1 [default = 1];
   oneof instruction_oneof {
@@ -29,6 +42,7 @@ message Instruction {
     InstructionDeleteFile instruction_delete_file = 4;
     InstructionCloseFile instruction_close_file = 5;
     InstructionResizeFile instruction_resize_file = 6;
+    InstructionWriteFile instruction_write_file = 7;
   }
 }
 
