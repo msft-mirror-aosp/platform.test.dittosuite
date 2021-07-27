@@ -26,7 +26,7 @@ TEST(DeleteFileTest, DeleteFileTestRun) {
 
   dittosuite::SharedVariables::Set("absolute_path", "");
 
-  dittosuite::OpenFile open_file_instruction(repeat, file, true);
+  dittosuite::OpenFile open_file_instruction(repeat, file, true, -1);
   open_file_instruction.Run();
   ASSERT_EQ(access(file.c_str(), F_OK), 0);
 

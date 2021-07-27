@@ -25,8 +25,8 @@
 
 namespace dittosuite {
 
-ResizeFile::ResizeFile(int repeat, int64_t size)
-    : Instruction(repeat), size_(size), input_fd_key_(-1) {}
+ResizeFile::ResizeFile(int repeat, int64_t size, int input_fd_key)
+    : Instruction(repeat), size_(size), input_fd_key_(input_fd_key) {}
 
 void ResizeFile::SetUp() {}
 
@@ -44,14 +44,6 @@ void ResizeFile::RunSingle() {
 }
 
 void ResizeFile::TearDown() {}
-
-int ResizeFile::GetInputFdKey() {
-  return input_fd_key_;
-}
-
-void ResizeFile::SetInputFdKey(int input_fd_key) {
-  input_fd_key_ = input_fd_key;
-}
 
 int64_t ResizeFile::GetFileSize(int fd) {
   struct stat64 sb;

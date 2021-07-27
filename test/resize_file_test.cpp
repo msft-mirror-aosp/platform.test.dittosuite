@@ -32,14 +32,12 @@ TEST(ResizeFileTest, ResizeFileTestRun) {
 
   int fd_key = dittosuite::SharedVariables::GetKey("test_file");
 
-  dittosuite::OpenFile open_file_instruction(repeat, file, true);
-  open_file_instruction.SetOutputFdKey(fd_key);
+  dittosuite::OpenFile open_file_instruction(repeat, file, true, fd_key);
   open_file_instruction.Run();
 
   ASSERT_EQ(access(file.c_str(), F_OK), 0);
 
-  dittosuite::ResizeFile resize_file_instruction(repeat, size);
-  resize_file_instruction.SetInputFdKey(fd_key);
+  dittosuite::ResizeFile resize_file_instruction(repeat, size, fd_key);
   resize_file_instruction.Run();
 
   struct stat sb;
