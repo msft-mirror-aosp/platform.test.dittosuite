@@ -16,8 +16,9 @@ a real device, tracking the behavior and measuring the performance.
 $ ./dittobench [options] [.ditto file]
 ```
 
-To run a benchmark, a well formed .ditto file must be
-provided. In addition, these options can be set:
+To run a benchmark, a well formed .ditto file must be provided, see section
+[How to write .ditto files](#how-to-write-ditto-files)
+In addition, these options can be set:
 
 - `--results-output=<int | string>` (default: report). Select the results output format.
 Options: report, csv with 0, 1 respectively.
@@ -28,6 +29,161 @@ the set level. Options: VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL with 0, 1, 2
 respectively.
 - `--parameters=string`. If the benchmark is parametric, all the parameters (separated by commas)
 can be given through this option.
+
+# How to write .ditto files
+
+Every .ditto file should begin with this skeleton:
+```
+main: {
+  ...
+},
+global {
+  ...
+}
+```
+
+Optionally, it can contain `init` and `clean_up` sections:
+```
+init: {
+  ...
+},
+main: {
+  ...
+},
+clean_up: {
+  ...
+},
+global {
+  ...
+}
+```
+
+## `global`
+
+Global section should contain general benchmark configuration. Currently available options:
+
+- (optional) `string absolute_path` (`default = ""`). Specifies the absolute path for the files.
+
+## `init`
+
+`init` is optional and can be used to initialize the benchmarking environment. It executes
+instructions similar to `main`, but the results are not collected in the end.
+
+## `main`
+
+`main` is the entry point for the benchmark. It can contain a single `instruction` or
+`instruction_set` (also with nested `instruction_set`).
+
+## `clean_up`
+
+`clean_up` is optional and can be used to reset the benchmarking environment to the initial state,
+e.g, delete benchmark files. Similar to `init`, it executes instructions like `main`, but results
+are not collected in the end.
+
+## `instruction`
+
+```
+{
+  <name of the instruction>: {
+    <first argument>,
+    <second argument>,
+    ...
+  },
+  <general instruction options>
+}
+```
+
+Currently available options:
+- (optional) `int repeat` (`default = 1`). Specifies how many times the instruction should be
+repeated.
+
+## `instruction_set`
+```
+{
+  instruction_set: {
+    instructions: {
+      {
+        <name of the first instruction>: {
+          <first argument>,
+          <second argument>,
+          ...
+        },
+        <general instruction options>
+      },
+      {
+        <name of the second instruction>: {
+          <first argument>,
+          <second argument>,
+          ...
+        },
+        <general instruction options>
+      },
+      ...
+    },
+    iterate_options: {...}
+  },
+  <general instruction options>
+}
+```
+
+Instruction set is an Instruction container that executes the contained instructions sequentially.
+Instruction set can optionally iterate over a list and execute the provided set of instructions on
+each item from the list. To use it, `iterate_options` should be set with these options:
+- `string list_name` - Name of the shared variable where the list of values are stored.
+- `string item_name` - Name of the shared variable to which a selected value should be stored.
+- (optional) `AccessType type` (`default = SEQUENTIAL`) - Specifies if the values should be
+selected sequentially or randomly. Options: `SEQUENTIAL`, `RANDOM`.
+- (optional) `Reseeding reseeding` (`default = ONCE`) - Specifies how often the random number
+generator should be reseeded with the same provided (or generated) seed. Options: `ONCE`,
+`EACH_ROUND_OF_CYCLES`, `EACH_CYCLE`.
+- (optional) `uint32 seed` - Seed for the random number generator. If the seed is not provided,
+current system time is used as the seed.
+
+## `multithreading` and `threads`
+
+```
+multithreading: {
+  threads: [
+    {
+      instruction: {...},
+      spawn: <number of threads to spawn with the provided instruction>
+    },
+    ...
+  ]
+}
+```
+
+Multithreading is another instruction container that executes the specified instructions
+(or instruction sets) in different threads. If the optional `spawn` option for a specific
+instruction (or instruction set) is provided, then the provided number of threads will be created
+for it.
+
+## Example
+
+```
+main: {
+  instruction_set: {
+    instructions: [
+      {
+        open_file: {
+          path_name: "newfile2.txt",
+          output_fd: "test_file"
+        }
+      },
+      {
+        close_file: {
+          input_fd: "test_file"
+        }
+      }
+    ]
+  },
+  repeat: 10
+},
+global {
+  absolute_path: "/data/local/tmp/";
+}
+```
+See more examples in `example/`.
 
 # Dependencies
 
