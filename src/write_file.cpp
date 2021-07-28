@@ -14,7 +14,6 @@
 
 #include <ditto/write_file.h>
 
-#include <sys/stat.h>
 #include <unistd.h>
 
 #include <cstdint>
@@ -22,6 +21,7 @@
 
 #include <ditto/logger.h>
 #include <ditto/shared_variables.h>
+#include <ditto/utils.h>
 
 namespace dittosuite {
 
@@ -78,11 +78,5 @@ void WriteFile::RunSingle() {
 }
 
 void WriteFile::TearDown() {}
-
-int64_t WriteFile::GetFileSize(int fd) {
-  struct stat64 sb;
-  fstat64(fd, &sb);
-  return sb.st_size;
-}
 
 }  // namespace dittosuite

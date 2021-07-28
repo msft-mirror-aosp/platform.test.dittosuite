@@ -29,7 +29,6 @@ class ResizeFile : public Instruction {
 
  private:
   void RunSingle() override;
-  int64_t GetFileSize(int fd);
 
   int64_t size_;
   int input_fd_key_;

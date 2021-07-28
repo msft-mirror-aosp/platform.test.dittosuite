@@ -12,43 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
+#include <ditto/utils.h>
 
-#include <sys/types.h>
-
-#include <cstdint>
-#include <memory>
-#include <random>
-#include <vector>
-
-#include <ditto/instruction.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace dittosuite {
 
-class WriteFile : public Instruction {
- public:
-  explicit WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                     u_int32_t seed, int input_fd_key);
-
-  void SetUp() override;
-  void TearDown() override;
-
- private:
-  void RunSingle() override;
-
-  int64_t size_;
-  int64_t block_size_;
-  ReadWriteType type_;
-  std::mt19937_64 gen_;
-  int input_fd_key_;
-
-  struct Unit {
-    int64_t count;
-    int64_t offset;
-  };
-
-  std::vector<Unit> units_;
-  std::unique_ptr<char[]> buffer_;
-};
+int64_t GetFileSize(int fd) {
+  struct stat64 sb;
+  fstat64(fd, &sb);
+  return sb.st_size;
+}
 
 }  // namespace dittosuite
