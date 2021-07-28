@@ -10,6 +10,25 @@ the goodness of a solution.
 Specularly, Dittobench interprets the Dittolang operations and executes them on
 a real device, tracking the behavior and measuring the performance.
 
+# How to run
+
+```
+$ ./dittobench [options] [.ditto file]
+```
+
+To run a benchmark, a well formed .ditto file must be
+provided. In addition, these options can be set:
+
+- `--results-output=<int | string>` (default: report). Select the results output format.
+Options: report, csv with 0, 1 respectively.
+- `--log-stream=<int | string>` (default: stdout). Select the output stream for the log messages.
+Options: stdout, logcat with 0, 1 respectively.
+- `--log-level=<int | string>` (default: INFO). Select to output messages which are at or below
+the set level. Options: VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL with 0, 1, 2, 3, 4 and 5
+respectively.
+- `--parameters=string`. If the benchmark is parametric, all the parameters (separated by commas)
+can be given through this option.
+
 # Dependencies
 
 ## Android
