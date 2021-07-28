@@ -28,7 +28,7 @@ namespace dittosuite {
 class WriteFile : public Instruction {
  public:
   explicit WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                     u_int32_t seed, int input_fd_key);
+                     u_int32_t seed, bool fsync, int input_fd_key);
 
   void SetUp() override;
   void TearDown() override;
@@ -40,6 +40,7 @@ class WriteFile : public Instruction {
   int64_t block_size_;
   ReadWriteType type_;
   std::mt19937_64 gen_;
+  bool fsync_;
   int input_fd_key_;
 
   struct Unit {

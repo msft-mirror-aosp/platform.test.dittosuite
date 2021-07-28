@@ -106,7 +106,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       int fd_key = SharedVariables::GetKey(options.input_fd());
       auto instruction = std::make_unique<WriteFile>(repeat, options.size(), options.block_size(),
-                                                     type, seed, fd_key);
+                                                     type, seed, options.fsync(), fd_key);
 
       return instruction;
     }
