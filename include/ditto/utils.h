@@ -14,42 +14,10 @@
 
 #pragma once
 
-#include <sys/types.h>
-
 #include <cstdint>
-#include <memory>
-#include <random>
-#include <vector>
-
-#include <ditto/instruction.h>
 
 namespace dittosuite {
 
-class WriteFile : public Instruction {
- public:
-  explicit WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                     u_int32_t seed, bool fsync, int input_fd_key);
-
-  void SetUp() override;
-  void TearDown() override;
-
- private:
-  void RunSingle() override;
-
-  int64_t size_;
-  int64_t block_size_;
-  ReadWriteType type_;
-  std::mt19937_64 gen_;
-  bool fsync_;
-  int input_fd_key_;
-
-  struct Unit {
-    int64_t count;
-    int64_t offset;
-  };
-
-  std::vector<Unit> units_;
-  std::unique_ptr<char[]> buffer_;
-};
+int64_t GetFileSize(int fd);
 
 }  // namespace dittosuite
