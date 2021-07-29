@@ -26,7 +26,9 @@ namespace dittosuite {
 CloseFile::CloseFile(int repeat, int input_fd_key)
     : Instruction(repeat), input_fd_key_(input_fd_key) {}
 
-void CloseFile::SetUp() {}
+void CloseFile::SetUp() {
+  Instruction::SetUp();
+}
 
 void CloseFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
@@ -37,6 +39,8 @@ void CloseFile::RunSingle() {
   }
 }
 
-void CloseFile::TearDown() {}
+void CloseFile::TearDown() {
+  Instruction::TearDown();
+}
 
 }  // namespace dittosuite
