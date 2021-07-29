@@ -3,21 +3,6 @@ cc_defaults {
     include_dirs: ["test/dittosuite/include"],
     static_libs: ["dittosuite-proto", "libbase_ndk"],
     shared_libs: ["libprotobuf-cpp-full", "liblog"],
-    srcs: [
-      "src/arg_parser.cpp",
-      "src/close_file.cpp",
-      "src/delete_file.cpp",
-      "src/instruction_factory.cpp",
-      "src/instruction_set.cpp",
-      "src/instruction.cpp",
-      "src/logger.cpp",
-      "src/open_file.cpp",
-      "src/parser.cpp",
-      "src/resize_file.cpp",
-      "src/shared_variables.cpp",
-      "src/utils.cpp",
-      "src/write_file.cpp",
-    ],
     cflags: [
       "-Wall",
       "-Werror",
@@ -34,20 +19,26 @@ cc_defaults {
     ],
 }
 
+cc_library {
+    name: "libdittosuite",
+    srcs: [
+      "src/*.cpp",
+    ],
+    defaults: ["dittobench_defaults"],
+}
+
 cc_binary {
     name: "dittobench",
-    srcs: ["src/dittobench.cpp"],
+    srcs: ["dittobench.cpp"],
+    static_libs: ["libdittosuite"],
     defaults: ["dittobench_defaults"],
 }
 
 cc_test {
     name: "dittobench_test",
     srcs: [
-      "test/delete_file_test.cpp",
-      "test/logger_test.cpp",
-      "test/open_file_test.cpp",
-      "test/resize_file_test.cpp",
-      "test/shared_variables_test.cpp",
+      "test/*.cpp",
     ],
+    static_libs: ["libdittosuite"],
     defaults: ["dittobench_defaults"],
 }
