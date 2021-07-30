@@ -61,4 +61,19 @@ class WriteFile : public ReadWriteFile {
   bool fsync_;
 };
 
+class ReadFile : public ReadWriteFile {
+ public:
+  enum ReadFAdvise { kAutomatic, kNormal, kSequential, kRandom };
+
+  explicit ReadFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
+                    u_int32_t seed, ReadFAdvise fadvise, int input_fd_key);
+
+  void SetUp() override;
+
+ private:
+  void RunSingle() override;
+
+  ReadFAdvise fadvise_;
+};
+
 }  // namespace dittosuite
