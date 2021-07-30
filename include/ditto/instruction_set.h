@@ -30,6 +30,8 @@ class InstructionSet : public Instruction {
   void SetUp() override;
   void TearDown() override;
 
+  std::unique_ptr<Result> CollectResults() override;
+
  private:
   void RunSingle() override;
 

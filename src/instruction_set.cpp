@@ -35,4 +35,12 @@ void InstructionSet::TearDown() {
   Instruction::TearDown();
 }
 
+std::unique_ptr<Result> InstructionSet::CollectResults() {
+  auto result = std::make_unique<Result>(name_, time_sampler_.GetTimeSamples());
+  for (const auto& instruction : instructions_) {
+    result->AddSubResult(instruction->CollectResults());
+  }
+  return result;
+}
+
 }  // namespace dittosuite
