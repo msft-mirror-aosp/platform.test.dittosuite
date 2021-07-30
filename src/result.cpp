@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <ditto/result.h>
+#include <ditto/statistics.h>
 
 namespace dittosuite {
 
@@ -26,8 +27,26 @@ std::vector<timespec> Result::GetTimeSamples() {
   return time_samples_;
 }
 
+timespec Result::GetMin() const {
+  return min_;
+}
+
+timespec Result::GetMax() const {
+  return max_;
+}
+
+timespec Result::GetMean() const {
+  return mean_;
+}
+
 void Result::AddSubResult(std::unique_ptr<Result> result) {
   sub_results_.push_back(std::move(result));
+}
+
+void Result::Analyse() {
+  min_ = StatisticsGetMin(time_samples_);
+  max_ = StatisticsGetMax(time_samples_);
+  mean_ = StatisticsGetMean(time_samples_);
 }
 
 }  // namespace dittosuite
