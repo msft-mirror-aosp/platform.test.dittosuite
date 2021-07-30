@@ -24,9 +24,6 @@ class OpenFile : public Instruction {
  public:
   explicit OpenFile(int repeat, const std::string& file, bool create, int output_fd_key);
 
-  void SetUp() override;
-  void TearDown() override;
-
  private:
   void RunSingle() override;
 

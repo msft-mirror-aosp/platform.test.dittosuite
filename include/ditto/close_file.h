@@ -22,9 +22,6 @@ class CloseFile : public Instruction {
  public:
   explicit CloseFile(int repeat, int input_fd_key);
 
-  void SetUp() override;
-  void TearDown() override;
-
  private:
   void RunSingle() override;
 
