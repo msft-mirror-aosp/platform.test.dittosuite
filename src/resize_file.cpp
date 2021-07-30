@@ -26,7 +26,7 @@
 namespace dittosuite {
 
 ResizeFile::ResizeFile(int repeat, int64_t size, int input_fd_key)
-    : Instruction(repeat), size_(size), input_fd_key_(input_fd_key) {}
+    : Instruction(kName, repeat), size_(size), input_fd_key_(input_fd_key) {}
 
 void ResizeFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));

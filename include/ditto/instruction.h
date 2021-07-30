@@ -22,7 +22,7 @@ enum ReadWriteType { kSequential, kRandom };
 
 class Instruction {
  public:
-  explicit Instruction(int repeat);
+  explicit Instruction(const std::string& name, int repeat);
   virtual ~Instruction() = default;
 
   virtual void SetUp();
@@ -36,6 +36,7 @@ class Instruction {
   virtual void RunSingle() = 0;
 
   static int absolute_path_key_;
+  std::string name_;
   int repeat_;
 };
 

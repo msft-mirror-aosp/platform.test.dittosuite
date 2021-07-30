@@ -26,9 +26,9 @@
 
 namespace dittosuite {
 
-ReadWriteFile::ReadWriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                             u_int32_t seed, int input_fd_key)
-    : Instruction(repeat),
+ReadWriteFile::ReadWriteFile(const std::string& name, int repeat, int64_t size, int64_t block_size,
+                             ReadWriteType type, u_int32_t seed, int input_fd_key)
+    : Instruction(name, repeat),
       size_(size),
       block_size_(block_size),
       type_(type),
@@ -76,7 +76,7 @@ void ReadWriteFile::RunSingle() {}
 
 WriteFile::WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
                      u_int32_t seed, bool fsync, int input_fd_key)
-    : ReadWriteFile(repeat, size, block_size, type, seed, input_fd_key), fsync_(fsync) {}
+    : ReadWriteFile(kName, repeat, size, block_size, type, seed, input_fd_key), fsync_(fsync) {}
 
 void WriteFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
@@ -96,7 +96,7 @@ void WriteFile::RunSingle() {
 
 ReadFile::ReadFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type, u_int32_t seed,
                    ReadFAdvise fadvise, int input_fd_key)
-    : ReadWriteFile(repeat, size, block_size, type, seed, input_fd_key), fadvise_(fadvise) {}
+    : ReadWriteFile(kName, repeat, size, block_size, type, seed, input_fd_key), fadvise_(fadvise) {}
 
 void ReadFile::SetUp() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));

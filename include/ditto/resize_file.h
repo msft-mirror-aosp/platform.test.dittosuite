@@ -22,6 +22,8 @@ namespace dittosuite {
 
 class ResizeFile : public Instruction {
  public:
+  inline static const std::string kName = "instruction_resize_file";
+
   explicit ResizeFile(int repeat, int64_t size, int input_fd_key);
 
  private:
