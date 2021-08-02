@@ -19,20 +19,12 @@ namespace dittosuite {
 InstructionSet::InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions)
     : Instruction(kName, repeat), instructions_(std::move(instructions)) {}
 
-void InstructionSet::SetUp() {
-  Instruction::SetUp();
-}
-
 void InstructionSet::RunSingle() {
   for (const auto& instruction : instructions_) {
     instruction->SetUp();
     instruction->Run();
     instruction->TearDown();
   }
-}
-
-void InstructionSet::TearDown() {
-  Instruction::TearDown();
 }
 
 std::unique_ptr<Result> InstructionSet::CollectResults() {

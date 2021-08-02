@@ -27,9 +27,6 @@ class InstructionSet : public Instruction {
 
   explicit InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions);
 
-  void SetUp() override;
-  void TearDown() override;
-
   std::unique_ptr<Result> CollectResults() override;
 
  private:
