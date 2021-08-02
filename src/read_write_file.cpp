@@ -38,7 +38,7 @@ ReadWriteFile::ReadWriteFile(const std::string& name, int repeat, int64_t size, 
   std::fill(buffer_.get(), buffer_.get() + block_size_, 170);  // 170 = 10101010
 }
 
-void ReadWriteFile::SetUp() {
+void ReadWriteFile::SetUpSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
   int64_t file_size = GetFileSize(fd);
 
@@ -69,7 +69,7 @@ void ReadWriteFile::SetUp() {
     }
   }
 
-  Instruction::SetUp();
+  Instruction::SetUpSingle();
 }
 
 void ReadWriteFile::RunSingle() {}
@@ -98,7 +98,7 @@ ReadFile::ReadFile(int repeat, int64_t size, int64_t block_size, ReadWriteType t
                    ReadFAdvise fadvise, int input_fd_key)
     : ReadWriteFile(kName, repeat, size, block_size, type, seed, input_fd_key), fadvise_(fadvise) {}
 
-void ReadFile::SetUp() {
+void ReadFile::SetUpSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
   int64_t file_size = GetFileSize(fd);
 
@@ -135,7 +135,7 @@ void ReadFile::SetUp() {
     LOGE("Error while calling fadvise()");
     exit(EXIT_FAILURE);
   }
-  ReadWriteFile::SetUp();
+  ReadWriteFile::SetUpSingle();
 }
 
 void ReadFile::RunSingle() {
