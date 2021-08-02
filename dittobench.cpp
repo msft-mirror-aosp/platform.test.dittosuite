@@ -36,6 +36,6 @@ int main(int argc, char** argv) {
   main->TearDown();
 
   auto result = main->CollectResults();
-  result->Print();
+  result->Print("");
   return 0;
 }
