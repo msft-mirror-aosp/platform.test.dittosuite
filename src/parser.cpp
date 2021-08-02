@@ -42,8 +42,14 @@ Parser& Parser::GetParser() {
 std::unique_ptr<Instruction> Parser::Parse() {
   std::unique_ptr<dittosuiteproto::Benchmark> benchmark =
       std::make_unique<dittosuiteproto::Benchmark>();
-  google::protobuf::io::FileInputStream file_input(open(file_path_.c_str(), O_CLOEXEC));
 
+  int fd = open(file_path_.c_str(), O_CLOEXEC);
+  if (fd == -1) {
+    LOGE("Provided .ditto file was not found");
+    exit(EXIT_FAILURE);
+  }
+
+  google::protobuf::io::FileInputStream file_input(fd);
   if (!google::protobuf::TextFormat::Parse(&file_input, benchmark.get())) {
     LOGE("Error while parsing .ditto file");
     exit(EXIT_FAILURE);
