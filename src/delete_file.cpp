@@ -19,6 +19,7 @@
 #include <fstream>
 
 #include <ditto/shared_variables.h>
+#include <ditto/logger.h>
 
 namespace dittosuite {
 
@@ -28,7 +29,10 @@ DeleteFile::DeleteFile(int repeat, const std::string& file)
 }
 
 void DeleteFile::RunSingle() {
-  unlink(file_.c_str());
+  if (unlink(file_.c_str()) == -1) {
+    LOGE("Error while calling unlink()");
+    exit(EXIT_FAILURE);
+  }
 }
 
 }  // namespace dittosuite
