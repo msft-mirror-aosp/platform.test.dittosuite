@@ -39,7 +39,7 @@ class Result {
   std::string name_;
   std::vector<timespec> time_samples_;
   std::vector<std::unique_ptr<Result>> sub_results_;
-  timespec min_, max_, mean_;
+  timespec min_, max_, mean_, sd_;
 };
 
 }  // namespace dittosuite
