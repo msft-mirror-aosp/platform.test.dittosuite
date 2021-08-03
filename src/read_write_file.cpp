@@ -27,15 +27,24 @@
 namespace dittosuite {
 
 ReadWriteFile::ReadWriteFile(const std::string& name, int repeat, int64_t size, int64_t block_size,
-                             ReadWriteType type, u_int32_t seed, int input_fd_key)
+                             ReadWriteType type, u_int32_t seed, Reseeding reseeding,
+                             int input_fd_key)
     : Instruction(name, repeat),
       size_(size),
       block_size_(block_size),
       type_(type),
       gen_(seed),
+      seed_(seed),
+      reseeding_(reseeding),
       input_fd_key_(input_fd_key) {
   buffer_ = std::make_unique<char[]>(block_size_);
   std::fill(buffer_.get(), buffer_.get() + block_size_, 170);  // 170 = 10101010
+}
+
+void ReadWriteFile::SetUp() {
+  if (reseeding_ == Reseeding::kEachRoundOfCycles) {
+    gen_.seed(seed_);
+  }
 }
 
 void ReadWriteFile::SetUpSingle() {
@@ -49,6 +58,10 @@ void ReadWriteFile::SetUpSingle() {
   if (block_size_ > file_size) {
     LOGW("Supplied block_size is greater than total file size");
     return;
+  }
+
+  if (reseeding_ == Reseeding::kEachCycle) {
+    gen_.seed(seed_);
   }
 
   switch (type_) {
@@ -79,8 +92,9 @@ void ReadWriteFile::SetUpSingle() {
 void ReadWriteFile::RunSingle() {}
 
 WriteFile::WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                     u_int32_t seed, bool fsync, int input_fd_key)
-    : ReadWriteFile(kName, repeat, size, block_size, type, seed, input_fd_key), fsync_(fsync) {}
+                     u_int32_t seed, Reseeding reseeding, bool fsync, int input_fd_key)
+    : ReadWriteFile(kName, repeat, size, block_size, type, seed, reseeding, input_fd_key),
+      fsync_(fsync) {}
 
 void WriteFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
@@ -99,8 +113,9 @@ void WriteFile::RunSingle() {
 }
 
 ReadFile::ReadFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type, u_int32_t seed,
-                   ReadFAdvise fadvise, int input_fd_key)
-    : ReadWriteFile(kName, repeat, size, block_size, type, seed, input_fd_key), fadvise_(fadvise) {}
+                   Reseeding reseeding, ReadFAdvise fadvise, int input_fd_key)
+    : ReadWriteFile(kName, repeat, size, block_size, type, seed, reseeding, input_fd_key),
+      fadvise_(fadvise) {}
 
 void ReadFile::SetUpSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));

@@ -104,9 +104,12 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         seed = time(0);
       }
 
+      auto reseeding = ConvertReadWriteReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(options.input_fd());
-      auto instruction = std::make_unique<WriteFile>(repeat, options.size(), options.block_size(),
-                                                     type, seed, options.fsync(), fd_key);
+
+      auto instruction =
+          std::make_unique<WriteFile>(repeat, options.size(), options.block_size(), type, seed,
+                                      reseeding, options.fsync(), fd_key);
 
       return instruction;
     }
@@ -158,9 +161,11 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         }
       }
 
+      auto reseeding = ConvertReadWriteReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(options.input_fd());
+
       auto instruction = std::make_unique<ReadFile>(repeat, options.size(), options.block_size(),
-                                                    type, seed, fadvise, fd_key);
+                                                    type, seed, reseeding, fadvise, fd_key);
 
       return instruction;
     }
@@ -170,6 +175,25 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     }
     default: {
       LOGE("Invalid instruction was set in .ditto file");
+      exit(EXIT_FAILURE);
+    }
+  }
+}
+
+ReadWriteFile::Reseeding InstructionFactory::ConvertReadWriteReseeding(
+    const dittosuiteproto::ReadWriteReseeding& proto_reseeding) {
+  switch (proto_reseeding) {
+    case dittosuiteproto::ReadWriteReseeding::ONCE: {
+      return ReadWriteFile::Reseeding::kOnce;
+    }
+    case dittosuiteproto::ReadWriteReseeding::EACH_ROUND_OF_CYCLES: {
+      return ReadWriteFile::Reseeding::kEachRoundOfCycles;
+    }
+    case dittosuiteproto::ReadWriteReseeding::EACH_CYCLE: {
+      return ReadWriteFile::Reseeding::kEachCycle;
+    }
+    default: {
+      LOGE("Invalid ReadWriteReseeding was provided");
       exit(EXIT_FAILURE);
     }
   }
