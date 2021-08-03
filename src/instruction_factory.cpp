@@ -95,7 +95,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         }
         default: {
           LOGE("Invalid ReadWriteType was provided");
-          return nullptr;
+          exit(EXIT_FAILURE);
         }
       }
 
@@ -125,7 +125,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         }
         default: {
           LOGE("Invalid ReadWriteType was provided");
-          return nullptr;
+          exit(EXIT_FAILURE);
         }
       }
 
@@ -154,7 +154,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         }
         default: {
           LOGE("Invalid ReadFAdvise was provided");
-          return nullptr;
+          exit(EXIT_FAILURE);
         }
       }
 
@@ -166,11 +166,11 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGE("Instruction was not set in .ditto file");
-      return nullptr;
+      exit(EXIT_FAILURE);
     }
     default: {
       LOGE("Invalid instruction was set in .ditto file");
-      return nullptr;
+      exit(EXIT_FAILURE);
     }
   }
 }

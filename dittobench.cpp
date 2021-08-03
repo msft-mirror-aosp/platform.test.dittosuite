@@ -27,10 +27,6 @@ int main(int argc, char** argv) {
 
   auto main = dittosuite::Parser::GetParser().Parse();
 
-  if (main == nullptr) {
-    return EXIT_FAILURE;
-  }
-
   main->SetUp();
   main->Run();
   main->TearDown();
