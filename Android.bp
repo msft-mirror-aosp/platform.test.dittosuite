@@ -34,6 +34,13 @@ cc_binary {
     defaults: ["dittobench_defaults"],
 }
 
+cc_binary {
+    name: "dittotrace",
+    srcs: ["dittotrace.cpp"],
+    static_libs: ["libdittosuite"],
+    defaults: ["dittobench_defaults"],
+}
+
 cc_test {
     name: "dittobench_test",
     srcs: [
