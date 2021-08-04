@@ -63,7 +63,9 @@ void ReadWriteFile::SetUpSingle() {
   }
 
   if (block_size_ > file_size) {
-    LOGW("Supplied block_size is greater than total file size");
+    LOGW("Supplied block_size (" + std::to_string(block_size_) +
+         ") is greater than total file size (" + std::to_string(file_size) +
+         "). File path:" + GetFilePath(fd));
     return;
   }
 
