@@ -107,9 +107,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       auto reseeding = ConvertReadWriteReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
-      auto instruction =
-          std::make_unique<WriteFile>(repeat, options.size(), options.block_size(), type, seed,
-                                      reseeding, options.fsync(), fd_key);
+      auto instruction = std::make_unique<WriteFile>(repeat, options.size(), options.block_size(),
+                                                     options.starting_offset(), type, seed,
+                                                     reseeding, options.fsync(), fd_key);
 
       return instruction;
     }
@@ -165,7 +165,8 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
       auto instruction = std::make_unique<ReadFile>(repeat, options.size(), options.block_size(),
-                                                    type, seed, reseeding, fadvise, fd_key);
+                                                    options.starting_offset(), type, seed,
+                                                    reseeding, fadvise, fd_key);
 
       return instruction;
     }

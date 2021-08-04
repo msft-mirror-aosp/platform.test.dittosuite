@@ -27,11 +27,12 @@
 namespace dittosuite {
 
 ReadWriteFile::ReadWriteFile(const std::string& name, int repeat, int64_t size, int64_t block_size,
-                             ReadWriteType type, u_int32_t seed, Reseeding reseeding,
-                             int input_fd_key)
+                             int64_t starting_offset, ReadWriteType type, u_int32_t seed,
+                             Reseeding reseeding, int input_fd_key)
     : Instruction(name, repeat),
       size_(size),
       block_size_(block_size),
+      starting_offset_(starting_offset),
       type_(type),
       gen_(seed),
       seed_(seed),
@@ -39,6 +40,12 @@ ReadWriteFile::ReadWriteFile(const std::string& name, int repeat, int64_t size, 
       input_fd_key_(input_fd_key) {
   buffer_ = std::make_unique<char[]>(block_size_);
   std::fill(buffer_.get(), buffer_.get() + block_size_, 170);  // 170 = 10101010
+
+  if (type == ReadWriteType::kRandom && starting_offset != 0) {
+    LOGE(
+        "Starting offset is not 0, although the chosen type is RANDOM. Starting offset will be "
+        "ignored");
+  }
 }
 
 void ReadWriteFile::SetUp() {
@@ -66,7 +73,7 @@ void ReadWriteFile::SetUpSingle() {
 
   switch (type_) {
     case ReadWriteType::kSequential: {
-      int64_t offset = 0;
+      int64_t offset = starting_offset_;
       for (int64_t i = 0; i < (size_ / block_size_); i++) {
         if (offset > file_size - block_size_) {
           offset = 0;
@@ -91,9 +98,11 @@ void ReadWriteFile::SetUpSingle() {
 
 void ReadWriteFile::RunSingle() {}
 
-WriteFile::WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                     u_int32_t seed, Reseeding reseeding, bool fsync, int input_fd_key)
-    : ReadWriteFile(kName, repeat, size, block_size, type, seed, reseeding, input_fd_key),
+WriteFile::WriteFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
+                     ReadWriteType type, u_int32_t seed, Reseeding reseeding, bool fsync,
+                     int input_fd_key)
+    : ReadWriteFile(kName, repeat, size, block_size, starting_offset, type, seed, reseeding,
+                    input_fd_key),
       fsync_(fsync) {}
 
 void WriteFile::RunSingle() {
@@ -112,9 +121,11 @@ void WriteFile::RunSingle() {
   }
 }
 
-ReadFile::ReadFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type, u_int32_t seed,
-                   Reseeding reseeding, ReadFAdvise fadvise, int input_fd_key)
-    : ReadWriteFile(kName, repeat, size, block_size, type, seed, reseeding, input_fd_key),
+ReadFile::ReadFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
+                   ReadWriteType type, u_int32_t seed, Reseeding reseeding, ReadFAdvise fadvise,
+                   int input_fd_key)
+    : ReadWriteFile(kName, repeat, size, block_size, starting_offset, type, seed, reseeding,
+                    input_fd_key),
       fadvise_(fadvise) {}
 
 void ReadFile::SetUpSingle() {
