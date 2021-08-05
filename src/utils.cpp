@@ -14,6 +14,7 @@
 
 #include <ditto/utils.h>
 
+#include <sys/param.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -23,6 +24,12 @@ int64_t GetFileSize(int fd) {
   struct stat64 sb;
   fstat64(fd, &sb);
   return sb.st_size;
+}
+
+std::string GetFilePath(int fd) {
+  char file_path[PATH_MAX];
+  readlink(("/proc/self/fd/" + std::to_string(fd)).c_str(), file_path, sizeof(file_path));
+  return std::string(file_path);
 }
 
 }  // namespace dittosuite

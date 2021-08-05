@@ -15,9 +15,11 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 namespace dittosuite {
 
 int64_t GetFileSize(int fd);
+std::string GetFilePath(int fd);
 
 }  // namespace dittosuite
