@@ -14,6 +14,7 @@
 
 #include <ditto/instruction_factory.h>
 
+#include <fcntl.h>
 #include <sys/types.h>
 
 #include <ditto/close_file.h>
@@ -109,30 +110,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         seed = time(0);
       }
 
-      ReadFile::ReadFAdvise fadvise;
-      switch (options.fadvise()) {
-        case dittosuiteproto::InstructionReadFile_ReadFAdvise_AUTOMATIC: {
-          fadvise = ReadFile::ReadFAdvise::kAutomatic;
-          break;
-        }
-        case dittosuiteproto::InstructionReadFile_ReadFAdvise_NORMAL: {
-          fadvise = ReadFile::ReadFAdvise::kNormal;
-          break;
-        }
-        case dittosuiteproto::InstructionReadFile_ReadFAdvise_SEQUENTIAL: {
-          fadvise = ReadFile::ReadFAdvise::kSequential;
-          break;
-        }
-        case dittosuiteproto::InstructionReadFile_ReadFAdvise_RANDOM: {
-          fadvise = ReadFile::ReadFAdvise::kRandom;
-          break;
-        }
-        default: {
-          LOGE("Invalid ReadFAdvise was provided");
-          exit(EXIT_FAILURE);
-        }
-      }
-
+      auto fadvise = ConvertReadFAdvise(type, options.fadvise());
       auto reseeding = ConvertReadWriteReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
@@ -183,6 +161,36 @@ ReadWriteFile::Type InstructionFactory::ConvertReadWriteType(
     }
     default: {
       LOGE("Invalid ReadWriteType was provided");
+      exit(EXIT_FAILURE);
+    }
+  }
+}
+
+int InstructionFactory::ConvertReadFAdvise(
+    const ReadWriteFile::Type& type,
+    const dittosuiteproto::InstructionReadFile_ReadFAdvise& proto_fadvise) {
+  switch (proto_fadvise) {
+    case dittosuiteproto::InstructionReadFile_ReadFAdvise_AUTOMATIC: {
+      switch (type) {
+        case ReadWriteFile::Type::kSequential: {
+          return POSIX_FADV_SEQUENTIAL;
+        }
+        case ReadWriteFile::Type::kRandom: {
+          return POSIX_FADV_RANDOM;
+        }
+      }
+    }
+    case dittosuiteproto::InstructionReadFile_ReadFAdvise_NORMAL: {
+      return POSIX_FADV_NORMAL;
+    }
+    case dittosuiteproto::InstructionReadFile_ReadFAdvise_SEQUENTIAL: {
+      return POSIX_FADV_SEQUENTIAL;
+    }
+    case dittosuiteproto::InstructionReadFile_ReadFAdvise_RANDOM: {
+      return POSIX_FADV_RANDOM;
+    }
+    default: {
+      LOGE("Invalid ReadFAdvise was provided");
       exit(EXIT_FAILURE);
     }
   }
