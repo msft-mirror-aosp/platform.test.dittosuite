@@ -20,17 +20,25 @@
 #include <ditto/open_file.h>
 #include <ditto/shared_variables.h>
 
+#ifdef __ANDROID__
+const std::string absolute_path = "/data/local/tmp/";
+#else
+const std::string absolute_path = "";
+#endif
+
 TEST(DeleteFileTest, DeleteFileTestRun) {
   int repeat = 1;
-  std::string file = "/data/local/tmp/newfile.txt";
+  std::string file = "newfile.txt";
 
-  dittosuite::SharedVariables::Set("absolute_path", "");
+  auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
+  dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
+  dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
 
   dittosuite::OpenFile open_file_instruction(repeat, file, true, -1);
   open_file_instruction.Run();
-  ASSERT_EQ(access(file.c_str(), F_OK), 0);
+  ASSERT_EQ(access((absolute_path + file).c_str(), F_OK), 0);
 
   dittosuite::DeleteFile delete_file_instruction(repeat, file);
   delete_file_instruction.Run();
-  ASSERT_EQ(access(file.c_str(), F_OK), -1);
+  ASSERT_EQ(access((absolute_path + file).c_str(), F_OK), -1);
 }
