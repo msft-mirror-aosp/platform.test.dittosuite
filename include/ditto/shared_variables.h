@@ -27,6 +27,7 @@ class SharedVariables {
 
   static int GetKey(const std::string& variable_name);
   static Variant Get(int key);
+  static Variant Get(const std::string& variable_name);
   static void Set(int key, const Variant& value);
   static void Set(const std::string& variable_name, const Variant& value);
   static void ClearKeys();
