@@ -3,7 +3,7 @@ main: {
     instructions: [
       {
         instruction_open_file: {
-          file: "newfile2.txt"
+          path_name: "newfile2.txt"
         }
       },
       {

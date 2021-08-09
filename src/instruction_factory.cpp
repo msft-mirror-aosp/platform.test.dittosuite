@@ -51,12 +51,18 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionOpenFile: {
       const auto& options = proto_instruction.instruction_open_file();
 
+      int input = -1;
+      if (options.has_input()) {
+        input = SharedVariables::GetKey(options.input());
+      }
+
       int fd_key = -1;
       if (options.has_output_fd()) {
         fd_key = SharedVariables::GetKey(options.output_fd());
       }
 
-      return std::make_unique<OpenFile>(repeat, options.file(), options.create(), fd_key);
+      return std::make_unique<OpenFile>(repeat, options.path_name(), options.create(), input,
+                                        fd_key);
     }
     case InstructionType::kInstructionDeleteFile: {
       const auto& options = proto_instruction.instruction_delete_file();

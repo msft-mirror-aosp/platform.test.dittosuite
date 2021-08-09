@@ -37,8 +37,16 @@ class OpenFileTest : public ::testing::Test {
   void TearDown() override { unlink((absolute_path + file_name).c_str()); }
 };
 
-TEST_F(OpenFileTest, FileCreated) {
-  dittosuite::OpenFile instruction(1, file_name, true, -1);
+TEST_F(OpenFileTest, FileCreatedWithPathName) {
+  dittosuite::OpenFile instruction(1, file_name, true, -1, -1);
+  instruction.Run();
+
+  ASSERT_EQ(access((absolute_path + file_name).c_str(), F_OK), 0);
+}
+
+TEST_F(OpenFileTest, FileCreatedWithVariable) {
+  dittosuite::SharedVariables::Set("input", file_name);
+  dittosuite::OpenFile instruction(1, "", true, dittosuite::SharedVariables::GetKey("input"), -1);
   instruction.Run();
 
   ASSERT_EQ(access((absolute_path + file_name).c_str(), F_OK), 0);

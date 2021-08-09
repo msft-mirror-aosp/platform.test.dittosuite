@@ -25,14 +25,27 @@
 
 namespace dittosuite {
 
-OpenFile::OpenFile(int repeat, const std::string& file, bool create, int output_fd_key)
+OpenFile::OpenFile(int repeat, const std::string& path_name, bool create, int input_key,
+                   int output_fd_key)
     : Instruction(kName, repeat),
-      file_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) + file),
+      path_name_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) +
+                 path_name),
       create_(create),
+      input_key_(input_key),
       output_fd_key_(output_fd_key) {}
 
+void OpenFile::SetUpSingle() {
+  auto absolute_path =
+      std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey()));
+  if (input_key_ != -1) {
+    path_name_ = absolute_path + std::get<std::string>(SharedVariables::Get(input_key_));
+  }
+  Instruction::SetUpSingle();
+}
+
 void OpenFile::RunSingle() {
-  int fd = open(file_.c_str(), (create_ ? O_CREAT : 0) | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR);
+  int fd =
+      open(path_name_.c_str(), (create_ ? O_CREAT : 0) | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR);
 
   if (fd == -1) {
     LOGF("Error while trying to open the file");
