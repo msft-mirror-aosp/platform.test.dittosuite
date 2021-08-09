@@ -64,8 +64,7 @@ void ParseArguments(int argc, char** argv) {
   }
 
   if (optind >= argc) {
-    LOGE("Expected .ditto file");
-    exit(EXIT_FAILURE);
+    LOGF("Expected .ditto file");
   }
 
   dittosuite::Parser::GetParser().SetFilePath(argv[optind]);
