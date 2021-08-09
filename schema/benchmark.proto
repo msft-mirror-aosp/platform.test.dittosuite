@@ -60,6 +60,11 @@ message InstructionReadFile {
   optional ReadWriteReseeding reseeding = 8 [default = ONCE];
 }
 
+message InstructionReadDirectory {
+  required string directory_name = 1;
+  required string output = 2;
+}
+
 message Instruction {
   optional int32 repeat = 1 [default = 1];
   oneof instruction_oneof {
@@ -70,6 +75,7 @@ message Instruction {
     InstructionResizeFile instruction_resize_file = 6;
     InstructionWriteFile instruction_write_file = 7;
     InstructionReadFile instruction_read_file = 8;
+    InstructionReadDirectory instruction_read_directory = 9;
   }
 }
 
