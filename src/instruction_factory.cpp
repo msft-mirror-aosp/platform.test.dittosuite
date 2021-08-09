@@ -67,7 +67,12 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionDeleteFile: {
       const auto& options = proto_instruction.instruction_delete_file();
 
-      return std::make_unique<DeleteFile>(repeat, options.file());
+      int input = -1;
+      if (options.has_input()) {
+        input = SharedVariables::GetKey(options.input());
+      }
+
+      return std::make_unique<DeleteFile>(repeat, options.path_name(), input);
     }
     case InstructionType::kInstructionCloseFile: {
       const auto& options = proto_instruction.instruction_close_file();

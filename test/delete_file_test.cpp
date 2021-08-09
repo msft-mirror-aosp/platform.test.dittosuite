@@ -44,8 +44,16 @@ class DeleteFileTest : public ::testing::Test {
   void TearDown() override { unlink((absolute_path + file_name).c_str()); }
 };
 
-TEST_F(DeleteFileTest, SuccessRun) {
-  dittosuite::DeleteFile instruction(1, file_name);
+TEST_F(DeleteFileTest, FileDeletedWithPathName) {
+  dittosuite::DeleteFile instruction(1, file_name, -1);
+  instruction.Run();
+
+  ASSERT_EQ(access((absolute_path + file_name).c_str(), F_OK), -1);
+}
+
+TEST_F(DeleteFileTest, FileDeletedWithVariable) {
+  dittosuite::SharedVariables::Set("input", file_name);
+  dittosuite::DeleteFile instruction(1, "", dittosuite::SharedVariables::GetKey("input"));
   instruction.Run();
 
   ASSERT_EQ(access((absolute_path + file_name).c_str(), F_OK), -1);
