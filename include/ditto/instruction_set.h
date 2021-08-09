@@ -14,7 +14,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
+#include <random>
 #include <vector>
 
 #include <ditto/instruction.h>
@@ -25,14 +27,26 @@ class InstructionSet : public Instruction {
  public:
   inline static const std::string kName = "instruction_set";
 
+  explicit InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions,
+                          int list_key, int item_key, AccessType type, Reseeding reseeding,
+                          uint32_t seed);
   explicit InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions);
 
   std::unique_ptr<Result> CollectResults() override;
 
  private:
+  void SetUp() override;
+  void SetUpSingle() override;
   void RunSingle() override;
+  void RunInstructions();
 
   std::vector<std::unique_ptr<Instruction>> instructions_;
+  int list_key_;
+  int item_key_;
+  AccessType type_;
+  Reseeding reseeding_;
+  uint32_t seed_;
+  std::mt19937_64 gen_;
 };
 
 }  // namespace dittosuite
