@@ -23,7 +23,11 @@
 namespace dittosuite {
 
 ReadDirectory::ReadDirectory(int repeat, const std::string& directory_name, int output_key)
-    : Instruction(kName, repeat), directory_name_(directory_name), output_key_(output_key) {}
+    : Instruction(kName, repeat),
+      directory_name_(
+          std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) +
+          directory_name),
+      output_key_(output_key) {}
 
 void ReadDirectory::RunSingle() {
   std::vector<std::string> output;
