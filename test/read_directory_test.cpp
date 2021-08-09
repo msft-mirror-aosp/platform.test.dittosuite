@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -38,19 +37,19 @@ class ReadDirectoryTest : public ::testing::Test {
     dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
     dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
 
-    ASSERT_NE(mkdir(directory_name.c_str(), S_IRWXU), -1);
+    ASSERT_NE(mkdir((absolute_path + directory_name).c_str(), S_IRWXU), -1);
     for (const auto& file_name : file_names) {
-      ASSERT_NE(
-          open((directory_name + "/" + file_name).c_str(), O_CREAT | O_CLOEXEC, S_IRUSR | S_IWUSR),
-          -1);
+      ASSERT_NE(open((absolute_path + directory_name + "/" + file_name).c_str(),
+                     O_CREAT | O_CLOEXEC, S_IRUSR | S_IWUSR),
+                -1);
     }
   }
   // Remove the folder and files that were created in SetUp()
   void TearDown() override {
     for (const auto& file_name : file_names) {
-      ASSERT_NE(unlink((directory_name + "/" + file_name).c_str()), -1);
+      ASSERT_NE(unlink((absolute_path + directory_name + "/" + file_name).c_str()), -1);
     }
-    ASSERT_NE(rmdir(directory_name.c_str()), -1);
+    ASSERT_NE(rmdir((absolute_path + directory_name).c_str()), -1);
   }
 };
 
