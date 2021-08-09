@@ -13,6 +13,9 @@
 // limitations under the License.
 
 #include <ditto/statistics.h>
+#include <ditto/time_sampler.h>
+
+#include <cmath>
 
 #include <algorithm>
 
@@ -47,10 +50,21 @@ timespec StatisticsGetMean(const std::vector<timespec>& time_samples) {
   return NsToTimespec(result / time_samples.size());
 }
 
+// TODO(lucialup): improve readability
+// the standard deviation is computed as the square root of the
+// variance given by the deviation of each point relative to the mean
+// SD = sqrt( variance ),
+// where variance = Sum( (point_i - mean)^2 ) / total_number_of_points
 timespec StatisticsGetSd(const std::vector<timespec>& time_samples) {
-  // TODO (lucialup): implement standard deviation
-  timespec result = time_samples[0];
-  return result;
+  int64_t mean = TimespecToNs(StatisticsGetMean(time_samples));
+  int64_t result(0), deviation_pow;
+  int64_t deviation;
+  for (const auto& time_sample : time_samples) {
+    deviation = TimespecToNs(time_sample) - mean;
+    deviation_pow = std::pow(deviation, 2);
+    result += deviation_pow;  // TODO(lucialup): add overflow error handling
+  }
+  int time_samples_size = time_samples.size();
+  return NsToTimespec(std::sqrt(result / time_samples_size));
 }
-
 }  // namespace dittosuite
