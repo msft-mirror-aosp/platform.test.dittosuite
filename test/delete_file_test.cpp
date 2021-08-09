@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <fcntl.h>
 #include <unistd.h>
 
 #include <gtest/gtest.h>
 
 #include <ditto/delete_file.h>
-#include <ditto/open_file.h>
 #include <ditto/shared_variables.h>
 
 #ifdef __ANDROID__
@@ -26,19 +26,27 @@ const std::string absolute_path = "/data/local/tmp/";
 const std::string absolute_path = "";
 #endif
 
-TEST(DeleteFileTest, DeleteFileTestRun) {
-  int repeat = 1;
-  std::string file = "newfile.txt";
+class DeleteFileTest : public ::testing::Test {
+ protected:
+  std::string file_name = "test";
 
-  auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
-  dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
-  dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
+  // Create a file for testing and set absolute_path
+  void SetUp() override {
+    auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
+    dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
+    dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
 
-  dittosuite::OpenFile open_file_instruction(repeat, file, true, -1);
-  open_file_instruction.Run();
-  ASSERT_EQ(access((absolute_path + file).c_str(), F_OK), 0);
+    ASSERT_NE(
+        open((absolute_path + file_name).c_str(), O_CREAT | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR),
+        -1);
+  }
+  // Make sure that the file created in SetUp() is actually deleted
+  void TearDown() override { unlink((absolute_path + file_name).c_str()); }
+};
 
-  dittosuite::DeleteFile delete_file_instruction(repeat, file);
-  delete_file_instruction.Run();
-  ASSERT_EQ(access((absolute_path + file).c_str(), F_OK), -1);
+TEST_F(DeleteFileTest, SuccessRun) {
+  dittosuite::DeleteFile instruction(1, file_name);
+  instruction.Run();
+
+  ASSERT_EQ(access((absolute_path + file_name).c_str(), F_OK), -1);
 }
