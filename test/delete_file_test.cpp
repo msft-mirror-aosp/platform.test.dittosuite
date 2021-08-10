@@ -29,6 +29,7 @@ const std::string absolute_path = "";
 class DeleteFileTest : public ::testing::Test {
  protected:
   std::string file_name = "test";
+  std::string path = absolute_path + file_name;
 
   // Create a file for testing and set absolute_path
   void SetUp() override {
@@ -36,19 +37,17 @@ class DeleteFileTest : public ::testing::Test {
     dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
     dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
 
-    ASSERT_NE(
-        open((absolute_path + file_name).c_str(), O_CREAT | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR),
-        -1);
+    ASSERT_NE(open(path.c_str(), O_CREAT | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR), -1);
   }
   // Make sure that the file created in SetUp() is actually deleted
-  void TearDown() override { unlink((absolute_path + file_name).c_str()); }
+  void TearDown() override { unlink(path.c_str()); }
 };
 
 TEST_F(DeleteFileTest, FileDeletedWithPathName) {
   dittosuite::DeleteFile instruction(1, file_name, -1);
   instruction.Run();
 
-  ASSERT_EQ(access((absolute_path + file_name).c_str(), F_OK), -1);
+  ASSERT_EQ(access(path.c_str(), F_OK), -1);
 }
 
 TEST_F(DeleteFileTest, FileDeletedWithVariable) {
@@ -56,5 +55,5 @@ TEST_F(DeleteFileTest, FileDeletedWithVariable) {
   dittosuite::DeleteFile instruction(1, "", dittosuite::SharedVariables::GetKey("input"));
   instruction.Run();
 
-  ASSERT_EQ(access((absolute_path + file_name).c_str(), F_OK), -1);
+  ASSERT_EQ(access(path.c_str(), F_OK), -1);
 }

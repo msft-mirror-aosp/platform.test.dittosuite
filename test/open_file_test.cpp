@@ -26,6 +26,7 @@ const std::string absolute_path = "";
 class OpenFileTest : public ::testing::Test {
  protected:
   std::string file_name = "test";
+  std::string path = absolute_path + file_name;
 
   // Set absolute_path
   void SetUp() override {
@@ -34,14 +35,14 @@ class OpenFileTest : public ::testing::Test {
     dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
   }
   // Make sure that the files, which have been created in the tests, are deleted
-  void TearDown() override { unlink((absolute_path + file_name).c_str()); }
+  void TearDown() override { unlink(path.c_str()); }
 };
 
 TEST_F(OpenFileTest, FileCreatedWithPathName) {
   dittosuite::OpenFile instruction(1, file_name, true, -1, -1);
   instruction.Run();
 
-  ASSERT_EQ(access((absolute_path + file_name).c_str(), F_OK), 0);
+  ASSERT_EQ(access(path.c_str(), F_OK), 0);
 }
 
 TEST_F(OpenFileTest, FileCreatedWithVariable) {
@@ -49,5 +50,5 @@ TEST_F(OpenFileTest, FileCreatedWithVariable) {
   dittosuite::OpenFile instruction(1, "", true, dittosuite::SharedVariables::GetKey("input"), -1);
   instruction.Run();
 
-  ASSERT_EQ(access((absolute_path + file_name).c_str(), F_OK), 0);
+  ASSERT_EQ(access(path.c_str(), F_OK), 0);
 }
