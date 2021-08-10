@@ -97,4 +97,10 @@ void Logger::WriteLogMessage(const std::string message, LOG_LEVEL log_level) {
   }
 }
 
+void Logger::WriteLogErrorMessage(const std::string& message, LOG_LEVEL log_level) {
+  std::string errno_suffix = ": ";
+  errno_suffix += strerror(errno);
+  WriteLogMessage(message + errno_suffix, log_level);
+}
+
 }  // namespace dittosuite
