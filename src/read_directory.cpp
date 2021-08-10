@@ -24,9 +24,7 @@ namespace dittosuite {
 
 ReadDirectory::ReadDirectory(int repeat, const std::string& directory_name, int output_key)
     : Instruction(kName, repeat),
-      directory_name_(
-          std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) +
-          directory_name),
+      directory_name_(GetAbsolutePath() + directory_name),
       output_key_(output_key) {}
 
 void ReadDirectory::RunSingle() {

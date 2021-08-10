@@ -25,15 +25,12 @@ namespace dittosuite {
 
 DeleteFile::DeleteFile(int repeat, const std::string& path_name, int input_key)
     : Instruction(kName, repeat),
-      path_name_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) +
-                 path_name),
+      path_name_(GetAbsolutePath() + path_name),
       input_key_(input_key) {}
 
 void DeleteFile::SetUpSingle() {
-  auto absolute_path =
-      std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey()));
   if (input_key_ != -1) {
-    path_name_ = absolute_path + std::get<std::string>(SharedVariables::Get(input_key_));
+    path_name_ = GetAbsolutePath() + std::get<std::string>(SharedVariables::Get(input_key_));
   }
   Instruction::SetUpSingle();
 }
