@@ -36,6 +36,7 @@ class Result {
   void Print(const std::string& instruction_path);
   void PrintHistograms(const std::string& instruction_path);
   void PrintStatisticsTable();
+  void MakeStatisticsCsv();
 
  private:
   std::string name_;
@@ -45,5 +46,6 @@ class Result {
   std::vector<int> ComputeNormalizedFrequencyVector();
   void PrintStatisticsTableContent(const std::string& instruction_path);
   std::string ComputeNextInstructionPath(const std::string& instruction_path);
+  void PrintStatisticInCsv(std::fstream& csv_stream, const std::string& instruction_path);
 };
 }  // namespace dittosuite

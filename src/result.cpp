@@ -16,6 +16,7 @@
 #include <ditto/statistics.h>
 
 #include <algorithm>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -29,6 +30,7 @@ const int kMaxHistogramHeight = 20;  // used for normalizing the histogram (repr
                                      //  maximum height of the histogram)
 const int kMaxHistogramWidth = 50;   // used for normalizing the histogram (represents the
                                      // maximum width of the histogram)
+const char kCsvDelimiter = ',';      // delimiter used for .csv files
 static int bin_size;                 // bin size corresponding to the normalization
                                      // of the Oy axis of the histograms
 
@@ -198,4 +200,40 @@ void Result::PrintHistograms(const std::string& instruction_path) {
     sub_result->PrintHistograms(next_instruction_path);
   }
 }
+
+// returns the printing version of the timespec
+std::string TimespecToString(const timespec& t) {
+  return std::to_string(t.tv_sec) + "s " + std::to_string(t.tv_nsec) + "ns";
+}
+
+// Recursive function to print one row at a time using the .csv stream given as a parameter
+// of statistics table content (the instruction path, min, max, mean and SD).
+void Result::PrintStatisticInCsv(std::fstream& csv_stream, const std::string& instruction_path) {
+  std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
+  csv_stream << next_instruction_path << kCsvDelimiter;
+  csv_stream << TimespecToString(min_) << kCsvDelimiter;
+  csv_stream << TimespecToString(max_) << kCsvDelimiter;
+  csv_stream << TimespecToString(mean_) << kCsvDelimiter;
+  csv_stream << TimespecToString(sd_);
+  csv_stream << std::endl;  // ending of row
+
+  for (const auto& sub_result : sub_results_) {
+    sub_result->PrintStatisticInCsv(csv_stream, next_instruction_path);
+  }
+}
+
+void Result::MakeStatisticsCsv() {
+  std::fstream csv_stream;
+  csv_stream.open("../statistics.csv", std::ios::out | std::ios::ate);
+  csv_stream << "Instruction path" << kCsvDelimiter;
+  csv_stream << "Min" << kCsvDelimiter;
+  csv_stream << "Max" << kCsvDelimiter;
+  csv_stream << "Mean" << kCsvDelimiter;
+  csv_stream << "SD" << std::endl;
+
+  PrintStatisticInCsv(csv_stream, "");
+
+  csv_stream.close();
+}
+
 }  // namespace dittosuite
