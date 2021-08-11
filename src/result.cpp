@@ -112,8 +112,7 @@ void PrintStatisticsTableHeader() {
 }
 
 void PrintTimespecInTable(const timespec& t) {
-  std::cout << std::setw(3) << t.tv_sec << "s, ";
-  std::cout << std::setw(10) << t.tv_nsec << "ns";
+  std::cout << std::setw(16) << TimespecToNs(t) << "ns";
 }
 
 // Recursive function to print one row at a time
@@ -205,20 +204,15 @@ void Result::PrintHistograms(const std::string& instruction_path) {
   }
 }
 
-// returns the printing version of the timespec
-std::string TimespecToString(const timespec& t) {
-  return std::to_string(t.tv_sec) + "s " + std::to_string(t.tv_nsec) + "ns";
-}
-
 // Recursive function to print one row at a time using the .csv stream given as a parameter
 // of statistics table content (the instruction path, min, max, mean and SD).
 void Result::PrintStatisticInCsv(std::fstream& csv_stream, const std::string& instruction_path) {
   std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
   csv_stream << next_instruction_path << kCsvDelimiter;
-  csv_stream << TimespecToString(min_) << kCsvDelimiter;
-  csv_stream << TimespecToString(max_) << kCsvDelimiter;
-  csv_stream << TimespecToString(mean_) << kCsvDelimiter;
-  csv_stream << TimespecToString(sd_);
+  csv_stream << TimespecToNs(min_) << kCsvDelimiter;
+  csv_stream << TimespecToNs(max_) << kCsvDelimiter;
+  csv_stream << TimespecToNs(mean_) << kCsvDelimiter;
+  csv_stream << TimespecToNs(sd_);
   csv_stream << std::endl;  // ending of row
 
   for (const auto& sub_result : sub_results_) {
