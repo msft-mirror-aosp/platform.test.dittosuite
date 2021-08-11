@@ -39,6 +39,12 @@ class Result {
   void MakeStatisticsCsv();
 
  private:
+  struct TimeUnit {
+    int dividing_factor;  // dividing factor used for transforming the current time
+                          // unit (ns) in another one (ex 1000 for microseconds)
+    std::string name;
+  };
+  TimeUnit time_unit_;
   std::string name_;
   std::vector<timespec> time_samples_;
   std::vector<std::unique_ptr<Result>> sub_results_;
@@ -47,5 +53,7 @@ class Result {
   void PrintStatisticsTableContent(const std::string& instruction_path);
   std::string ComputeNextInstructionPath(const std::string& instruction_path);
   void PrintStatisticInCsv(std::fstream& csv_stream, const std::string& instruction_path);
+  void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value);
+  TimeUnit GetTimeUnit(const timespec& min_value);
 };
 }  // namespace dittosuite
