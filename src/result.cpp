@@ -23,7 +23,7 @@
 const int kTimeDividingFactor = 1;       // dividing factor used for transforming the current time
                                          // unit (ns) in another one (ex 1000 for microseconds)
 const int kTimeSampleDisplayWidth = 11;  // this width is used displaying a time sample value
-const int kTableWidth = 137;  // table width; can be adjusted in case of longer instruction paths
+const int kTableWidth = 158;  // table width; can be adjusted in case of longer instruction paths
 const char* kTableDivider = " | ";   // table character divider
 const int kMaxHistogramHeight = 20;  // used for normalizing the histogram (represents the
                                      //  maximum height of the histogram)
@@ -103,6 +103,8 @@ void PrintStatisticsTableHeader() {
   std::cout << kTableDivider;
   std::cout << std::setw(18) << std::left << " Mean";
   std::cout << kTableDivider;
+  std::cout << std::setw(18) << std::left << "Standard Deviation";
+  std::cout << kTableDivider;
   PrintTableBorder();
   std::cout << "\x1b[0m";  // ending of bold
 }
@@ -133,6 +135,8 @@ void Result::PrintStatisticsTableContent(const std::string& instruction_path) {
   PrintTimespecInTable(max_);
   std::cout << kTableDivider;
   PrintTimespecInTable(mean_);
+  std::cout << kTableDivider;
+  PrintTimespecInTable(sd_);
   std::cout << kTableDivider;  // ended current row
   PrintTableBorder();
   for (const auto& sub_result : sub_results_) {
