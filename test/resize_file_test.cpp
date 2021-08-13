@@ -40,7 +40,7 @@ TEST(ResizeFileTest, ResizeFileTestRun) {
 
   int fd_key = dittosuite::SharedVariables::GetKey("test_file");
 
-  dittosuite::OpenFile open_file_instruction(repeat, file, true, fd_key);
+  dittosuite::OpenFile open_file_instruction(repeat, file, true, -1, fd_key);
   open_file_instruction.Run();
 
   ASSERT_EQ(access((absolute_path + file).c_str(), F_OK), 0);

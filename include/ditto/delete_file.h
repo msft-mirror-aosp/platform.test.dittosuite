@@ -24,12 +24,14 @@ class DeleteFile : public Instruction {
  public:
   inline static const std::string kName = "instruction_delete_file";
 
-  explicit DeleteFile(int repeat, const std::string& file);
+  explicit DeleteFile(int repeat, const std::string& path_name, int input_key);
 
  private:
+  void SetUpSingle() override;
   void RunSingle() override;
 
-  const std::string file_;
+  std::string path_name_;
+  int input_key_;
 };
 
 }  // namespace dittosuite

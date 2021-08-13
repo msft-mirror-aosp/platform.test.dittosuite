@@ -73,6 +73,8 @@ void ReadWriteFile::SetUpSingle() {
     gen_.seed(seed_);
   }
 
+  units_.clear();
+
   switch (type_) {
     case Type::kSequential: {
       int64_t offset = starting_offset_;

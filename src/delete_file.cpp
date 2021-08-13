@@ -23,13 +23,20 @@
 
 namespace dittosuite {
 
-DeleteFile::DeleteFile(int repeat, const std::string& file)
+DeleteFile::DeleteFile(int repeat, const std::string& path_name, int input_key)
     : Instruction(kName, repeat),
-      file_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) + file) {
+      path_name_(GetAbsolutePath() + path_name),
+      input_key_(input_key) {}
+
+void DeleteFile::SetUpSingle() {
+  if (input_key_ != -1) {
+    path_name_ = GetAbsolutePath() + std::get<std::string>(SharedVariables::Get(input_key_));
+  }
+  Instruction::SetUpSingle();
 }
 
 void DeleteFile::RunSingle() {
-  if (unlink(file_.c_str()) == -1) {
+  if (unlink(path_name_.c_str()) == -1) {
     LOGF("Error while calling unlink()");
   }
 }

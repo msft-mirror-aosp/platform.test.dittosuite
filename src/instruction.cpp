@@ -14,6 +14,8 @@
 
 #include <ditto/instruction.h>
 
+#include <ditto/shared_variables.h>
+
 namespace dittosuite {
 
 Instruction::Instruction(const std::string& name, int repeat) : name_(name), repeat_(repeat) {}
@@ -48,8 +50,8 @@ void Instruction::SetAbsolutePathKey(int absolute_path_key) {
   absolute_path_key_ = absolute_path_key;
 }
 
-int Instruction::GetAbsolutePathKey() {
-  return absolute_path_key_;
+std::string Instruction::GetAbsolutePath() {
+  return std::get<std::string>(SharedVariables::Get(absolute_path_key_));
 }
 
 int Instruction::absolute_path_key_;
