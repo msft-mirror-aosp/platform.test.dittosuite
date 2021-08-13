@@ -14,20 +14,18 @@
 
 #include <ditto/delete_file.h>
 
-#include <unistd.h>
-
-#include <fstream>
-
-#include <ditto/shared_variables.h>
 #include <ditto/logger.h>
+#include <ditto/shared_variables.h>
 
 namespace dittosuite {
 
-DeleteFile::DeleteFile(int repeat, const std::string& path_name)
-    : Instruction(kName, repeat), path_name_(GetAbsolutePath() + path_name), input_key_(-1) {}
+DeleteFile::DeleteFile(SyscallInterface& syscall, int repeat, const std::string& path_name)
+    : Instruction(syscall, kName, repeat),
+      path_name_(GetAbsolutePath() + path_name),
+      input_key_(-1) {}
 
-DeleteFile::DeleteFile(int repeat, int input_key)
-    : Instruction(kName, repeat), input_key_(input_key) {}
+DeleteFile::DeleteFile(SyscallInterface& syscall, int repeat, int input_key)
+    : Instruction(syscall, kName, repeat), input_key_(input_key) {}
 
 void DeleteFile::SetUpSingle() {
   if (input_key_ != -1) {
@@ -37,7 +35,7 @@ void DeleteFile::SetUpSingle() {
 }
 
 void DeleteFile::RunSingle() {
-  if (unlink(path_name_.c_str()) == -1) {
+  if (syscall_.Unlink(path_name_) == -1) {
     LOGF("Error while calling unlink()");
   }
 }

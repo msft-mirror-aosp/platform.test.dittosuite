@@ -16,19 +16,18 @@
 
 #include <sys/param.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
 namespace dittosuite {
 
-int64_t GetFileSize(int fd) {
+int64_t GetFileSize(SyscallInterface& syscall, int fd) {
   struct stat64 sb;
-  fstat64(fd, &sb);
+  syscall.FStat(fd, &sb);
   return sb.st_size;
 }
 
-std::string GetFilePath(int fd) {
+std::string GetFilePath(SyscallInterface& syscall, int fd) {
   char file_path[PATH_MAX];
-  readlink(("/proc/self/fd/" + std::to_string(fd)).c_str(), file_path, sizeof(file_path));
+  syscall.ReadLink("/proc/self/fd/" + std::to_string(fd), file_path, sizeof(file_path));
   return std::string(file_path);
 }
 

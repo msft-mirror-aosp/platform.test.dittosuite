@@ -27,10 +27,11 @@ class InstructionSet : public Instruction {
  public:
   inline static const std::string kName = "instruction_set";
 
-  explicit InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions,
-                          int list_key, int item_key, AccessType type, Reseeding reseeding,
-                          uint32_t seed);
-  explicit InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions);
+  explicit InstructionSet(SyscallInterface& syscall, int repeat,
+                          std::vector<std::unique_ptr<Instruction>> instructions, int list_key,
+                          int item_key, AccessType type, Reseeding reseeding, uint32_t seed);
+  explicit InstructionSet(SyscallInterface& syscall, int repeat,
+                          std::vector<std::unique_ptr<Instruction>> instructions);
 
   std::unique_ptr<Result> CollectResults() override;
 
