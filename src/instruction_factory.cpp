@@ -91,14 +91,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionWriteFile: {
       const auto& options = proto_instruction.instruction_write_file();
 
-      auto type = ConvertReadWriteType(options.type());
+      auto type = ConvertAccessType(options.type());
 
       u_int32_t seed = options.seed();
       if (!options.has_seed()) {
         seed = time(0);
       }
 
-      auto reseeding = ConvertReadWriteReseeding(options.reseeding());
+      auto reseeding = ConvertReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
       return std::make_unique<WriteFile>(repeat, options.size(), options.block_size(),
@@ -108,7 +108,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionReadFile: {
       const auto& options = proto_instruction.instruction_read_file();
 
-      auto type = ConvertReadWriteType(options.type());
+      auto type = ConvertAccessType(options.type());
 
       u_int32_t seed = options.seed();
       if (!options.has_seed()) {
@@ -116,7 +116,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       }
 
       auto fadvise = ConvertReadFAdvise(type, options.fadvise());
-      auto reseeding = ConvertReadWriteReseeding(options.reseeding());
+      auto reseeding = ConvertReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
       return std::make_unique<ReadFile>(repeat, options.size(), options.block_size(),
@@ -139,49 +139,46 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
   }
 }
 
-ReadWriteFile::Reseeding InstructionFactory::ConvertReadWriteReseeding(
-    const dittosuiteproto::ReadWriteReseeding& proto_reseeding) {
+Reseeding InstructionFactory::ConvertReseeding(const dittosuiteproto::Reseeding& proto_reseeding) {
   switch (proto_reseeding) {
-    case dittosuiteproto::ReadWriteReseeding::ONCE: {
-      return ReadWriteFile::Reseeding::kOnce;
+    case dittosuiteproto::Reseeding::ONCE: {
+      return kOnce;
     }
-    case dittosuiteproto::ReadWriteReseeding::EACH_ROUND_OF_CYCLES: {
-      return ReadWriteFile::Reseeding::kEachRoundOfCycles;
+    case dittosuiteproto::Reseeding::EACH_ROUND_OF_CYCLES: {
+      return kEachRoundOfCycles;
     }
-    case dittosuiteproto::ReadWriteReseeding::EACH_CYCLE: {
-      return ReadWriteFile::Reseeding::kEachCycle;
+    case dittosuiteproto::Reseeding::EACH_CYCLE: {
+      return kEachCycle;
     }
     default: {
-      LOGF("Invalid ReadWriteReseeding was provided");
+      LOGF("Invalid Reseeding was provided");
     }
   }
 }
 
-ReadWriteFile::Type InstructionFactory::ConvertReadWriteType(
-    const dittosuiteproto::ReadWriteType& proto_type) {
+AccessType InstructionFactory::ConvertAccessType(const dittosuiteproto::AccessType& proto_type) {
   switch (proto_type) {
-    case dittosuiteproto::ReadWriteType::SEQUENTIAL: {
-      return ReadWriteFile::Type::kSequential;
+    case dittosuiteproto::AccessType::SEQUENTIAL: {
+      return kSequential;
     }
-    case dittosuiteproto::ReadWriteType::RANDOM: {
-      return ReadWriteFile::Type::kRandom;
+    case dittosuiteproto::AccessType::RANDOM: {
+      return kRandom;
     }
     default: {
-      LOGF("Invalid ReadWriteType was provided");
+      LOGF("Invalid AccessType was provided");
     }
   }
 }
 
 int InstructionFactory::ConvertReadFAdvise(
-    const ReadWriteFile::Type& type,
-    const dittosuiteproto::InstructionReadFile_ReadFAdvise& proto_fadvise) {
+    const AccessType& type, const dittosuiteproto::InstructionReadFile_ReadFAdvise& proto_fadvise) {
   switch (proto_fadvise) {
     case dittosuiteproto::InstructionReadFile_ReadFAdvise_AUTOMATIC: {
       switch (type) {
-        case ReadWriteFile::Type::kSequential: {
+        case kSequential: {
           return POSIX_FADV_SEQUENTIAL;
         }
-        case ReadWriteFile::Type::kRandom: {
+        case kRandom: {
           return POSIX_FADV_RANDOM;
         }
       }
