@@ -227,7 +227,7 @@ void Result::PrintHistograms(const std::string& instruction_path) {
 
 // Recursive function to print one row at a time using the .csv stream given as a parameter
 // of statistics table content (the instruction path, min, max, mean and SD).
-void Result::PrintStatisticInCsv(std::fstream& csv_stream, const std::string& instruction_path) {
+void Result::PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path) {
   std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
   csv_stream << next_instruction_path << kCsvDelimiter;
   csv_stream << TimespecToNs(min_) << kCsvDelimiter;
@@ -242,8 +242,7 @@ void Result::PrintStatisticInCsv(std::fstream& csv_stream, const std::string& in
 }
 
 void Result::MakeStatisticsCsv() {
-  std::fstream csv_stream;
-  csv_stream.open("../statistics.csv", std::ios::out | std::ios::ate);
+  std::ostream csv_stream(std::cout.rdbuf());
   csv_stream << "Instruction path" << kCsvDelimiter;
   csv_stream << "Min" << kCsvDelimiter;
   csv_stream << "Max" << kCsvDelimiter;
@@ -251,8 +250,6 @@ void Result::MakeStatisticsCsv() {
   csv_stream << "SD" << std::endl;
 
   PrintStatisticInCsv(csv_stream, "");
-
-  csv_stream.close();
 }
 
 }  // namespace dittosuite
