@@ -24,7 +24,8 @@ class DeleteFile : public Instruction {
  public:
   inline static const std::string kName = "instruction_delete_file";
 
-  explicit DeleteFile(int repeat, const std::string& path_name, int input_key);
+  explicit DeleteFile(int repeat, const std::string& path_name);
+  explicit DeleteFile(int repeat, int input_key);
 
  private:
   void SetUpSingle() override;
