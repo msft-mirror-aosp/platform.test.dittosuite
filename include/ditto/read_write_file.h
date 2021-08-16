@@ -28,7 +28,7 @@ namespace dittosuite {
 class ReadWriteFile : public Instruction {
  public:
   explicit ReadWriteFile(const std::string& name, int repeat, int64_t size, int64_t block_size,
-                         int64_t starting_offset, AccessType type, u_int32_t seed,
+                         int64_t starting_offset, AccessType type, uint32_t seed,
                          Reseeding reseeding, int input_fd_key);
 
  protected:
@@ -61,7 +61,7 @@ class WriteFile : public ReadWriteFile {
   inline static const std::string kName = "instruction_write_file";
 
   explicit WriteFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
-                     AccessType type, u_int32_t seed, Reseeding reseeding, bool fsync,
+                     AccessType type, uint32_t seed, Reseeding reseeding, bool fsync,
                      int input_fd_key);
 
  private:
@@ -75,7 +75,7 @@ class ReadFile : public ReadWriteFile {
   inline static const std::string kName = "instruction_read_file";
 
   explicit ReadFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
-                    AccessType type, u_int32_t seed, Reseeding reseeding, int fadvise,
+                    AccessType type, uint32_t seed, Reseeding reseeding, int fadvise,
                     int input_fd_key);
 
  private:

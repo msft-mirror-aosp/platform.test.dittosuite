@@ -93,7 +93,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       auto type = ConvertAccessType(options.type());
 
-      u_int32_t seed = options.seed();
+      uint32_t seed = options.seed();
       if (!options.has_seed()) {
         seed = time(nullptr);
       }
@@ -110,7 +110,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       auto type = ConvertAccessType(options.type());
 
-      u_int32_t seed = options.seed();
+      uint32_t seed = options.seed();
       if (!options.has_seed()) {
         seed = time(nullptr);
       }
