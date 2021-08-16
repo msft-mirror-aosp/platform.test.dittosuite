@@ -27,7 +27,7 @@
 namespace dittosuite {
 
 ReadWriteFile::ReadWriteFile(const std::string& name, int repeat, int64_t size, int64_t block_size,
-                             int64_t starting_offset, AccessType type, u_int32_t seed,
+                             int64_t starting_offset, AccessType type, uint32_t seed,
                              Reseeding reseeding, int input_fd_key)
     : Instruction(name, repeat),
       size_(size),
@@ -106,7 +106,7 @@ void ReadWriteFile::SetUpSingle() {
 void ReadWriteFile::RunSingle() {}
 
 WriteFile::WriteFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
-                     AccessType type, u_int32_t seed, Reseeding reseeding, bool fsync,
+                     AccessType type, uint32_t seed, Reseeding reseeding, bool fsync,
                      int input_fd_key)
     : ReadWriteFile(kName, repeat, size, block_size, starting_offset, type, seed, reseeding,
                     input_fd_key),
@@ -127,7 +127,7 @@ void WriteFile::RunSingle() {
 }
 
 ReadFile::ReadFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
-                   AccessType type, u_int32_t seed, Reseeding reseeding, int fadvise,
+                   AccessType type, uint32_t seed, Reseeding reseeding, int fadvise,
                    int input_fd_key)
     : ReadWriteFile(kName, repeat, size, block_size, starting_offset, type, seed, reseeding,
                     input_fd_key),
