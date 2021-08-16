@@ -37,26 +37,6 @@ namespace dittosuite {
 Result::Result(const std::string& name, std::vector<timespec> time_samples)
     : name_(name), time_samples_(time_samples) {}
 
-std::string Result::GetName() {
-  return name_;
-}
-
-std::vector<timespec> Result::GetTimeSamples() {
-  return time_samples_;
-}
-
-timespec Result::GetMin() const {
-  return min_;
-}
-
-timespec Result::GetMax() const {
-  return max_;
-}
-
-timespec Result::GetMean() const {
-  return mean_;
-}
-
 void Result::AddSubResult(std::unique_ptr<Result> result) {
   sub_results_.push_back(std::move(result));
 }

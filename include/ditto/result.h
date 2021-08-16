@@ -26,11 +26,6 @@ class Result {
  public:
   explicit Result(const std::string& name, std::vector<timespec> time_samples);
 
-  std::string GetName();
-  std::vector<timespec> GetTimeSamples();
-  timespec GetMin() const;
-  timespec GetMax() const;
-  timespec GetMean() const;
   void AddSubResult(std::unique_ptr<Result> result);
   void Analyse();
   void Print(const std::string& instruction_path);
