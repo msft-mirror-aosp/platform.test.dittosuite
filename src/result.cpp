@@ -22,7 +22,7 @@
 #include <string>
 
 const int kTimeSampleDisplayWidth = 11;  // this width is used displaying a time sample value
-const int kTableWidth = 158;  // table width; can be adjusted in case of longer instruction paths
+const int kTableWidth = 164;  // table width; can be adjusted in case of longer instruction paths
 const char* kTableDivider = " | ";   // table character divider
 const int kMaxHistogramHeight = 20;  // used for normalizing the histogram (represents the
                                      //  maximum height of the histogram)
@@ -45,6 +45,7 @@ void Result::Analyse() {
   min_ = StatisticsGetMin(time_samples_);
   max_ = StatisticsGetMax(time_samples_);
   mean_ = StatisticsGetMean(time_samples_);
+  median_ = StatisticsGetMedian(time_samples_);
   sd_ = StatisticsGetSd(time_samples_);
 }
 
@@ -58,6 +59,7 @@ void Result::Print(const std::string& instruction_path) {
   std::cout << "Min: " << min_.tv_sec << "s, " << min_.tv_nsec << "ns" << std::endl;
   std::cout << "Max: " << max_.tv_sec << "s, " << max_.tv_nsec << "ns" << std::endl;
   std::cout << "Mean: " << mean_.tv_sec << "s, " << mean_.tv_nsec << "ns" << std::endl;
+  std::cout << "Median: " << median_.tv_sec << "s, " << median_.tv_nsec << "ns" << std::endl;
   std::cout << "SD: " << sd_.tv_sec << "s, " << sd_.tv_nsec << "ns" << std::endl << std::endl;
 
   for (const auto& sub_result : sub_results_) {
@@ -77,20 +79,22 @@ void PrintStatisticsTableHeader() {
   std::cout << "| ";  // beginning of table row
   std::cout << std::setw(70) << std::left << "Instruction name";
   std::cout << kTableDivider;
-  std::cout << std::setw(18) << std::left << " Min";
+  std::cout << std::setw(15) << std::left << " Min";
   std::cout << kTableDivider;
-  std::cout << std::setw(18) << std::left << " Max";
+  std::cout << std::setw(15) << std::left << " Max";
   std::cout << kTableDivider;
-  std::cout << std::setw(18) << std::left << " Mean";
+  std::cout << std::setw(15) << std::left << " Mean";
   std::cout << kTableDivider;
-  std::cout << std::setw(18) << std::left << "Standard Deviation";
+  std::cout << std::setw(15) << std::left << " Median";
+  std::cout << kTableDivider;
+  std::cout << std::setw(15) << std::left << " SD";
   std::cout << kTableDivider;
   PrintTableBorder();
   std::cout << "\x1b[0m";  // ending of bold
 }
 
 void PrintTimespecInTable(const timespec& t) {
-  std::cout << std::setw(16) << TimespecToNs(t) << "ns";
+  std::cout << std::setw(13) << TimespecToNs(t) << "ns";
 }
 
 // Recursive function to print one row at a time
@@ -114,6 +118,8 @@ void Result::PrintStatisticsTableContent(const std::string& instruction_path) {
   PrintTimespecInTable(max_);
   std::cout << kTableDivider;
   PrintTimespecInTable(mean_);
+  std::cout << kTableDivider;
+  PrintTimespecInTable(median_);
   std::cout << kTableDivider;
   PrintTimespecInTable(sd_);
   std::cout << kTableDivider;  // ended current row
@@ -213,6 +219,7 @@ void Result::PrintStatisticInCsv(std::ostream& csv_stream, const std::string& in
   csv_stream << TimespecToNs(min_) << kCsvDelimiter;
   csv_stream << TimespecToNs(max_) << kCsvDelimiter;
   csv_stream << TimespecToNs(mean_) << kCsvDelimiter;
+  csv_stream << TimespecToNs(median_) << kCsvDelimiter;
   csv_stream << TimespecToNs(sd_);
   csv_stream << std::endl;  // ending of row
 
@@ -227,6 +234,7 @@ void Result::MakeStatisticsCsv() {
   csv_stream << "Min" << kCsvDelimiter;
   csv_stream << "Max" << kCsvDelimiter;
   csv_stream << "Mean" << kCsvDelimiter;
+  csv_stream << "Median" << kCsvDelimiter;
   csv_stream << "SD" << std::endl;
 
   PrintStatisticInCsv(csv_stream, "");
