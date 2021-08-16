@@ -23,10 +23,11 @@
 
 namespace dittosuite {
 
-DeleteFile::DeleteFile(int repeat, const std::string& path_name, int input_key)
-    : Instruction(kName, repeat),
-      path_name_(GetAbsolutePath() + path_name),
-      input_key_(input_key) {}
+DeleteFile::DeleteFile(int repeat, const std::string& path_name)
+    : Instruction(kName, repeat), path_name_(GetAbsolutePath() + path_name), input_key_(-1) {}
+
+DeleteFile::DeleteFile(int repeat, int input_key)
+    : Instruction(kName, repeat), input_key_(input_key) {}
 
 void DeleteFile::SetUpSingle() {
   if (input_key_ != -1) {

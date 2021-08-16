@@ -25,10 +25,15 @@
 
 namespace dittosuite {
 
-OpenFile::OpenFile(int repeat, const std::string& path_name, bool create, int input_key,
-                   int output_fd_key)
+OpenFile::OpenFile(int repeat, const std::string& path_name, bool create, int output_fd_key)
     : Instruction(kName, repeat),
       path_name_(GetAbsolutePath() + path_name),
+      create_(create),
+      input_key_(-1),
+      output_fd_key_(output_fd_key) {}
+
+OpenFile::OpenFile(int repeat, int input_key, bool create, int output_fd_key)
+    : Instruction(kName, repeat),
       create_(create),
       input_key_(input_key),
       output_fd_key_(output_fd_key) {}
