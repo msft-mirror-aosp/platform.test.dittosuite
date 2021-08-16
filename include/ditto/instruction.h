@@ -22,6 +22,9 @@
 
 namespace dittosuite {
 
+enum AccessType { kSequential, kRandom };
+enum Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
+
 class Instruction {
  public:
   explicit Instruction(const std::string& name, int repeat);
