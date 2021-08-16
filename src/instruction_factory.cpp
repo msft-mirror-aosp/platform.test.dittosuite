@@ -95,7 +95,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       u_int32_t seed = options.seed();
       if (!options.has_seed()) {
-        seed = time(0);
+        seed = time(nullptr);
       }
 
       auto reseeding = ConvertReseeding(options.reseeding());
@@ -112,7 +112,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       u_int32_t seed = options.seed();
       if (!options.has_seed()) {
-        seed = time(0);
+        seed = time(nullptr);
       }
 
       auto fadvise = ConvertReadFAdvise(type, options.fadvise());
