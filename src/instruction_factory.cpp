@@ -21,6 +21,7 @@
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
 #include <ditto/logger.h>
+#include <ditto/multithreading.h>
 #include <ditto/open_file.h>
 #include <ditto/read_directory.h>
 #include <ditto/read_write_file.h>
@@ -166,6 +167,22 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       return std::make_unique<ResizeFileRandom>(Syscall::GetSyscall(), repeat, options.min(),
                                                 options.max(), seed, reseeding, fd_key);
+    }
+    case InstructionType::kMultithreading: {
+      const auto& options = proto_instruction.multithreading();
+
+      std::vector<std::unique_ptr<Instruction>> instructions;
+      for (const auto& thread : options.threads()) {
+        for (int i = 0; i < thread.spawn(); i++) {
+          auto thread_ids_copy = thread_ids;
+          thread_ids_copy.push_back(InstructionFactory::GenerateThreadId());
+          instructions.push_back(std::move(InstructionFactory::CreateFromProtoInstruction(
+              thread_ids_copy, thread.instruction())));
+        }
+      }
+
+      return std::make_unique<Multithreading>(Syscall::GetSyscall(), repeat,
+                                              std::move(instructions));
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");

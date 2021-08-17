@@ -14,8 +14,11 @@
 
 #pragma once
 
+#include <pthread.h>
+
 #include <memory>
 #include <string>
+#include <thread>
 
 #include <ditto/result.h>
 #include <ditto/syscall.h>
@@ -33,6 +36,8 @@ class Instruction {
 
   virtual void SetUp();
   void Run();
+  void RunSynchronized(pthread_barrier_t* barrier);
+  std::thread SpawnThread(pthread_barrier_t* barrier);
   virtual void TearDown();
 
   virtual std::unique_ptr<Result> CollectResults(const std::string& prefix);

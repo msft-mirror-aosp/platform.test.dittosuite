@@ -31,6 +31,15 @@ void Instruction::Run() {
   }
 }
 
+void Instruction::RunSynchronized(pthread_barrier_t* barrier) {
+  pthread_barrier_wait(barrier);
+  Instruction::Run();
+}
+
+std::thread Instruction::SpawnThread(pthread_barrier_t* barrier) {
+  return std::thread([=] { RunSynchronized(barrier); });
+}
+
 void Instruction::TearDown() {}
 
 void Instruction::SetUpSingle() {
