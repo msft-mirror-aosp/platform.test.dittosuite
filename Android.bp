@@ -39,6 +39,6 @@ cc_test {
     srcs: [
       "test/*.cpp",
     ],
-    static_libs: ["libdittosuite"],
+    static_libs: ["libdittosuite", "libgmock"],
     defaults: ["dittobench_defaults"],
 }
