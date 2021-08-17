@@ -35,7 +35,7 @@ class Instruction {
   void Run();
   virtual void TearDown();
 
-  virtual std::unique_ptr<Result> CollectResults();
+  virtual std::unique_ptr<Result> CollectResults(const std::string& prefix);
 
   static void SetAbsolutePathKey(int absolute_path_key);
 

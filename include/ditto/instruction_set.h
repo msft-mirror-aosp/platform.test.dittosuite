@@ -33,7 +33,7 @@ class InstructionSet : public Instruction {
   explicit InstructionSet(SyscallInterface& syscall, int repeat,
                           std::vector<std::unique_ptr<Instruction>> instructions);
 
-  std::unique_ptr<Result> CollectResults() override;
+  std::unique_ptr<Result> CollectResults(const std::string& prefix) override;
 
  private:
   void SetUp() override;
