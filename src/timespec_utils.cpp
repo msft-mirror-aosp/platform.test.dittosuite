@@ -46,11 +46,12 @@ bool operator>=(const timespec& t1, const timespec& t2) {
   return t1 == t2 || t1 > t2;
 }
 
-// return the value of t1 - t2, if t1 >= t2
-// return {0, 0} and display an error if t1 < t2
+// Return the value of t1 - t2, if t1 >= t2 or fail.
 timespec operator-(const timespec& t1, const timespec& t2) {
   timespec result = {0, 0};
-  if (t1 >= t2) {
+  if (t1 < t2) {
+    LOGF("Subtraction cannot return negative timespec values");
+  } else {
     result.tv_sec = t1.tv_sec - t2.tv_sec;
     if (t1.tv_nsec < t2.tv_nsec) {
       result.tv_sec--;
@@ -58,9 +59,7 @@ timespec operator-(const timespec& t1, const timespec& t2) {
     } else {
       result.tv_nsec = t1.tv_nsec - t2.tv_nsec;
     }
-    return result;
   }
-  LOGE("At timer, end time is smaller than start time");
   return result;
 }
 
