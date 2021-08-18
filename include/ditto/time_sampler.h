@@ -14,13 +14,17 @@
 
 #pragma once
 
-#include <time.h>
+#include <ctime>
 #include <vector>
 
 namespace dittosuite {
 
-bool IsTimeSampleValid(const timespec& start, const timespec& end);
-timespec subtract(const timespec& t1, const timespec& t2);
+bool operator<(const timespec& t1, const timespec& t2);
+bool operator<=(const timespec& t1, const timespec& t2);
+bool operator>(const timespec& t1, const timespec& t2);
+bool operator>=(const timespec& t1, const timespec& t2);
+timespec operator-(const timespec& t1, const timespec& t2);
+timespec operator+(const timespec& t1, const timespec& t2);
 
 class TimeSampler {
  public:
