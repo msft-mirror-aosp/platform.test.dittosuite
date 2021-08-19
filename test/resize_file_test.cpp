@@ -34,12 +34,14 @@ TEST(ResizeFileTest, ResizeFileTestRun) {
   int repeat = 1;
   std::string file = "newfile.txt";
   int64_t size = 2048;
+  std::list<int> thread_ids;
 
-  auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
+  thread_ids.push_back(0);
+  auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
   dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
   dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
 
-  int fd_key = dittosuite::SharedVariables::GetKey("test_file");
+  int fd_key = dittosuite::SharedVariables::GetKey(thread_ids, "test_file");
 
   dittosuite::OpenFile open_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, file, true,
                                              fd_key);

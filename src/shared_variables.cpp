@@ -20,19 +20,26 @@ namespace dittosuite {
 
 // Matches variable_name to the integer key value.
 //
-// If variable_name already exists in the map, then the key is returned.
+// If variable_name already exists in the map for the current thread or parent threads,
+// then the key is returned.
 //
-// If variable_name does not exist in the map, size of the vector of shared_variables
+// If variable_name does not exist in that map, size of the vector of shared_variables
 // is increased by one and the new key (index of the last element in the resized vector)
-// is saved together with variable_name in the map and returned.
-int SharedVariables::GetKey(const std::string& variable_name) {
-  if (keys_.find(variable_name) == keys_.end()) {
-    int key = variables_.size();
-    keys_.insert({variable_name, key});
-    variables_.resize(variables_.size() + 1);
-    return key;
+// is saved together with variable_name in the map for the current thread and returned.
+int SharedVariables::GetKey(const std::list<int>& thread_ids, const std::string& variable_name) {
+  // If the key exists in the current or parent threads, return it
+  for (auto it = thread_ids.rbegin(); it != thread_ids.rend(); ++it) {
+    if (keys_.find(*it) == keys_.end() || keys_[*it].find(variable_name) == keys_[*it].end()) {
+      continue;
+    }
+    return SharedVariables::keys_[*it][variable_name];
   }
-  return SharedVariables::keys_[variable_name];
+
+  // If the key does not exist, create it for the current thread
+  int key = variables_.size();
+  keys_[thread_ids.back()].insert({variable_name, key});
+  variables_.resize(variables_.size() + 1);
+  return key;
 }
 
 SharedVariables::Variant SharedVariables::Get(int key) {
@@ -42,8 +49,9 @@ SharedVariables::Variant SharedVariables::Get(int key) {
   return variables_[key];
 }
 
-SharedVariables::Variant SharedVariables::Get(const std::string& variable_name) {
-  return Get(GetKey(variable_name));
+SharedVariables::Variant SharedVariables::Get(const std::list<int>& thread_ids,
+                                              const std::string& variable_name) {
+  return Get(GetKey(thread_ids, variable_name));
 }
 
 void SharedVariables::Set(int key, const SharedVariables::Variant& value) {
@@ -53,8 +61,9 @@ void SharedVariables::Set(int key, const SharedVariables::Variant& value) {
   variables_[key] = value;
 }
 
-void SharedVariables::Set(const std::string& variable_name, const Variant& value) {
-  Set(GetKey(variable_name), value);
+void SharedVariables::Set(const std::list<int>& thread_ids, const std::string& variable_name,
+                          const Variant& value) {
+  Set(GetKey(thread_ids, variable_name), value);
 }
 
 void SharedVariables::ClearKeys() {
@@ -62,6 +71,6 @@ void SharedVariables::ClearKeys() {
 }
 
 std::vector<SharedVariables::Variant> SharedVariables::variables_;
-std::unordered_map<std::string, int> SharedVariables::keys_;
+std::unordered_map<int, std::unordered_map<std::string, int>> SharedVariables::keys_;
 
 }  // namespace dittosuite

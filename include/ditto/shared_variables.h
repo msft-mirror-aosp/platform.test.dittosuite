@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <list>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -25,16 +26,17 @@ class SharedVariables {
  public:
   typedef std::variant<int, std::string, std::vector<std::string>> Variant;
 
-  static int GetKey(const std::string& variable_name);
+  static int GetKey(const std::list<int>& thread_ids, const std::string& variable_name);
   static Variant Get(int key);
-  static Variant Get(const std::string& variable_name);
+  static Variant Get(const std::list<int>& thread_ids, const std::string& variable_name);
   static void Set(int key, const Variant& value);
-  static void Set(const std::string& variable_name, const Variant& value);
+  static void Set(const std::list<int>& thread_ids, const std::string& variable_name,
+                  const Variant& value);
   static void ClearKeys();
 
  private:
   static std::vector<Variant> variables_;
-  static std::unordered_map<std::string, int> keys_;
+  static std::unordered_map<int, std::unordered_map<std::string, int>> keys_;
 };
 
 }  // namespace dittosuite

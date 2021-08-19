@@ -28,10 +28,12 @@ class OpenFileTest : public ::testing::Test {
  protected:
   std::string file_name = "test";
   std::string path = absolute_path + file_name;
+  std::list<int> thread_ids;
 
   // Set absolute_path
   void SetUp() override {
-    auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
+    thread_ids.push_back(0);
+    auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
     dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
     dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
   }
@@ -47,9 +49,10 @@ TEST_F(OpenFileTest, FileCreatedWithPathName) {
 }
 
 TEST_F(OpenFileTest, FileCreatedWithVariable) {
-  dittosuite::SharedVariables::Set("input", file_name);
+  dittosuite::SharedVariables::Set(thread_ids, "input", file_name);
   dittosuite::OpenFile instruction(dittosuite::Syscall::GetSyscall(), 1,
-                                   dittosuite::SharedVariables::GetKey("input"), true, -1);
+                                   dittosuite::SharedVariables::GetKey(thread_ids, "input"), true,
+                                   -1);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);

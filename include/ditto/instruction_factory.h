@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <list>
 #include <string>
 
 #include <ditto/instruction.h>
@@ -31,9 +32,11 @@ namespace dittosuite {
 class InstructionFactory {
  public:
   static std::unique_ptr<InstructionSet> CreateFromProtoInstructionSet(
-      const int& repeat, const dittosuiteproto::InstructionSet& proto_instruction_set);
+      const std::list<int>& thread_ids, const int& repeat,
+      const dittosuiteproto::InstructionSet& proto_instruction_set);
   static std::unique_ptr<Instruction> CreateFromProtoInstruction(
-      const dittosuiteproto::Instruction& proto_instruction);
+      const std::list<int>& thread_ids, const dittosuiteproto::Instruction& proto_instruction);
+  static int GenerateThreadId();
 
  private:
   InstructionFactory();
@@ -43,6 +46,8 @@ class InstructionFactory {
   static int ConvertReadFAdvise(
       const AccessType& type,
       const dittosuiteproto::InstructionReadFile_ReadFAdvise& proto_fadvise);
+
+  static int current_thread_id_;
 };
 
 } // namespace dittosuite
