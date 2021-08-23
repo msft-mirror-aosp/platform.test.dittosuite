@@ -49,7 +49,7 @@ TEST_F(OpenFileTest, FileCreatedWithPathName) {
 }
 
 TEST_F(OpenFileTest, FileCreatedWithVariable) {
-  dittosuite::SharedVariables::Set(thread_ids, "input", file_name);
+  dittosuite::SharedVariables::Set(thread_ids, "input", path);
   dittosuite::OpenFile instruction(dittosuite::Syscall::GetSyscall(), 1,
                                    dittosuite::SharedVariables::GetKey(thread_ids, "input"), true,
                                    -1);
