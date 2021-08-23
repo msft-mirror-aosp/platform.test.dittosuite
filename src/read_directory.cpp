@@ -41,7 +41,13 @@ void ReadDirectory::RunSingle() {
   while ((entry = readdir(directory)) != nullptr) {
     // Only collect regular files
     if (entry->d_type == DT_REG) {
-      output.push_back(directory_name_ + "/" + entry->d_name);
+      std::string path_name = directory_name_;
+      // Add a slash if the current directory name does not end with a slash
+      if (!path_name.empty() && path_name.back() != '/') {
+        path_name += "/";
+      }
+      path_name += entry->d_name;
+      output.push_back(path_name);
     }
   }
   SharedVariables::Set(output_key_, output);
