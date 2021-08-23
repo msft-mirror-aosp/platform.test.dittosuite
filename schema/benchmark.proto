@@ -38,6 +38,14 @@ message InstructionResizeFile {
   required int64 size = 2;
 }
 
+message InstructionResizeFileRandom {
+  required string input_fd = 1;
+  required int64 min = 2;
+  required int64 max = 3;
+  optional uint32 seed = 4;
+  optional Reseeding reseeding = 5 [default = ONCE];
+}
+
 message InstructionWriteFile {
   required string input_fd = 1;
   optional int64 size = 2 [default = -1];
@@ -82,6 +90,7 @@ message Instruction {
     InstructionWriteFile instruction_write_file = 7;
     InstructionReadFile instruction_read_file = 8;
     InstructionReadDirectory instruction_read_directory = 9;
+    InstructionResizeFileRandom instruction_resize_file_random = 10;
   }
 }
 
