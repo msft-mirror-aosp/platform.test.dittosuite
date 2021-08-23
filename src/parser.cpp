@@ -39,7 +39,7 @@ Parser& Parser::GetParser() {
   return parser;
 }
 
-std::unique_ptr<Instruction> Parser::Parse() {
+void Parser::Parse() {
   std::unique_ptr<dittosuiteproto::Benchmark> benchmark =
       std::make_unique<dittosuiteproto::Benchmark>();
 
@@ -57,10 +57,27 @@ std::unique_ptr<Instruction> Parser::Parse() {
   SharedVariables::Set(absolute_path_key, benchmark->global().absolute_path());
   Instruction::SetAbsolutePathKey(absolute_path_key);
 
-  auto instructions = InstructionFactory::CreateFromProtoInstruction(benchmark->main());
-  SharedVariables::ClearKeys();
+  if (benchmark->has_init()) {
+    init_ = InstructionFactory::CreateFromProtoInstruction(benchmark->init());
+  }
+  main_ = InstructionFactory::CreateFromProtoInstruction(benchmark->main());
+  if (benchmark->has_clean_up()) {
+    clean_up_ = InstructionFactory::CreateFromProtoInstruction(benchmark->clean_up());
+  }
 
-  return instructions;
+  SharedVariables::ClearKeys();
+}
+
+std::unique_ptr<Instruction> Parser::GetInit() {
+  return std::move(init_);
+}
+
+std::unique_ptr<Instruction> Parser::GetMain() {
+  return std::move(main_);
+}
+
+std::unique_ptr<Instruction> Parser::GetCleanUp() {
+  return std::move(clean_up_);
 }
 
 void Parser::SetFilePath(const std::string& file_path) {
