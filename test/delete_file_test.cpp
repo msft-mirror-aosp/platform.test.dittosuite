@@ -54,7 +54,7 @@ TEST_F(DeleteFileTest, FileDeletedWithPathName) {
 }
 
 TEST_F(DeleteFileTest, FileDeletedWithVariable) {
-  dittosuite::SharedVariables::Set(thread_ids, "input", file_name);
+  dittosuite::SharedVariables::Set(thread_ids, "input", path);
   dittosuite::DeleteFile instruction(dittosuite::Syscall::GetSyscall(), 1,
                                      dittosuite::SharedVariables::GetKey(thread_ids, "input"));
   instruction.Run();
