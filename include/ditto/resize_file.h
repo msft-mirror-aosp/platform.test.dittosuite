@@ -36,8 +36,8 @@ class ResizeFile : public Instruction {
 
 class ResizeFileRandom : public ResizeFile {
  public:
-  explicit ResizeFileRandom(int repeat, int64_t min, int64_t max, uint64_t seed,
-                            Reseeding reseeding, int input_fd_key);
+  explicit ResizeFileRandom(SyscallInterface& syscall, int repeat, int64_t min, int64_t max,
+                            uint64_t seed, Reseeding reseeding, int input_fd_key);
 
  private:
   void SetUp() override;

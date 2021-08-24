@@ -162,8 +162,8 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       auto reseeding = ConvertReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
-      return std::make_unique<ResizeFileRandom>(repeat, options.min(), options.max(), seed,
-                                                reseeding, fd_key);
+      return std::make_unique<ResizeFileRandom>(Syscall::GetSyscall(), repeat, options.min(),
+                                                options.max(), seed, reseeding, fd_key);
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");

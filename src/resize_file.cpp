@@ -35,9 +35,9 @@ void ResizeFile::RunSingle() {
   }
 }
 
-ResizeFileRandom::ResizeFileRandom(int repeat, int64_t min, int64_t max, uint64_t seed,
-                                   Reseeding reseeding, int input_fd_key)
-    : ResizeFile(repeat, -1, input_fd_key),
+ResizeFileRandom::ResizeFileRandom(SyscallInterface& syscall, int repeat, int64_t min, int64_t max,
+                                   uint64_t seed, Reseeding reseeding, int input_fd_key)
+    : ResizeFile(syscall, repeat, -1, input_fd_key),
       min_(min),
       max_(max),
       gen_(seed),
