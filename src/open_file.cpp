@@ -14,26 +14,22 @@
 
 #include <ditto/open_file.h>
 
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <cstdlib>
-#include <fstream>
-
 #include <ditto/logger.h>
 #include <ditto/shared_variables.h>
 
 namespace dittosuite {
 
-OpenFile::OpenFile(int repeat, const std::string& path_name, bool create, int output_fd_key)
-    : Instruction(kName, repeat),
+OpenFile::OpenFile(SyscallInterface& syscall, int repeat, const std::string& path_name, bool create,
+                   int output_fd_key)
+    : Instruction(syscall, kName, repeat),
       path_name_(GetAbsolutePath() + path_name),
       create_(create),
       input_key_(-1),
       output_fd_key_(output_fd_key) {}
 
-OpenFile::OpenFile(int repeat, int input_key, bool create, int output_fd_key)
-    : Instruction(kName, repeat),
+OpenFile::OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool create,
+                   int output_fd_key)
+    : Instruction(syscall, kName, repeat),
       create_(create),
       input_key_(input_key),
       output_fd_key_(output_fd_key) {}
@@ -46,8 +42,7 @@ void OpenFile::SetUpSingle() {
 }
 
 void OpenFile::RunSingle() {
-  int fd =
-      open(path_name_.c_str(), (create_ ? O_CREAT : 0) | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR);
+  int fd = syscall_.Open(path_name_, create_);
 
   if (fd == -1) {
     LOGF("Error while trying to open the file");

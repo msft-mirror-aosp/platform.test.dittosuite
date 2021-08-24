@@ -18,6 +18,7 @@
 #include <string>
 
 #include <ditto/result.h>
+#include <ditto/syscall.h>
 #include <ditto/time_sampler.h>
 
 namespace dittosuite {
@@ -27,7 +28,7 @@ enum Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
 
 class Instruction {
  public:
-  explicit Instruction(const std::string& name, int repeat);
+  explicit Instruction(SyscallInterface& syscall, const std::string& name, int repeat);
   virtual ~Instruction() = default;
 
   virtual void SetUp();
@@ -45,6 +46,7 @@ class Instruction {
 
   std::string GetAbsolutePath();
 
+  SyscallInterface& syscall_;
   static int absolute_path_key_;
   std::string name_;
   int repeat_;

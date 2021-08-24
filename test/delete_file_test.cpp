@@ -19,6 +19,7 @@
 
 #include <ditto/delete_file.h>
 #include <ditto/shared_variables.h>
+#include <ditto/syscall.h>
 
 #ifdef __ANDROID__
 const std::string absolute_path = "/data/local/tmp/";
@@ -44,7 +45,7 @@ class DeleteFileTest : public ::testing::Test {
 };
 
 TEST_F(DeleteFileTest, FileDeletedWithPathName) {
-  dittosuite::DeleteFile instruction(1, file_name);
+  dittosuite::DeleteFile instruction(dittosuite::Syscall::GetSyscall(), 1, file_name);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), -1);
@@ -52,7 +53,8 @@ TEST_F(DeleteFileTest, FileDeletedWithPathName) {
 
 TEST_F(DeleteFileTest, FileDeletedWithVariable) {
   dittosuite::SharedVariables::Set("input", file_name);
-  dittosuite::DeleteFile instruction(1, dittosuite::SharedVariables::GetKey("input"));
+  dittosuite::DeleteFile instruction(dittosuite::Syscall::GetSyscall(), 1,
+                                     dittosuite::SharedVariables::GetKey("input"));
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), -1);

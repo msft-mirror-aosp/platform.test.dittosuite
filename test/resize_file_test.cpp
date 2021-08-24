@@ -22,6 +22,7 @@
 #include <ditto/open_file.h>
 #include <ditto/resize_file.h>
 #include <ditto/shared_variables.h>
+#include <ditto/syscall.h>
 
 #ifdef __ANDROID__
 const std::string absolute_path = "/data/local/tmp/";
@@ -40,12 +41,14 @@ TEST(ResizeFileTest, ResizeFileTestRun) {
 
   int fd_key = dittosuite::SharedVariables::GetKey("test_file");
 
-  dittosuite::OpenFile open_file_instruction(repeat, file, true, fd_key);
+  dittosuite::OpenFile open_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, file, true,
+                                             fd_key);
   open_file_instruction.Run();
 
   ASSERT_EQ(access((absolute_path + file).c_str(), F_OK), 0);
 
-  dittosuite::ResizeFile resize_file_instruction(repeat, size, fd_key);
+  dittosuite::ResizeFile resize_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, size,
+                                                 fd_key);
   resize_file_instruction.Run();
 
   struct stat sb;

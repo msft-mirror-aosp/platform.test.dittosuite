@@ -17,9 +17,11 @@
 #include <cstdint>
 #include <string>
 
+#include <ditto/syscall.h>
+
 namespace dittosuite {
 
-int64_t GetFileSize(int fd);
-std::string GetFilePath(int fd);
+int64_t GetFileSize(SyscallInterface& syscall, int fd);
+std::string GetFilePath(SyscallInterface& syscall, int fd);
 
 }  // namespace dittosuite
