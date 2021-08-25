@@ -26,6 +26,6 @@ timespec StatisticsGetMin(const std::vector<timespec>& time_samples);
 timespec StatisticsGetMax(const std::vector<timespec>& time_samples);
 timespec StatisticsGetMean(const std::vector<timespec>& time_samples);
 timespec StatisticsGetMedian(const std::vector<timespec>& time_samples);
-timespec StatisticsGetSd(const std::vector<timespec>& time_samples);
+double StatisticsGetSd(const std::vector<timespec>& time_samples);
 
 }  // namespace dittosuite
