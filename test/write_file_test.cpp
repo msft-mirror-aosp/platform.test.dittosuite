@@ -34,10 +34,15 @@ class WriteFileTest : public ::testing::Test {
  protected:
   MockSyscall syscall_;
   int fd_ = MockSyscall::kDefaultFileDescriptor;
-  int input_key_ = SharedVariables::GetKey("test_input");
+  int input_key_;
 
   // Set input fd
-  void SetUp() override { SharedVariables::Set(input_key_, fd_); }
+  void SetUp() override {
+    std::list<int> thread_ids;
+    thread_ids.push_back(0);
+    input_key_ = SharedVariables::GetKey(thread_ids, "test_input");
+    SharedVariables::Set(input_key_, fd_);
+  }
 };
 
 using WriteFileDeathTest = WriteFileTest;
