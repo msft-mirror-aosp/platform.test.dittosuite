@@ -21,6 +21,10 @@ Syscall& Syscall::GetSyscall() {
   return syscall;
 }
 
+int Syscall::Access(const std::string& path_name, int mode) {
+  return access(path_name.c_str(), mode);
+}
+
 int Syscall::Close(int fd) {
   return close(fd);
 }
