@@ -20,6 +20,7 @@
 int64_t TimespecToNs(const timespec& t);
 timespec NsToTimespec(const int64_t& t);
 
+bool operator==(const timespec& t1, const timespec& t2);
 bool operator<(const timespec& t1, const timespec& t2);
 bool operator<=(const timespec& t1, const timespec& t2);
 bool operator>(const timespec& t1, const timespec& t2);
