@@ -21,17 +21,6 @@
 
 namespace dittosuite {
 
-int64_t TimespecToNs(const timespec& t) {
-  return t.tv_sec * 1e9 + t.tv_nsec;
-}
-
-timespec NsToTimespec(const int64_t& t) {
-  timespec result;
-  result.tv_sec = t / 1e9;
-  result.tv_nsec = t % static_cast<int64_t>(1e9);
-  return result;
-}
-
 timespec StatisticsGetMin(const std::vector<timespec>& time_samples) {
   return *std::min_element(time_samples.begin(), time_samples.end(), [](timespec t1, timespec t2) {
     return ((t1.tv_sec < t2.tv_sec) || (t1.tv_sec == t2.tv_sec && t1.tv_nsec <= t2.tv_nsec));
@@ -91,4 +80,5 @@ timespec StatisticsGetSd(const std::vector<timespec>& time_samples) {
   int time_samples_size = time_samples.size();
   return NsToTimespec(std::sqrt(result / time_samples_size));
 }
+
 }  // namespace dittosuite
