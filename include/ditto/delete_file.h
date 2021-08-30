@@ -22,7 +22,7 @@ namespace dittosuite {
 
 class DeleteFile : public Instruction {
  public:
-  inline static const std::string kName = "instruction_delete_file";
+  inline static const std::string kName = "delete_file";
 
   explicit DeleteFile(SyscallInterface& syscall, int repeat, const std::string& path_name);
   explicit DeleteFile(SyscallInterface& syscall, int repeat, int input_key);

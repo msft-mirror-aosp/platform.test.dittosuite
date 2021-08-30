@@ -1,5 +1,5 @@
 main: {
-  instruction_delete_file: {
+  delete_file: {
     path_name: "newfile2.txt"
   }
 },

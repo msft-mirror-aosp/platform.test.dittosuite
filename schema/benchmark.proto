@@ -13,7 +13,7 @@ enum Reseeding {
   EACH_CYCLE = 2;
 }
 
-message InstructionOpenFile {
+message OpenFile {
   oneof file {
     string path_name = 1;
     string input = 2;
@@ -22,23 +22,23 @@ message InstructionOpenFile {
   optional bool create = 4 [default = true];
 }
 
-message InstructionDeleteFile {
+message DeleteFile {
   oneof file {
     string path_name = 1;
     string input = 2;
   }
 }
 
-message InstructionCloseFile {
+message CloseFile {
   required string input_fd = 1;
 }
 
-message InstructionResizeFile {
+message ResizeFile {
   required string input_fd = 1;
   required int64 size = 2;
 }
 
-message InstructionResizeFileRandom {
+message ResizeFileRandom {
   required string input_fd = 1;
   required int64 min = 2;
   required int64 max = 3;
@@ -46,7 +46,7 @@ message InstructionResizeFileRandom {
   optional Reseeding reseeding = 5 [default = ONCE];
 }
 
-message InstructionWriteFile {
+message WriteFile {
   required string input_fd = 1;
   optional int64 size = 2 [default = -1];
   optional int64 block_size = 3 [default = 4096];
@@ -57,7 +57,7 @@ message InstructionWriteFile {
   optional Reseeding reseeding = 8 [default = ONCE];
 }
 
-message InstructionReadFile {
+message ReadFile {
   enum ReadFAdvise {
     AUTOMATIC = 0;
     NORMAL = 1;
@@ -74,7 +74,7 @@ message InstructionReadFile {
   optional Reseeding reseeding = 8 [default = ONCE];
 }
 
-message InstructionReadDirectory {
+message ReadDirectory {
   required string directory_name = 1;
   required string output = 2;
 }
@@ -92,14 +92,14 @@ message Instruction {
   optional int32 repeat = 1 [default = 1];
   oneof instruction_oneof {
     InstructionSet instruction_set = 2;
-    InstructionOpenFile instruction_open_file = 3;
-    InstructionDeleteFile instruction_delete_file = 4;
-    InstructionCloseFile instruction_close_file = 5;
-    InstructionResizeFile instruction_resize_file = 6;
-    InstructionWriteFile instruction_write_file = 7;
-    InstructionReadFile instruction_read_file = 8;
-    InstructionReadDirectory instruction_read_directory = 9;
-    InstructionResizeFileRandom instruction_resize_file_random = 10;
+    OpenFile open_file = 3;
+    DeleteFile delete_file = 4;
+    CloseFile close_file = 5;
+    ResizeFile resize_file = 6;
+    WriteFile write_file = 7;
+    ReadFile read_file = 8;
+    ReadDirectory read_directory = 9;
+    ResizeFileRandom resize_file_random = 10;
     Multithreading multithreading = 11;
   }
 }

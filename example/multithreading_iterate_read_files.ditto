@@ -2,7 +2,7 @@ main: {
   instruction_set: {
     instructions: [
       {
-        instruction_read_directory {
+        read_directory {
           directory_name: "test_directory",
           output: "file_list"
         }
@@ -15,18 +15,18 @@ main: {
                 instruction_set {
                   instructions: [
                     {
-                      instruction_open_file: {
+                      open_file: {
                         input: "file_name",
                         output_fd: "file_fd"
                       }
                     },
                     {
-                      instruction_read_file: {
+                      read_file: {
                         input_fd: "file_fd"
                       }
                     },
                     {
-                      instruction_close_file: {
+                      close_file: {
                         input_fd: "file_fd"
                       }
                     }
