@@ -24,7 +24,7 @@ namespace dittosuite {
 
 class Result {
  public:
-  explicit Result(const std::string& name, std::vector<timespec> time_samples);
+  explicit Result(const std::string& name, const std::vector<timespec>& time_samples);
 
   void AddSubResult(std::unique_ptr<Result> result);
   void Analyse();
