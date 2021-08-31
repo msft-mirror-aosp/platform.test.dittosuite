@@ -23,7 +23,7 @@ namespace dittosuite {
 
 class OpenFile : public Instruction {
  public:
-  inline static const std::string kName = "instruction_open_file";
+  inline static const std::string kName = "open_file";
 
   explicit OpenFile(SyscallInterface& syscall, int repeat, const std::string& path_name,
                     bool create, int output_fd_key);
