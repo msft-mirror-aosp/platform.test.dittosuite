@@ -43,7 +43,8 @@ class Result {
   std::string name_;
   std::vector<timespec> time_samples_;
   std::vector<std::unique_ptr<Result>> sub_results_;
-  timespec min_, max_, mean_, median_, sd_;
+  timespec min_, max_, mean_, median_;
+  double sd_;
   std::vector<int> ComputeNormalizedFrequencyVector();
   void PrintStatisticsTableContent(const std::string& instruction_path);
   std::string ComputeNextInstructionPath(const std::string& instruction_path);
