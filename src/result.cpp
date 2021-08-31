@@ -57,10 +57,16 @@ std::string Result::ComputeNextInstructionPath(const std::string& instruction_pa
 void Result::Print(const std::string& instruction_path) {
   std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
   std::cout << next_instruction_path << std::endl;
-  std::cout << "Min: " << min_.tv_sec << "s, " << min_.tv_nsec << "ns" << std::endl;
-  std::cout << "Max: " << max_.tv_sec << "s, " << max_.tv_nsec << "ns" << std::endl;
-  std::cout << "Mean: " << mean_.tv_sec << "s, " << mean_.tv_nsec << "ns" << std::endl;
-  std::cout << "Median: " << median_.tv_sec << "s, " << median_.tv_nsec << "ns" << std::endl;
+
+  time_unit_ = GetTimeUnit(min_);
+  std::cout << "Min: " << TimespecToNs(min_) / time_unit_.dividing_factor << time_unit_.name
+            << std::endl;
+  std::cout << "Max: " << TimespecToNs(max_) / time_unit_.dividing_factor << time_unit_.name
+            << std::endl;
+  std::cout << "Mean: " << TimespecToNs(mean_) / time_unit_.dividing_factor << time_unit_.name
+            << std::endl;
+  std::cout << "Median: " << TimespecToNs(median_) / time_unit_.dividing_factor << time_unit_.name
+            << std::endl;
   std::cout << "SD: " << sd_ << std::endl << std::endl;
 
   for (const auto& sub_result : sub_results_) {
