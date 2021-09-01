@@ -20,12 +20,8 @@
 
 namespace dittosuite {
 
-std::vector<timespec> TimeSampler::GetTimeSamples() const {
-  return time_samples_;
-}
-
 void TimeSampler::AddTimeSample(timespec sample) {
-  time_samples_.push_back(sample);
+  samples_.push_back(sample);
 }
 
 void TimeSampler::MeasureStart() {

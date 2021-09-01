@@ -103,8 +103,7 @@ void InstructionSet::RunInstructions() {
 }
 
 std::unique_ptr<Result> InstructionSet::CollectResults(const std::string& prefix) {
-  auto result =
-      std::make_unique<Result>(prefix + name_, TimespecToNs(time_sampler_.GetTimeSamples()));
+  auto result = std::make_unique<Result>(prefix + name_, TimespecToNs(time_sampler_.GetSamples()));
   for (const auto& instruction : instructions_) {
     result->AddSubResult(instruction->CollectResults(""));
   }

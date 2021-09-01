@@ -21,17 +21,24 @@
 
 namespace dittosuite {
 
-class TimeSampler {
+template <class T>
+class Sampler {
  public:
-  std::vector<timespec> GetTimeSamples() const;
-  void AddTimeSample(timespec sample);
+  std::vector<T> GetSamples() const { return samples_; }
+
+ protected:
+  std::vector<T> samples_;
+};
+
+class TimeSampler : public Sampler<timespec> {
+ public:
   void MeasureStart();
   void MeasureEnd();
 
  private:
   timespec start_;
   timespec end_;
-  std::vector<timespec> time_samples_;
+  void AddTimeSample(timespec sample);
 };
 
 }  // namespace dittosuite
