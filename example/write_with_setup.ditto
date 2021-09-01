@@ -9,7 +9,7 @@ main: {
     instructions: [
       {
         open_file: {
-          path_name "newfile3.txt",
+          path_name: "newfile3.txt",
           output_fd: "test_file"
         }
       },
