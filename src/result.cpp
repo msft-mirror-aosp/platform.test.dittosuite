@@ -47,7 +47,7 @@ void Result::Analyse() {
   max_ = StatisticsGetMax(time_samples_);
   mean_ = StatisticsGetMean(time_samples_);
   median_ = StatisticsGetMedian(time_samples_);
-  sd_ = StatisticsGetSd(time_samples_);
+  sd_ = StatisticsGetSd(TimespecToNs(time_samples_));
 }
 
 std::string Result::ComputeNextInstructionPath(const std::string& instruction_path) {

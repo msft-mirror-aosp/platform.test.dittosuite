@@ -65,18 +65,18 @@ T StatisticsGetMedian(const std::vector<T>& samples) {
   }
 }
 
-
 // The standard deviation sd of a population of N samples, where x_i is the
 // i-th sample and x is the average among all the samples is computed as:
 //
 // sd = sqrt( sum( (x_i - x)^2 ) / N )
-double StatisticsGetSd(const std::vector<timespec>& samples) {
-  double mean = TimespecToNs(StatisticsGetMean(samples));
+template <class T>
+double StatisticsGetSd(const std::vector<T>& samples) {
+  T mean = StatisticsGetMean(samples);
   double variance;
 
   variance = 0.0;
   for (const auto& s : samples) {
-    double deviation = TimespecToNs(s) - mean;
+    double deviation = s - mean;
     double deviation_square = std::pow(deviation, 2);
     variance += deviation_square;  // TODO(lucialup): add overflow error handling
   }
