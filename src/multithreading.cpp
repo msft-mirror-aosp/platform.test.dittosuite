@@ -50,7 +50,8 @@ void Multithreading::TearDownSingle() {
 }
 
 std::unique_ptr<Result> Multithreading::CollectResults(const std::string& prefix) {
-  auto result = std::make_unique<Result>(prefix + name_, time_sampler_.GetTimeSamples());
+  auto result =
+      std::make_unique<Result>(prefix + name_, TimespecToNs(time_sampler_.GetTimeSamples()));
   for (unsigned int i = 0; i < instructions_.size(); ++i) {
     result->AddSubResult(instructions_[i]->CollectResults(std::to_string(i) + "/"));
   }

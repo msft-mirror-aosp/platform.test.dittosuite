@@ -24,7 +24,7 @@ namespace dittosuite {
 
 class Result {
  public:
-  explicit Result(const std::string& name, const std::vector<timespec>& time_samples);
+  explicit Result(const std::string& name, const std::vector<int64_t>& time_samples);
 
   void AddSubResult(std::unique_ptr<Result> result);
   void Analyse();
@@ -41,15 +41,15 @@ class Result {
   };
   TimeUnit time_unit_;
   std::string name_;
-  std::vector<timespec> time_samples_;
+  std::vector<int64_t> time_samples_;
   std::vector<std::unique_ptr<Result>> sub_results_;
-  timespec min_, max_, mean_, median_;
+  int64_t min_, max_, mean_, median_;
   double sd_;
   std::vector<int> ComputeNormalizedFrequencyVector();
   void PrintStatisticsTableContent(const std::string& instruction_path);
   std::string ComputeNextInstructionPath(const std::string& instruction_path);
   void PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path);
   void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value);
-  TimeUnit GetTimeUnit(const timespec& min_value);
+  TimeUnit GetTimeUnit(const int64_t& min_value);
 };
 }  // namespace dittosuite

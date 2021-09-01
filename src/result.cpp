@@ -35,7 +35,7 @@ static int bin_size;                 // bin size corresponding to the normalizat
 
 namespace dittosuite {
 
-Result::Result(const std::string& name, const std::vector<timespec>& time_samples)
+Result::Result(const std::string& name, const std::vector<int64_t>& time_samples)
     : name_(name), time_samples_(time_samples) {}
 
 void Result::AddSubResult(std::unique_ptr<Result> result) {
@@ -47,7 +47,7 @@ void Result::Analyse() {
   max_ = StatisticsGetMax(time_samples_);
   mean_ = StatisticsGetMean(time_samples_);
   median_ = StatisticsGetMedian(time_samples_);
-  sd_ = StatisticsGetSd(TimespecToNs(time_samples_));
+  sd_ = StatisticsGetSd(time_samples_);
 }
 
 std::string Result::ComputeNextInstructionPath(const std::string& instruction_path) {
@@ -59,14 +59,10 @@ void Result::Print(const std::string& instruction_path) {
   std::cout << next_instruction_path << std::endl;
 
   time_unit_ = GetTimeUnit(min_);
-  std::cout << "Min: " << TimespecToNs(min_) / time_unit_.dividing_factor << time_unit_.name
-            << std::endl;
-  std::cout << "Max: " << TimespecToNs(max_) / time_unit_.dividing_factor << time_unit_.name
-            << std::endl;
-  std::cout << "Mean: " << TimespecToNs(mean_) / time_unit_.dividing_factor << time_unit_.name
-            << std::endl;
-  std::cout << "Median: " << TimespecToNs(median_) / time_unit_.dividing_factor << time_unit_.name
-            << std::endl;
+  std::cout << "Min: " << min_ / time_unit_.dividing_factor << time_unit_.name << std::endl;
+  std::cout << "Max: " << max_ / time_unit_.dividing_factor << time_unit_.name << std::endl;
+  std::cout << "Mean: " << mean_ / time_unit_.dividing_factor << time_unit_.name << std::endl;
+  std::cout << "Median: " << median_ / time_unit_.dividing_factor << time_unit_.name << std::endl;
   std::cout << "SD: " << sd_ << std::endl << std::endl;
 
   for (const auto& sub_result : sub_results_) {
@@ -100,8 +96,8 @@ void PrintStatisticsTableHeader() {
   std::cout << "\x1b[0m";  // ending of bold
 }
 
-void PrintTimespecInTable(const timespec& t) {
-  std::cout << std::setw(13) << TimespecToNs(t) << "ns";
+void PrintTimespecInTable(const int64_t& t) {
+  std::cout << std::setw(13) << t << "ns";
 }
 
 // Recursive function to print one row at a time
@@ -167,25 +163,25 @@ void Result::MakeHistogramFromVector(const std::vector<int>& freq_vector, const 
 
 // makes and returns the normalized frequency vector
 std::vector<int> Result::ComputeNormalizedFrequencyVector() {
-  int64_t min_value = TimespecToNs(min_) / time_unit_.dividing_factor;
+  int64_t min_value = min_ / time_unit_.dividing_factor;
   std::vector<int> freq_vector(kMaxHistogramHeight, 0);
   for (auto time_sample : time_samples_) {
-    freq_vector[(TimespecToNs(time_sample) / time_unit_.dividing_factor - min_value) / bin_size]++;
+    freq_vector[(time_sample / time_unit_.dividing_factor - min_value) / bin_size]++;
   }
   return freq_vector;
 }
 
-Result::TimeUnit Result::GetTimeUnit(const timespec& min_value) {
+Result::TimeUnit Result::GetTimeUnit(const int64_t& min_value) {
   TimeUnit result;
-  if (TimespecToNs(min_value) <= 1e7) {
+  if (min_value <= 1e7) {
     // time unit in nanoseconds
     result.dividing_factor = 1;
     result.name = "ns";
-  } else if (TimespecToNs(min_value) <= 1e10) {
+  } else if (min_value <= 1e10) {
     // time unit in microseconds
     result.dividing_factor = 1e3;
     result.name = "us";
-  } else if (TimespecToNs(min_value) <= 1e13) {
+  } else if (min_value <= 1e13) {
     // time unit in milliseconds
     result.dividing_factor = 1e6;
     result.name = "ms";
@@ -206,8 +202,8 @@ void Result::PrintHistograms(const std::string& instruction_path) {
   std::cout << std::endl;
 
   time_unit_ = GetTimeUnit(min_);
-  int64_t min_value = TimespecToNs(min_) / time_unit_.dividing_factor;
-  int64_t max_value = TimespecToNs(max_) / time_unit_.dividing_factor;
+  int64_t min_value = min_ / time_unit_.dividing_factor;
+  int64_t max_value = max_ / time_unit_.dividing_factor;
   bin_size = (max_value - min_value) / kMaxHistogramHeight + 1;
   std::vector<int> freq_vector = ComputeNormalizedFrequencyVector();
   MakeHistogramFromVector(freq_vector, min_value);
@@ -223,10 +219,10 @@ void Result::PrintHistograms(const std::string& instruction_path) {
 void Result::PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path) {
   std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
   csv_stream << next_instruction_path << kCsvDelimiter;
-  csv_stream << TimespecToNs(min_) << kCsvDelimiter;
-  csv_stream << TimespecToNs(max_) << kCsvDelimiter;
-  csv_stream << TimespecToNs(mean_) << kCsvDelimiter;
-  csv_stream << TimespecToNs(median_) << kCsvDelimiter;
+  csv_stream << min_ << kCsvDelimiter;
+  csv_stream << max_ << kCsvDelimiter;
+  csv_stream << mean_ << kCsvDelimiter;
+  csv_stream << median_ << kCsvDelimiter;
   csv_stream << sd_;
   csv_stream << std::endl;  // ending of row
 
