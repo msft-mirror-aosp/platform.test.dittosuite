@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "mock_syscall.h"
+#include "instruction_test.cpp"
 
 #include <set>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
-#include <ditto/instruction.h>
 #include <ditto/instruction_set.h>
 #include <ditto/read_write_file.h>
-#include <ditto/shared_variables.h>
 
 using ::dittosuite::SharedVariables;
 using ::testing::_;
@@ -30,16 +25,14 @@ using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::Return;
 
-class ReadFileTest : public ::testing::Test {
+class ReadFileTest : public InstructionTest {
  protected:
-  MockSyscall syscall_;
   int fd_ = MockSyscall::kDefaultFileDescriptor;
   int input_key_;
 
   // Set input fd
   void SetUp() override {
-    std::list<int> thread_ids;
-    thread_ids.push_back(0);
+    InstructionTest::SetUp();
     input_key_ = SharedVariables::GetKey(thread_ids, "test_input");
     SharedVariables::Set(input_key_, fd_);
   }
