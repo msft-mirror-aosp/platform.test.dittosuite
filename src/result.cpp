@@ -63,7 +63,7 @@ void Result::Print(const std::string& instruction_path) {
   std::cout << "Max: " << max_ / time_unit_.dividing_factor << time_unit_.name << std::endl;
   std::cout << "Mean: " << mean_ / time_unit_.dividing_factor << time_unit_.name << std::endl;
   std::cout << "Median: " << median_ / time_unit_.dividing_factor << time_unit_.name << std::endl;
-  std::cout << "SD: " << sd_ << std::endl << std::endl;
+  std::cout << "SD: " << sd_ / time_unit_.dividing_factor << std::endl << std::endl;
 
   for (const auto& sub_result : sub_results_) {
     sub_result->Print(next_instruction_path);
