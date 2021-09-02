@@ -55,7 +55,6 @@ std::unique_ptr<Result> Multithreading::CollectResults(const std::string& prefix
   for (unsigned int i = 0; i < instructions_.size(); ++i) {
     result->AddSubResult(instructions_[i]->CollectResults(std::to_string(i) + "/"));
   }
-  result->Analyse();
   return result;
 }
 

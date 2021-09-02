@@ -29,7 +29,6 @@ class Result {
 
   void AddMeasurement(const std::string& type, const std::vector<int64_t>& samples);
   void AddSubResult(std::unique_ptr<Result> result);
-  void Analyse();
   void Print(const std::string& instruction_path);
   void PrintHistograms(const std::string& instruction_path);
   void PrintStatisticsTable();

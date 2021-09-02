@@ -108,7 +108,6 @@ std::unique_ptr<Result> InstructionSet::CollectResults(const std::string& prefix
   for (const auto& instruction : instructions_) {
     result->AddSubResult(instruction->CollectResults(""));
   }
-  result->Analyse();
   return result;
 }
 

@@ -39,6 +39,7 @@ Result::Result(const std::string& name) : name_(name) {}
 
 void Result::AddMeasurement(const std::string& name, const std::vector<int64_t>& samples) {
   samples_[name] = samples;
+  AnalyseMeasurement(name);
 }
 
 void Result::AddSubResult(std::unique_ptr<Result> result) {
@@ -53,10 +54,6 @@ void Result::AnalyseMeasurement(const std::string& name) {
   statistics_[name].mean = StatisticsGetMean(samples_[name]);
   statistics_[name].median = StatisticsGetMedian(samples_[name]);
   statistics_[name].sd = StatisticsGetSd(samples_[name]);
-}
-
-void Result::Analyse() {
-  for (const auto& s : samples_) AnalyseMeasurement(s.first);
 }
 
 std::string Result::ComputeNextInstructionPath(const std::string& instruction_path) {

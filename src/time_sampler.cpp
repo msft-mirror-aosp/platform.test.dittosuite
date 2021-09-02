@@ -14,6 +14,7 @@
 
 #include <ditto/time_sampler.h>
 
+#include <cmath>
 #include <ctime>
 
 #include <ditto/logger.h>
@@ -27,6 +28,19 @@ void TimeSampler::MeasureStart() {
 void TimeSampler::MeasureEnd() {
   clock_gettime(CLOCK_MONOTONIC, &end_);
   samples_.push_back(end_ - start_);
+}
+
+void BandwidthSampler::Measure(const int64_t& file_size, const timespec& duration) {
+  double bandwidth = file_size * 1e6 / TimespecToNs(duration);  // currently bytes/milliseconds
+  bandwidth = bandwidth * 1e3 / (1 << 10);                      // Kb / s
+  samples_.push_back(bandwidth);
+}
+
+std::vector<int64_t> BandwidthSampler::GetLongIntSamples() const {
+  std::vector<int64_t> bandwidths;
+  bandwidths.reserve(samples_.size());
+  for (const auto& it : samples_) bandwidths.push_back(std::round(it));
+  return bandwidths;
 }
 
 }  // namespace dittosuite
