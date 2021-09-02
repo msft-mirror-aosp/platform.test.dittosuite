@@ -55,6 +55,7 @@ class Result {
   std::vector<int> ComputeNormalizedFrequencyVector(const std::string& measurement_name);
   void PrintStatisticsTableContent(const std::string& instruction_path,
                                    const std::string& measurement_name);
+
   std::string ComputeNextInstructionPath(const std::string& instruction_path);
   void PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path,
                            const std::string& measurement_name);

@@ -61,21 +61,25 @@ std::string Result::ComputeNextInstructionPath(const std::string& instruction_pa
 }
 
 void Result::PrintMeasurement(const std::string& name) {
-  std::cout << name << ":" << std::endl;
-  // duration measurement is printed with dynamically set time unit
+  int dividing_factor = 1;
+  std::string unit_name = "";
+
   if (name == "duration") {
     time_unit_ = GetTimeUnit(statistics_[name].min);
-    std::cout << "Min: " << statistics_[name].min / time_unit_.dividing_factor << time_unit_.name
-              << std::endl;
-    std::cout << "Max: " << statistics_[name].max / time_unit_.dividing_factor << time_unit_.name
-              << std::endl;
-    std::cout << "Mean: " << statistics_[name].mean / time_unit_.dividing_factor << time_unit_.name
-              << std::endl;
-    std::cout << "Median: " << statistics_[name].median / time_unit_.dividing_factor
-              << time_unit_.name << std::endl;
-    std::cout << "SD: " << statistics_[name].sd / time_unit_.dividing_factor << std::endl
-              << std::endl;
+    dividing_factor = time_unit_.dividing_factor;
+    unit_name = time_unit_.name;
+  } else if (name == "bandwidth") {
+    unit_name = " KB/s";
   }
+
+  std::cout << name << ":" << std::endl;
+  std::cout << "Min: " << statistics_[name].min / dividing_factor << unit_name << std::endl;
+  std::cout << "Max: " << statistics_[name].max / dividing_factor << unit_name << std::endl;
+  std::cout << "Mean: " << statistics_[name].mean / dividing_factor << unit_name << std::endl;
+  std::cout << "Median: " << statistics_[name].median / dividing_factor << unit_name << std::endl;
+  std::cout << "Sd: " << statistics_[name].sd / dividing_factor << std::endl;
+
+  std::cout << std::endl;
 }
 
 void Result::Print(const std::string& instruction_path) {
