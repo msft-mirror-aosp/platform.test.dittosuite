@@ -38,7 +38,6 @@ class TimeSampler : public Sampler<timespec> {
  private:
   timespec start_;
   timespec end_;
-  void AddTimeSample(timespec sample);
 };
 
 }  // namespace dittosuite

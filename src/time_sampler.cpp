@@ -20,17 +20,13 @@
 
 namespace dittosuite {
 
-void TimeSampler::AddTimeSample(timespec sample) {
-  samples_.push_back(sample);
-}
-
 void TimeSampler::MeasureStart() {
   clock_gettime(CLOCK_MONOTONIC, &start_);
 }
 
 void TimeSampler::MeasureEnd() {
   clock_gettime(CLOCK_MONOTONIC, &end_);
-  AddTimeSample(end_ - start_);
+  samples_.push_back(end_ - start_);
 }
 
 }  // namespace dittosuite
