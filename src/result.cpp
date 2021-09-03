@@ -23,7 +23,7 @@
 #include <set>
 #include <string>
 
-const int kTimeSampleDisplayWidth = 11;  // this width is used displaying a time sample value
+const int kSampleDisplayWidth = 15;  // this width is used displaying a sample value
 const int kTableWidth = 164;  // table width; can be adjusted in case of longer instruction paths
 const char* kTableDivider = " | ";   // table character divider
 const int kMaxHistogramHeight = 20;  // used for normalizing the histogram (represents the
@@ -187,9 +187,14 @@ void Result::PrintStatisticsTables() {
 
 void Result::PrintHistogramHeader(const std::string& measurement_name) {
   if (measurement_name == "duration") {
-    std::cout.width(kTimeSampleDisplayWidth - 3);
+    std::cout.width(kSampleDisplayWidth - 3);
     std::cout << "Time(" << time_unit_.name << ") |";
     std::cout << " Normalized number of time samples";
+    std::cout << std::endl;
+  } else if (measurement_name == "bandwidth") {
+    std::cout.width(kSampleDisplayWidth);
+    std::cout << "Bandwidth(KB/s) |";
+    std::cout << " Normalized number of bandwidth samples";
     std::cout << std::endl;
   }
   for (int i = 0; i <= kMaxHistogramWidth + 15; i++) std::cout << "-";
@@ -201,7 +206,7 @@ void Result::MakeHistogramFromVector(const std::vector<int>& freq_vector, const 
   int sum = 0;
   int max_frequency = *std::max_element(freq_vector.begin(), freq_vector.end());
   for (unsigned int i = 0; i < freq_vector.size(); i++) {
-    std::cout.width(kTimeSampleDisplayWidth);
+    std::cout.width(kSampleDisplayWidth);
     std::cout << min_value + bin_size * i << kTableDivider;
     for (int j = 0; j < freq_vector[i] * kMaxHistogramWidth / max_frequency; j++) std::cout << "x";
     std::cout << " {" << freq_vector[i] << "}";
@@ -252,15 +257,14 @@ Result::TimeUnit Result::GetTimeUnit(const int64_t& min_value) {
 }
 
 void Result::PrintHistograms(const std::string& instruction_path) {
+  std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
+  std::cout << std::endl;
+  std::cout << "\x1b[1m";  // beginning of bold
+  std::cout << "Instruction path: " << next_instruction_path;
+  std::cout << "\x1b[0m" << std::endl;  // ending of bold
+  std::cout << std::endl;
+
   for (const auto& sample : samples_) {
-    std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
-
-    std::cout << std::endl;
-    std::cout << "\x1b[1m";  // beginning of bold
-    std::cout << "Instruction path: " << next_instruction_path;
-    std::cout << "\x1b[0m" << std::endl;  // ending of bold
-    std::cout << std::endl;
-
     int64_t min_value = statistics_[sample.first].min;
     int64_t max_value = statistics_[sample.first].max;
     if (sample.first == "duration") {
