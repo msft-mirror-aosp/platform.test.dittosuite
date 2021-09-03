@@ -254,3 +254,14 @@ TEST_F(WriteFileTest, WroteMultipleBlocksRandomRepeatedReseededEachCycle) {
   // Check that the number of unique blocks, that were collected, matches the expected number
   ASSERT_EQ(static_cast<int>(blocks.size()), number_of_unique_blocks);
 }
+
+TEST_F(WriteFileDeathTest, DiedDueToInvalidFd) {
+  SharedVariables::Set(input_key_, -1);
+  auto instruction =
+      dittosuite::WriteFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0, dittosuite::kRandom,
+                            0, dittosuite::kOnce, false, input_key_);
+
+  // Will fail when GetFileSize() is called for an invalid fd during setup
+  EXPECT_CALL(syscall_, FStat(-1, _)).WillRepeatedly(Return(-1));
+  EXPECT_DEATH(instruction.Run(), _);
+}

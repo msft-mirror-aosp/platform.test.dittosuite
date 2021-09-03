@@ -17,17 +17,23 @@
 #include <sys/param.h>
 #include <sys/stat.h>
 
+#include <ditto/logger.h>
+
 namespace dittosuite {
 
 int64_t GetFileSize(SyscallInterface& syscall, int fd) {
   struct stat64 sb;
-  syscall.FStat(fd, &sb);
+  if (syscall.FStat(fd, &sb) == -1) {
+    PLOGF("Error while calling fstat() to get file size");
+  }
   return sb.st_size;
 }
 
 std::string GetFilePath(SyscallInterface& syscall, int fd) {
   char file_path[PATH_MAX];
-  syscall.ReadLink("/proc/self/fd/" + std::to_string(fd), file_path, sizeof(file_path));
+  if (syscall.ReadLink("/proc/self/fd/" + std::to_string(fd), file_path, sizeof(file_path)) == -1) {
+    PLOGF("Error while calling readlink() to get file path");
+  }
   return std::string(file_path);
 }
 
