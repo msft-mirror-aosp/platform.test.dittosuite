@@ -287,41 +287,60 @@ void Result::PrintHistograms(const std::string& instruction_path) {
 
 // Print statistic measurement with given name in .csv
 void Result::PrintMeasurementStatisticInCsv(std::ostream& csv_stream, const std::string& name) {
+  csv_stream << kCsvDelimiter;
   csv_stream << statistics_[name].min << kCsvDelimiter;
   csv_stream << statistics_[name].max << kCsvDelimiter;
   csv_stream << statistics_[name].mean << kCsvDelimiter;
   csv_stream << statistics_[name].median << kCsvDelimiter;
   csv_stream << statistics_[name].sd;
-  csv_stream << std::endl;  // ending of row
+}
+
+void PrintEmptyMeasurementInCsv(std::ostream& csv_stream) {
+  for (int i = 0; i < 5; i++) csv_stream << kCsvDelimiter;
 }
 
 // Recursive function to print one row at a time using the .csv stream given as a parameter
 // of statistics table content (the instruction path, min, max, mean and SD).
 void Result::PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path,
-                                 const std::string& measurement_name) {
+                                 const std::set<std::string>& measurements_names) {
   std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
-  csv_stream << next_instruction_path << kCsvDelimiter;
 
-  PrintMeasurementStatisticInCsv(csv_stream, measurement_name);
+  // print one row in csv
+  csv_stream << next_instruction_path;
+  for (const auto& measurement : measurements_names) {
+    if (samples_.find(measurement) != samples_.end()) {
+      PrintMeasurementStatisticInCsv(csv_stream, measurement);
+    } else {
+      PrintEmptyMeasurementInCsv(csv_stream);
+    }
+  }
+  csv_stream << std::endl;  // ending of row
 
   for (const auto& sub_result : sub_results_) {
-    sub_result->PrintStatisticInCsv(csv_stream, next_instruction_path, measurement_name);
+    sub_result->PrintStatisticInCsv(csv_stream, next_instruction_path, measurements_names);
   }
+}
+
+void PrintCsvHeader(std::ostream& csv_stream, const std::set<std::string>& measurement_names) {
+  csv_stream << "Instruction path";
+  for (const auto& measurement : measurement_names) {
+    csv_stream << kCsvDelimiter;
+    csv_stream << measurement << " min" << kCsvDelimiter;
+    csv_stream << measurement << " max" << kCsvDelimiter;
+    csv_stream << measurement << " mean" << kCsvDelimiter;
+    csv_stream << measurement << " median" << kCsvDelimiter;
+    csv_stream << measurement << " SD";
+  }
+  csv_stream << std::endl;
 }
 
 void Result::MakeStatisticsCsv() {
   std::ostream csv_stream(std::cout.rdbuf());
 
-  for (const auto& s : samples_) {
-    csv_stream << "Instruction path" << kCsvDelimiter;
-    csv_stream << "Min" << kCsvDelimiter;
-    csv_stream << "Max" << kCsvDelimiter;
-    csv_stream << "Mean" << kCsvDelimiter;
-    csv_stream << "Median" << kCsvDelimiter;
-    csv_stream << "SD" << std::endl;
+  std::set<std::string> measurements_names = GetMeasurementsNames();
+  PrintCsvHeader(csv_stream, measurements_names);
 
-    PrintStatisticInCsv(csv_stream, "", s.first);
-  }
+  PrintStatisticInCsv(csv_stream, "", measurements_names);
 }
 
 }  // namespace dittosuite

@@ -60,7 +60,7 @@ class Result {
 
   std::string ComputeNextInstructionPath(const std::string& instruction_path);
   void PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path,
-                           const std::string& measurement_name);
+                           const std::set<std::string>& measurements_names);
   void PrintHistogramHeader(const std::string& measurement_name);
   void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value);
   TimeUnit GetTimeUnit(const int64_t& min_value);
