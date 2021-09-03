@@ -42,6 +42,7 @@ class SyscallInterface {
   virtual int64_t Read(int fd, char* buf, int64_t count, int64_t offset) = 0;
   virtual struct dirent* ReadDir(DIR* dirp) = 0;
   virtual int64_t ReadLink(const std::string& path_name, char* buf, int64_t bufsiz) = 0;
+  virtual void Sync() = 0;
   virtual int Unlink(const std::string& path_name) = 0;
   virtual int64_t Write(int fd, char* buf, int64_t count, int64_t offset) = 0;
 };
@@ -66,6 +67,7 @@ class Syscall : public SyscallInterface {
   int64_t Read(int fd, char* buf, int64_t count, int64_t offset) override;
   struct dirent* ReadDir(DIR* dirp) override;
   int64_t ReadLink(const std::string& path_name, char* buf, int64_t bufsiz) override;
+  void Sync() override;
   int Unlink(const std::string& path_name) override;
   int64_t Write(int fd, char* buf, int64_t count, int64_t offset) override;
 

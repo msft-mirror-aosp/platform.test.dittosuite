@@ -46,6 +46,7 @@ class MockSyscall : public dittosuite::SyscallInterface {
   MOCK_METHOD(struct dirent*, ReadDir, (DIR * dirp), (override));
   MOCK_METHOD(int64_t, ReadLink, (const std::string& path_name, char* buf, int64_t bufsiz),
               (override));
+  MOCK_METHOD(void, Sync, (), (override));
   MOCK_METHOD(int, Unlink, (const std::string& path_name), (override));
   MOCK_METHOD(int64_t, Write, (int fd, char* buf, int64_t count, int64_t offset), (override));
 };

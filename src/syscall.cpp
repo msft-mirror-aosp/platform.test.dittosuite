@@ -73,6 +73,10 @@ int64_t Syscall::ReadLink(const std::string& path_name, char* buf, int64_t bufsi
   return readlink(path_name.c_str(), buf, bufsiz);
 }
 
+void Syscall::Sync() {
+  return sync();
+}
+
 int Syscall::Unlink(const std::string& path_name) {
   return unlink(path_name.c_str());
 }
