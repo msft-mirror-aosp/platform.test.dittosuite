@@ -18,6 +18,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,7 @@ class Result {
   void AddSubResult(std::unique_ptr<Result> result);
   void Print(const std::string& instruction_path);
   void PrintHistograms(const std::string& instruction_path);
-  void PrintStatisticsTable();
+  void PrintStatisticsTables();
   void MakeStatisticsCsv();
 
  private:
@@ -53,6 +54,7 @@ class Result {
   void AnalyseMeasurement(const std::string& name);
   void PrintMeasurement(const std::string& name);
   std::vector<int> ComputeNormalizedFrequencyVector(const std::string& measurement_name);
+  std::set<std::string> GetMeasurementsNames();
   void PrintStatisticsTableContent(const std::string& instruction_path,
                                    const std::string& measurement_name);
 

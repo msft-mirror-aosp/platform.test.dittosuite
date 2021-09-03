@@ -20,6 +20,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <set>
 #include <string>
 
 const int kTimeSampleDisplayWidth = 11;  // this width is used displaying a time sample value
@@ -120,14 +121,17 @@ void PrintStatisticsTableHeader() {
 }
 
 void PrintMeasurementInTable(const int64_t& measurement, const std::string& measurement_name) {
-  if (measurement_name == "duration") std::cout << std::setw(13) << measurement << "ns";
+  if (measurement_name == "duration") {
+    std::cout << std::setw(13) << measurement << "ns";
+  } else if (measurement_name == "bandwidth") {
+    std::cout << std::setw(11) << measurement << "KB/s";
+  }
 }
 
 // Recursive function to print one row at a time
 // of statistics table content (the instruction path, min, max and mean).
 void Result::PrintStatisticsTableContent(const std::string& instruction_path,
                                          const std::string& measurement_name) {
-  std::cout << "| ";  // started new row
   std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
   int subinstruction_level =
       std::count(next_instruction_path.begin(), next_instruction_path.end(), '/');
@@ -139,31 +143,45 @@ void Result::PrintStatisticsTableContent(const std::string& instruction_path,
   }
 
   // Print table row
-  std::cout << std::setw(70) << std::left << next_instruction_path << std::right;
-  std::cout << kTableDivider;
-  PrintMeasurementInTable(statistics_[measurement_name].min, measurement_name);
-  std::cout << kTableDivider;
-  PrintMeasurementInTable(statistics_[measurement_name].max, measurement_name);
-  std::cout << kTableDivider;
-  PrintMeasurementInTable(statistics_[measurement_name].mean, measurement_name);
-  std::cout << kTableDivider;
-  PrintMeasurementInTable(statistics_[measurement_name].median, measurement_name);
-  std::cout << kTableDivider;
-  std::cout << std::setw(15)
-            << statistics_[measurement_name].sd;  // SD is always printed without measurement unit
-  std::cout << kTableDivider;                     // ended current row
-  PrintTableBorder();
+  if (samples_.find(measurement_name) != samples_.end()) {
+    std::cout << "| ";  // started new row
+    std::cout << std::setw(70) << std::left << next_instruction_path << std::right;
+    std::cout << kTableDivider;
+    PrintMeasurementInTable(statistics_[measurement_name].min, measurement_name);
+    std::cout << kTableDivider;
+    PrintMeasurementInTable(statistics_[measurement_name].max, measurement_name);
+    std::cout << kTableDivider;
+    PrintMeasurementInTable(statistics_[measurement_name].mean, measurement_name);
+    std::cout << kTableDivider;
+    PrintMeasurementInTable(statistics_[measurement_name].median, measurement_name);
+    std::cout << kTableDivider;
+    std::cout << std::setw(15)
+              << statistics_[measurement_name].sd;  // SD is always printed without measurement unit
+    std::cout << kTableDivider;                     // ended current row
+    PrintTableBorder();
+  }
 
   for (const auto& sub_result : sub_results_) {
     sub_result->PrintStatisticsTableContent(next_instruction_path, measurement_name);
   }
 }
 
-void Result::PrintStatisticsTable() {
-  for (const auto& s : samples_) {
-    std::cout << s.first << " statistics:";
+std::set<std::string> Result::GetMeasurementsNames() {
+  std::set<std::string> names;
+  for (const auto& it : samples_) names.insert(it.first);
+  for (const auto& sub_result : sub_results_) {
+    for (const auto& sub_name : sub_result->GetMeasurementsNames()) names.insert(sub_name);
+  }
+  return names;
+}
+
+void Result::PrintStatisticsTables() {
+  std::set<std::string> measurement_names = GetMeasurementsNames();
+  for (const auto& s : measurement_names) {
+    std::cout << std::endl << s << " statistics:";
     PrintStatisticsTableHeader();
-    PrintStatisticsTableContent("", s.first);
+    PrintStatisticsTableContent("", s);
+    std::cout << std::endl;
   }
 }
 

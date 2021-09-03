@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
   auto result = main->CollectResults("");
   result->Print("");
   result->PrintHistograms("");
-  result->PrintStatisticsTable();
+  result->PrintStatisticsTables();
   result->MakeStatisticsCsv();
 
   auto clean_up = dittosuite::Parser::GetParser().GetCleanUp();
