@@ -266,6 +266,27 @@ TEST_F(ReadFileTest, UsedFileSize) {
   read_file.Run();
 }
 
+TEST_F(ReadFileTest, UsedFileSizeRepeated) {
+  std::vector<int64_t> sizes = {1024, 2048};
+  {
+    InSequence sq;
+    for (const auto& size : sizes) {
+      EXPECT_CALL(syscall_, FStat(fd_, _))
+          .Times(2)
+          .WillRepeatedly(Invoke([&](int, struct stat64* buf) {
+            buf->st_size = size;
+            return 0;
+          }));
+      // Expect a single Read() with the correct block_size (equal to file size)
+      EXPECT_CALL(syscall_, Read(fd_, _, size, _));
+    }
+  }
+
+  auto read_file = dittosuite::ReadFile(syscall_, sizes.size(), -1, -1, 0, dittosuite::kSequential,
+                                        0, dittosuite::kOnce, 0, input_key_);
+  read_file.Run();
+}
+
 TEST_F(ReadFileDeathTest, DiedDueToInvalidFd) {
   SharedVariables::Set(input_key_, -1);
   auto read_file = dittosuite::ReadFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,

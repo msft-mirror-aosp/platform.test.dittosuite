@@ -56,24 +56,26 @@ void ReadWriteFile::SetUpSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
   int64_t file_size = GetFileSize(syscall_, fd);
 
-  if (size_ == -1) {
-    size_ = file_size;
+  int64_t size = size_;
+  int64_t block_size = block_size_;
+  if (size == -1) {
+    size = file_size;
   }
-  if (block_size_ == -1) {
-    block_size_ = file_size;
+  if (block_size == -1) {
+    block_size = file_size;
   }
 
-  if (block_size_ > file_size) {
-    LOGF("Supplied block_size (" + std::to_string(block_size_) +
+  if (block_size > file_size) {
+    LOGF("Supplied block_size (" + std::to_string(block_size) +
          ") is greater than total file size (" + std::to_string(file_size) +
          "). File path:" + GetFilePath(syscall_, fd));
   }
 
-  buffer_ = std::unique_ptr<char[]>(new (std::nothrow) char[block_size_]);
+  buffer_ = std::unique_ptr<char[]>(new (std::nothrow) char[block_size]);
   if (buffer_ == nullptr) {
     PLOGF("Error while allocating buffer for Read/Write");
   }
-  std::fill(buffer_.get(), buffer_.get() + block_size_, 170);  // 170 = 10101010
+  std::fill(buffer_.get(), buffer_.get() + block_size, 170);  // 170 = 10101010
 
   if (reseeding_ == kEachCycle) {
     gen_.seed(seed_);
@@ -84,20 +86,20 @@ void ReadWriteFile::SetUpSingle() {
   switch (type_) {
     case kSequential: {
       int64_t offset = starting_offset_;
-      for (int64_t i = 0; i < (size_ / block_size_); i++) {
-        if (offset > file_size - block_size_) {
+      for (int64_t i = 0; i < (size / block_size); i++) {
+        if (offset > file_size - block_size) {
           offset = 0;
         }
-        units_.push_back({block_size_, offset});
-        offset += block_size_;
+        units_.push_back({block_size, offset});
+        offset += block_size;
       }
       break;
     }
     case kRandom: {
-      std::uniform_int_distribution<> uniform_distribution(0, file_size - block_size_);
+      std::uniform_int_distribution<> uniform_distribution(0, file_size - block_size);
 
-      for (int64_t i = 0; i < (size_ / block_size_); i++) {
-        units_.push_back({block_size_, uniform_distribution(gen_)});
+      for (int64_t i = 0; i < (size / block_size); i++) {
+        units_.push_back({block_size, uniform_distribution(gen_)});
       }
       break;
     }
