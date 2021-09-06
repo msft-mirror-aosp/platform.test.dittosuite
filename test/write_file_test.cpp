@@ -255,6 +255,15 @@ TEST_F(WriteFileTest, WroteMultipleBlocksRandomRepeatedReseededEachCycle) {
   ASSERT_EQ(static_cast<int>(blocks.size()), number_of_unique_blocks);
 }
 
+TEST_F(WriteFileTest, UsedFileSize) {
+  // Expect a single Write() with the correct block_size (equal to file size)
+  EXPECT_CALL(syscall_, Write(fd_, _, MockSyscall::kDefaultFileSize, _));
+
+  auto write_file = dittosuite::WriteFile(syscall_, 1, -1, -1, 0, dittosuite::kSequential, 0,
+                                          dittosuite::kOnce, false, input_key_);
+  write_file.Run();
+}
+
 TEST_F(WriteFileDeathTest, DiedDueToInvalidFd) {
   SharedVariables::Set(input_key_, -1);
   auto instruction =

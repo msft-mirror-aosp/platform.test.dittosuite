@@ -33,9 +33,6 @@ ReadWriteFile::ReadWriteFile(SyscallInterface& syscall, const std::string& name,
       seed_(seed),
       reseeding_(reseeding),
       input_fd_key_(input_fd_key) {
-  buffer_ = std::make_unique<char[]>(block_size_);
-  std::fill(buffer_.get(), buffer_.get() + block_size_, 170);  // 170 = 10101010
-
   if (type == kRandom && starting_offset != 0) {
     LOGE(
         "Starting offset is not 0, although the chosen type is RANDOM. Starting offset will be "
@@ -71,6 +68,12 @@ void ReadWriteFile::SetUpSingle() {
          ") is greater than total file size (" + std::to_string(file_size) +
          "). File path:" + GetFilePath(syscall_, fd));
   }
+
+  buffer_ = std::unique_ptr<char[]>(new (std::nothrow) char[block_size_]);
+  if (buffer_ == nullptr) {
+    PLOGF("Error while allocating buffer for Read/Write");
+  }
+  std::fill(buffer_.get(), buffer_.get() + block_size_, 170);  // 170 = 10101010
 
   if (reseeding_ == kEachCycle) {
     gen_.seed(seed_);
