@@ -41,11 +41,17 @@ class Result {
                           // unit (ns) in another one (ex 1000 for microseconds)
     std::string name;
   };
+  struct BandwidthUnit {
+    int dividing_factor;  // dividing factor used for transforming the bandwidth
+                          // unit (KB/s) in another one (ex GB/s)
+    std::string name;
+  };
   struct Statistics {
     int64_t min, max, mean, median;
     double sd;
   };
   TimeUnit time_unit_;
+  BandwidthUnit bandwidth_unit_;
   std::string name_;
   std::map<std::string, std::vector<int64_t>> samples_;
   std::map<std::string, Statistics> statistics_;
@@ -64,6 +70,7 @@ class Result {
   void PrintHistogramHeader(const std::string& measurement_name);
   void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value);
   TimeUnit GetTimeUnit(const int64_t& min_value);
+  BandwidthUnit GetBandwidthUnit(const int64_t& min_value);
   void PrintMeasurementStatisticInCsv(std::ostream& csv_stream, const std::string& name);
 };
 }  // namespace dittosuite

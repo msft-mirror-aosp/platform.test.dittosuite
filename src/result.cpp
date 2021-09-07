@@ -23,7 +23,7 @@
 #include <set>
 #include <string>
 
-const int kSampleDisplayWidth = 15;  // this width is used displaying a sample value
+const int kSampleDisplayWidth = 16;  // this width is used displaying a sample value
 const int kTableWidth = 164;  // table width; can be adjusted in case of longer instruction paths
 const char* kTableDivider = " | ";   // table character divider
 const int kMaxHistogramHeight = 20;  // used for normalizing the histogram (represents the
@@ -70,7 +70,9 @@ void Result::PrintMeasurement(const std::string& name) {
     dividing_factor = time_unit_.dividing_factor;
     unit_name = time_unit_.name;
   } else if (name == "bandwidth") {
-    unit_name = " KB/s";
+    bandwidth_unit_ = GetBandwidthUnit(statistics_[name].min);
+    dividing_factor = bandwidth_unit_.dividing_factor;
+    unit_name = bandwidth_unit_.name;
   }
 
   std::cout << name << ":" << std::endl;
@@ -192,8 +194,8 @@ void Result::PrintHistogramHeader(const std::string& measurement_name) {
     std::cout << " Normalized number of time samples";
     std::cout << std::endl;
   } else if (measurement_name == "bandwidth") {
-    std::cout.width(kSampleDisplayWidth);
-    std::cout << "Bandwidth(KB/s) |";
+    std::cout.width(kSampleDisplayWidth - 6);
+    std::cout << "Bandwidth(" << bandwidth_unit_.name << ") |";
     std::cout << " Normalized number of bandwidth samples";
     std::cout << std::endl;
   }
@@ -221,12 +223,20 @@ void Result::MakeHistogramFromVector(const std::vector<int>& freq_vector, const 
 // makes and returns the normalized frequency vector
 std::vector<int> Result::ComputeNormalizedFrequencyVector(const std::string& measurement_name) {
   int64_t min_value = statistics_[measurement_name].min;
-  if (measurement_name == "duration") min_value /= time_unit_.dividing_factor;
+  if (measurement_name == "duration") {
+    min_value /= time_unit_.dividing_factor;
+  } else if (measurement_name == "bandwidth") {
+    min_value /= bandwidth_unit_.dividing_factor;
+  }
 
   std::vector<int> freq_vector(kMaxHistogramHeight, 0);
   for (const auto& sample : samples_[measurement_name]) {
-    int64_t sample_copy =
-        measurement_name == "duration" ? (sample / time_unit_.dividing_factor) : sample;
+    int64_t sample_copy = sample;
+    if (measurement_name == "duration") {
+      sample_copy /= time_unit_.dividing_factor;
+    } else if (measurement_name == "bandwidth") {
+      sample_copy /= bandwidth_unit_.dividing_factor;
+    }
     int64_t bin = (sample_copy - min_value) / bin_size;
 
     freq_vector[bin]++;
@@ -256,6 +266,24 @@ Result::TimeUnit Result::GetTimeUnit(const int64_t& min_value) {
   return result;
 }
 
+Result::BandwidthUnit Result::GetBandwidthUnit(const int64_t& min_value) {
+  BandwidthUnit result;
+  if (min_value <= (1 << 15)) {
+    // bandwidth unit in KB/s
+    result.dividing_factor = 1;
+    result.name = "KiB/s";
+  } else if (min_value <= (1 << 25)) {
+    // bandwidth unit in MB/s
+    result.dividing_factor = 1 << 10;
+    result.name = "MiB/s";
+  } else {
+    // bandwidth unit in GB/s
+    result.dividing_factor = 1 << 20;
+    result.name = "GiB/s";
+  }
+  return result;
+}
+
 void Result::PrintHistograms(const std::string& instruction_path) {
   std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
   std::cout << std::endl;
@@ -271,6 +299,10 @@ void Result::PrintHistograms(const std::string& instruction_path) {
       time_unit_ = GetTimeUnit(statistics_[sample.first].min);
       min_value /= time_unit_.dividing_factor;
       max_value /= time_unit_.dividing_factor;
+    } else if (sample.first == "bandwidth") {
+      bandwidth_unit_ = GetBandwidthUnit(min_value);
+      min_value /= bandwidth_unit_.dividing_factor;
+      max_value /= bandwidth_unit_.dividing_factor;
     }
     bin_size = (max_value - min_value) / kMaxHistogramHeight + 1;
 
