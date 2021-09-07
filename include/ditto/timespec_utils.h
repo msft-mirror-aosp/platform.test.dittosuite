@@ -18,6 +18,7 @@
 #include <ctime>
 
 int64_t TimespecToNs(const timespec& t);
+std::vector<int64_t> TimespecToNs(const std::vector<timespec>& tv);
 timespec NsToTimespec(const int64_t& t);
 
 bool operator==(const timespec& t1, const timespec& t2);

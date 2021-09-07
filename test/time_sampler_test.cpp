@@ -27,7 +27,7 @@ TEST(TimeSamplerTest, TimeSamplerVector) {
     time_sampler.MeasureStart();
     time_sampler.MeasureEnd();
   }
-  ASSERT_EQ(time_sampler.GetTimeSamples().size(), static_cast<unsigned int>(n));
+  ASSERT_EQ(time_sampler.GetSamples().size(), static_cast<unsigned int>(n));
 }
 
 }  // namespace dittosuite
