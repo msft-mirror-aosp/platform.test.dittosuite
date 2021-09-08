@@ -61,10 +61,18 @@ std::string Result::ComputeNextInstructionPath(const std::string& instruction_pa
   return instruction_path + (instruction_path != "" ? "/" : "") + name_;
 }
 
-void Result::Print(const std::string& instruction_path) {
-  PrintHistograms(instruction_path);
-  PrintStatisticsTables();
-  MakeStatisticsCsv();
+void Result::Print(const ResultsOutput& results_output, const std::string& instruction_path) {
+  switch (results_output) {
+    case kReport:
+      PrintHistograms(instruction_path);
+      PrintStatisticsTables();
+      break;
+    case kCsv:
+      MakeStatisticsCsv();
+      break;
+    default:
+      break;
+  }
 }
 
 void PrintTableBorder() {

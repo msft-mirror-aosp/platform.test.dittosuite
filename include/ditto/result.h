@@ -24,13 +24,15 @@
 
 namespace dittosuite {
 
+enum ResultsOutput { kReport, kCsv };
+
 class Result {
  public:
   explicit Result(const std::string& name);
 
   void AddMeasurement(const std::string& type, const std::vector<int64_t>& samples);
   void AddSubResult(std::unique_ptr<Result> result);
-  void Print(const std::string& instruction_path);
+  void Print(const ResultsOutput& results_output, const std::string& instruction_path);
 
  private:
   struct TimeUnit {

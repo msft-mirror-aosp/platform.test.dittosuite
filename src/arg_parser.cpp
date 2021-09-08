@@ -16,6 +16,11 @@
 
 namespace dittosuite {
 
+ResultsOutput ArgToResultsOutput(char* optarg) {
+  if (strcmp(optarg, "csv") == 0 || strcmp(optarg, "1") == 0) return kCsv;
+  return kReport;  // by default, the results output is the report (= 0)
+}
+
 LOG_LEVEL ArgToLogLevel(char* optarg) {
   if (strcmp(optarg, "VERBOSE") == 0 || strcmp(optarg, "0") == 0)
     return LOG_LEVEL_VERBOSE;
@@ -28,7 +33,8 @@ LOG_LEVEL ArgToLogLevel(char* optarg) {
   return LOG_LEVEL_ERROR;
 }
 
-void ParseArguments(int argc, char** argv) {
+CmdArguments ParseArguments(int argc, char** argv) {
+  CmdArguments arguments;
   while (true) {
     int option_index = 0;
     static struct option long_options[] = {{"results-output", required_argument, 0, 1},
@@ -43,7 +49,7 @@ void ParseArguments(int argc, char** argv) {
 
     switch (c) {
       case 1:
-        // TODO(robertasn): set results output in the output class
+        arguments.results_output = ArgToResultsOutput(optarg);
         break;
       case 2:
         // TODO(robertasn): set results output path in the output class
@@ -68,6 +74,7 @@ void ParseArguments(int argc, char** argv) {
   }
 
   dittosuite::Parser::GetParser().SetFilePath(argv[optind]);
+  return arguments;
 }
 
 }  // namespace dittosuite
