@@ -31,9 +31,6 @@ class Result {
   void AddMeasurement(const std::string& type, const std::vector<int64_t>& samples);
   void AddSubResult(std::unique_ptr<Result> result);
   void Print(const std::string& instruction_path);
-  void PrintHistograms(const std::string& instruction_path);
-  void PrintStatisticsTables();
-  void MakeStatisticsCsv();
 
  private:
   struct TimeUnit {
@@ -57,8 +54,11 @@ class Result {
   std::map<std::string, Statistics> statistics_;
   std::vector<std::unique_ptr<Result>> sub_results_;
 
+  void PrintHistograms(const std::string& instruction_path);
+  void PrintStatisticsTables();
+  void MakeStatisticsCsv();
+
   void AnalyseMeasurement(const std::string& name);
-  void PrintMeasurement(const std::string& name);
   std::vector<int> ComputeNormalizedFrequencyVector(const std::string& measurement_name);
   std::set<std::string> GetMeasurementsNames();
   void PrintStatisticsTableContent(const std::string& instruction_path,
