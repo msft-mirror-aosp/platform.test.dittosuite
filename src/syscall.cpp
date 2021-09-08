@@ -53,8 +53,8 @@ int Syscall::FSync(int fd) {
   return fsync(fd);
 }
 
-int Syscall::Open(const std::string& path_name, bool create) {
-  return open(path_name.c_str(), (create ? O_CREAT : 0) | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR);
+int Syscall::Open(const std::string& path_name, int flags, int mode) {
+  return open(path_name.c_str(), flags, mode);
 }
 
 DIR* Syscall::OpenDir(const std::string& name) {
@@ -71,6 +71,10 @@ struct dirent* Syscall::ReadDir(DIR* dirp) {
 
 int64_t Syscall::ReadLink(const std::string& path_name, char* buf, int64_t bufsiz) {
   return readlink(path_name.c_str(), buf, bufsiz);
+}
+
+void Syscall::Sync() {
+  return sync();
 }
 
 int Syscall::Unlink(const std::string& path_name) {

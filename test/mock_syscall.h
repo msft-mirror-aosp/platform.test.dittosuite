@@ -25,7 +25,7 @@ class MockSyscall : public dittosuite::SyscallInterface {
       return 0;
     }));
     ON_CALL(*this, FSync(_)).WillByDefault(Return(0));
-    ON_CALL(*this, Open(_, _)).WillByDefault(Return(kDefaultFileDescriptor));
+    ON_CALL(*this, Open(_, _, _)).WillByDefault(Return(kDefaultFileDescriptor));
     ON_CALL(*this, Read(_, _, _, _)).WillByDefault(ReturnArg<2>());
     ON_CALL(*this, ReadLink(_, _, _)).WillByDefault(ReturnArg<2>());
     ON_CALL(*this, Unlink(_)).WillByDefault(Return(0));
@@ -40,12 +40,13 @@ class MockSyscall : public dittosuite::SyscallInterface {
   MOCK_METHOD(int, FTruncate, (int fd, int64_t length), (override));
   MOCK_METHOD(int, FStat, (int filedes, struct stat64* buf), (override));
   MOCK_METHOD(int, FSync, (int fd), (override));
-  MOCK_METHOD(int, Open, (const std::string& path_name, bool create), (override));
+  MOCK_METHOD(int, Open, (const std::string& path_name, int flags, int mode), (override));
   MOCK_METHOD(DIR*, OpenDir, (const std::string& name), (override));
   MOCK_METHOD(int64_t, Read, (int fd, char* buf, int64_t count, int64_t offset), (override));
   MOCK_METHOD(struct dirent*, ReadDir, (DIR * dirp), (override));
   MOCK_METHOD(int64_t, ReadLink, (const std::string& path_name, char* buf, int64_t bufsiz),
               (override));
+  MOCK_METHOD(void, Sync, (), (override));
   MOCK_METHOD(int, Unlink, (const std::string& path_name), (override));
   MOCK_METHOD(int64_t, Write, (int fd, char* buf, int64_t count, int64_t offset), (override));
 };
