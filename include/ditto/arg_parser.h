@@ -27,6 +27,7 @@ namespace dittosuite {
 struct CmdArguments {
   ResultsOutput results_output = kReport;
   std::string file_path;
+  std::vector<std::string> parameters;
 };
 CmdArguments ParseArguments(int argc, char** argv);
 
