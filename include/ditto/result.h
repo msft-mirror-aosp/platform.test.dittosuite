@@ -32,6 +32,7 @@ class Result {
 
   void AddMeasurement(const std::string& type, const std::vector<int64_t>& samples);
   void AddSubResult(std::unique_ptr<Result> result);
+  std::vector<int64_t> GetSamples(const std::string& measurement_name) const;
   void Print(const ResultsOutput& results_output, const std::string& instruction_path);
 
  private:

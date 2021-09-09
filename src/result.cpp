@@ -47,6 +47,10 @@ void Result::AddSubResult(std::unique_ptr<Result> result) {
   sub_results_.push_back(std::move(result));
 }
 
+std::vector<int64_t> Result::GetSamples(const std::string& measurement_name) const {
+  return samples_.find(measurement_name)->second;
+}
+
 // analyse the measurement with the given name, and store
 // the results in the statistics_ map
 void Result::AnalyseMeasurement(const std::string& name) {
