@@ -40,7 +40,11 @@ LOG_LEVEL ArgToLogLevel(char* optarg) {
     return LOG_LEVEL_INFO;
   else if (strcmp(optarg, "WARNING") == 0 || strcmp(optarg, "3") == 0)
     return LOG_LEVEL_WARNING;
-  return LOG_LEVEL_ERROR;
+  else if (strcmp(optarg, "ERROR") == 0 || strcmp(optarg, "4") == 0)
+    return LOG_LEVEL_ERROR;
+  else if (strcmp(optarg, "FATAL") == 0 || strcmp(optarg, "5") == 0)
+    return LOG_LEVEL_FATAL;
+  return LOG_LEVEL_INFO;  // by default, the log level is info
 }
 
 CmdArguments ParseArguments(int argc, char** argv) {
