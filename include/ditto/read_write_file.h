@@ -46,6 +46,8 @@ class ReadWriteFile : public Instruction {
   uint64_t seed_;
   Reseeding reseeding_;
   int input_fd_key_;
+  bool update_size_;
+  bool update_block_size_;
 
   struct Unit {
     int64_t count;
