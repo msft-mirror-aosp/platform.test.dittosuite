@@ -36,7 +36,7 @@ static int bin_size;                 // bin size corresponding to the normalizat
 
 namespace dittosuite {
 
-Result::Result(const std::string& name) : name_(name) {}
+Result::Result(const std::string& name, const int& repeat) : name_(name), repeat_(repeat) {}
 
 void Result::AddMeasurement(const std::string& name, const std::vector<int64_t>& samples) {
   samples_[name] = samples;
@@ -49,6 +49,10 @@ void Result::AddSubResult(std::unique_ptr<Result> result) {
 
 std::vector<int64_t> Result::GetSamples(const std::string& measurement_name) const {
   return samples_.find(measurement_name)->second;
+}
+
+int Result::GetRepeat() const {
+  return repeat_;
 }
 
 // analyse the measurement with the given name, and store

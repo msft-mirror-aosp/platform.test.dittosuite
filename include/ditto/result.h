@@ -28,11 +28,12 @@ enum ResultsOutput { kReport, kCsv };
 
 class Result {
  public:
-  explicit Result(const std::string& name);
+  explicit Result(const std::string& name, const int& repeat);
 
   void AddMeasurement(const std::string& type, const std::vector<int64_t>& samples);
   void AddSubResult(std::unique_ptr<Result> result);
   std::vector<int64_t> GetSamples(const std::string& measurement_name) const;
+  int GetRepeat() const;
   void Print(const ResultsOutput& results_output, const std::string& instruction_path);
 
  private:
@@ -56,6 +57,7 @@ class Result {
   std::map<std::string, std::vector<int64_t>> samples_;
   std::map<std::string, Statistics> statistics_;
   std::vector<std::unique_ptr<Result>> sub_results_;
+  int repeat_;
 
   void PrintHistograms(const std::string& instruction_path);
   void PrintStatisticsTables();
