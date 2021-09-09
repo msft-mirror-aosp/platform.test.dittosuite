@@ -21,6 +21,16 @@ ResultsOutput ArgToResultsOutput(char* optarg) {
   return kReport;  // by default, the results output is the report (= 0)
 }
 
+LOG_STREAM ArgToLogStream(char* optarg) {
+  if (strcmp(optarg, "logcat") == 0 || strcmp(optarg, "1") == 0) {
+#ifdef __ANDROID__
+    return LOG_STREAM_LOGCAT;
+#endif
+    PLOGF("Cannot set log stream as logcat outside of Android");
+  }
+  return LOG_STREAM_STDOUT;  // by default, the log stream is stdout
+}
+
 LOG_LEVEL ArgToLogLevel(char* optarg) {
   if (strcmp(optarg, "VERBOSE") == 0 || strcmp(optarg, "0") == 0)
     return LOG_LEVEL_VERBOSE;
@@ -55,7 +65,7 @@ CmdArguments ParseArguments(int argc, char** argv) {
         // TODO(robertasn): set results output path in the output class
         break;
       case 3:
-        // TODO(robertasn): set log stream in Logger
+        dittosuite::Logger::GetInstance().SetLogStream(ArgToLogStream(optarg));
         break;
       case 4:
         // TODO(robertasn): set log delayed in Logger
