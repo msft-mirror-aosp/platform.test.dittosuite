@@ -42,10 +42,9 @@ TEST_F(ExampleTest, ExampleDittoFilesAreCorrect) {
     if (entry->d_type == DT_REG) {
       std::string file = path + "/" + entry->d_name;
 
-      dittosuite::Parser::GetParser().SetFilePath(file);
       EXPECT_EXIT(
           {
-            dittosuite::Parser::GetParser().Parse();
+            dittosuite::Parser::GetParser().Parse(file);
             exit(0);
           },
           testing::ExitedWithCode(0), "");

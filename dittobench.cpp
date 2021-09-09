@@ -25,7 +25,7 @@
 int main(int argc, char** argv) {
   dittosuite::CmdArguments arguments = dittosuite::ParseArguments(argc, argv);
 
-  dittosuite::Parser::GetParser().Parse();
+  dittosuite::Parser::GetParser().Parse(arguments.file_path);
 
   auto init = dittosuite::Parser::GetParser().GetInit();
   if (init != nullptr) {
