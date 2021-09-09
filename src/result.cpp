@@ -61,38 +61,17 @@ std::string Result::ComputeNextInstructionPath(const std::string& instruction_pa
   return instruction_path + (instruction_path != "" ? "/" : "") + name_;
 }
 
-void Result::PrintMeasurement(const std::string& name) {
-  int dividing_factor = 1;
-  std::string unit_name = "";
-
-  if (name == "duration") {
-    time_unit_ = GetTimeUnit(statistics_[name].min);
-    dividing_factor = time_unit_.dividing_factor;
-    unit_name = time_unit_.name;
-  } else if (name == "bandwidth") {
-    bandwidth_unit_ = GetBandwidthUnit(statistics_[name].min);
-    dividing_factor = bandwidth_unit_.dividing_factor;
-    unit_name = bandwidth_unit_.name;
-  }
-
-  std::cout << name << ":" << std::endl;
-  std::cout << "Min: " << statistics_[name].min / dividing_factor << unit_name << std::endl;
-  std::cout << "Max: " << statistics_[name].max / dividing_factor << unit_name << std::endl;
-  std::cout << "Mean: " << statistics_[name].mean / dividing_factor << unit_name << std::endl;
-  std::cout << "Median: " << statistics_[name].median / dividing_factor << unit_name << std::endl;
-  std::cout << "Sd: " << statistics_[name].sd / dividing_factor << std::endl;
-
-  std::cout << std::endl;
-}
-
-void Result::Print(const std::string& instruction_path) {
-  std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
-  std::cout << next_instruction_path << std::endl;
-
-  for (const auto& s : samples_) PrintMeasurement(s.first);
-
-  for (const auto& sub_result : sub_results_) {
-    sub_result->Print(next_instruction_path);
+void Result::Print(const ResultsOutput& results_output, const std::string& instruction_path) {
+  switch (results_output) {
+    case kReport:
+      PrintHistograms(instruction_path);
+      PrintStatisticsTables();
+      break;
+    case kCsv:
+      MakeStatisticsCsv();
+      break;
+    default:
+      break;
   }
 }
 
