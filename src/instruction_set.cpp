@@ -102,12 +102,28 @@ void InstructionSet::RunInstructions() {
   }
 }
 
+// The duration for an instruction set is a sum of its child instruction durations.
 std::unique_ptr<Result> InstructionSet::CollectResults(const std::string& prefix) {
   auto result = std::make_unique<Result>(prefix + name_, repeat_);
-  result->AddMeasurement("duration", TimespecToNs(time_sampler_.GetSamples()));
+  std::vector<int64_t> duration;
   for (const auto& instruction : instructions_) {
-    result->AddSubResult(instruction->CollectResults(""));
+    auto sub_result = instruction->CollectResults("");
+    auto samples = sub_result->GetSamples("duration");
+    auto repeat = sub_result->GetRepeat();
+
+    if (duration.empty()) {
+      duration.resize(samples.size() / repeat);
+    }
+
+    for (int i = 0; i < samples.size() / repeat; ++i) {
+      for (int j = 0; j < repeat; ++j) {
+        duration[i] += samples[i * repeat + j];
+      }
+    }
+
+    result->AddSubResult(std::move(sub_result));
   }
+  result->AddMeasurement("duration", duration);
   return result;
 }
 
