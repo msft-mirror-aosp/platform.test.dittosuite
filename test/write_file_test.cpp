@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "instruction_test.cpp"
+#include "include/instruction_test.h"
 
 #include <set>
 
