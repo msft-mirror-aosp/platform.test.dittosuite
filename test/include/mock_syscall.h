@@ -4,11 +4,6 @@
 
 #include <ditto/syscall.h>
 
-using ::testing::_;
-using ::testing::Invoke;
-using ::testing::Return;
-using ::testing::ReturnArg;
-
 class MockSyscall : public dittosuite::SyscallInterface {
  public:
   static constexpr int kDefaultFileSize = 4096;
@@ -16,22 +11,29 @@ class MockSyscall : public dittosuite::SyscallInterface {
 
   // Set default returns for each syscall (mostly return 0 to indicate a successful call)
   MockSyscall() {
-    ON_CALL(*this, Access(_, _)).WillByDefault(Return(0));
-    ON_CALL(*this, Close(_)).WillByDefault(Return(0));
-    ON_CALL(*this, CloseDir(_)).WillByDefault(Return(0));
-    ON_CALL(*this, FAdvise(_, _, _, _)).WillByDefault(Return(0));
-    ON_CALL(*this, FAllocate(_, _, _, _)).WillByDefault(Return(0));
-    ON_CALL(*this, FTruncate(_, _)).WillByDefault(Return(0));
-    ON_CALL(*this, FStat(_, _)).WillByDefault(Invoke([](int, struct stat64* buf) {
-      buf->st_size = kDefaultFileSize;
-      return 0;
-    }));
-    ON_CALL(*this, FSync(_)).WillByDefault(Return(0));
-    ON_CALL(*this, Open(_, _, _)).WillByDefault(Return(kDefaultFileDescriptor));
-    ON_CALL(*this, Read(_, _, _, _)).WillByDefault(ReturnArg<2>());
-    ON_CALL(*this, ReadLink(_, _, _)).WillByDefault(ReturnArg<2>());
-    ON_CALL(*this, Unlink(_)).WillByDefault(Return(0));
-    ON_CALL(*this, Write(_, _, _, _)).WillByDefault(ReturnArg<2>());
+    ON_CALL(*this, Access(::testing::_, ::testing::_)).WillByDefault(::testing::Return(0));
+    ON_CALL(*this, Close(::testing::_)).WillByDefault(::testing::Return(0));
+    ON_CALL(*this, CloseDir(::testing::_)).WillByDefault(::testing::Return(0));
+    ON_CALL(*this, FAdvise(::testing::_, ::testing::_, ::testing::_, ::testing::_))
+        .WillByDefault(::testing::Return(0));
+    ON_CALL(*this, FAllocate(::testing::_, ::testing::_, ::testing::_, ::testing::_))
+        .WillByDefault(::testing::Return(0));
+    ON_CALL(*this, FTruncate(::testing::_, ::testing::_)).WillByDefault(::testing::Return(0));
+    ON_CALL(*this, FStat(::testing::_, ::testing::_))
+        .WillByDefault(::testing::Invoke([](int, struct stat64* buf) {
+          buf->st_size = kDefaultFileSize;
+          return 0;
+        }));
+    ON_CALL(*this, FSync(::testing::_)).WillByDefault(::testing::Return(0));
+    ON_CALL(*this, Open(::testing::_, ::testing::_, ::testing::_))
+        .WillByDefault(::testing::Return(kDefaultFileDescriptor));
+    ON_CALL(*this, Read(::testing::_, ::testing::_, ::testing::_, ::testing::_))
+        .WillByDefault(::testing::ReturnArg<2>());
+    ON_CALL(*this, ReadLink(::testing::_, ::testing::_, ::testing::_))
+        .WillByDefault(::testing::ReturnArg<2>());
+    ON_CALL(*this, Unlink(::testing::_)).WillByDefault(::testing::Return(0));
+    ON_CALL(*this, Write(::testing::_, ::testing::_, ::testing::_, ::testing::_))
+        .WillByDefault(::testing::ReturnArg<2>());
   }
 
   MOCK_METHOD(int, Access, (const std::string& path_name, int mode), (override));
