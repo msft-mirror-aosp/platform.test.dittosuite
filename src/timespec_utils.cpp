@@ -19,10 +19,21 @@ int64_t TimespecToNs(const timespec& t) {
   return t.tv_sec * 1e9 + t.tv_nsec;
 }
 
+double TimespecToDouble(const timespec& t) {
+  return static_cast<double>(TimespecToNs(t));
+}
+
 std::vector<int64_t> TimespecToNs(const std::vector<timespec>& tv) {
   std::vector<int64_t> nsv;
   nsv.reserve(tv.size());
   for (const auto& it : tv) nsv.push_back(TimespecToNs(it));
+  return nsv;
+}
+
+std::vector<double> TimespecToDouble(const std::vector<timespec>& tv) {
+  std::vector<double> nsv;
+  nsv.reserve(tv.size());
+  for (const auto& it : tv) nsv.push_back(TimespecToDouble(it));
   return nsv;
 }
 
