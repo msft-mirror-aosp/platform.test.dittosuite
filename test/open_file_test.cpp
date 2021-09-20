@@ -27,7 +27,8 @@ class OpenFileTest : public InstructionTest {
 };
 
 TEST_F(OpenFileTest, FileCreatedWithPathName) {
-  dittosuite::OpenFile instruction(dittosuite::Syscall::GetSyscall(), 1, file_name, true, -1);
+  dittosuite::OpenFile instruction(dittosuite::Syscall::GetSyscall(), 1, file_name, true, false,
+                                   -1);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);
@@ -37,7 +38,7 @@ TEST_F(OpenFileTest, FileCreatedWithVariable) {
   dittosuite::SharedVariables::Set(thread_ids, "input", path);
   dittosuite::OpenFile instruction(dittosuite::Syscall::GetSyscall(), 1,
                                    dittosuite::SharedVariables::GetKey(thread_ids, "input"), true,
-                                   -1);
+                                   false, -1);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);

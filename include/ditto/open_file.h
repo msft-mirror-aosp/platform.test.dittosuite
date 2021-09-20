@@ -26,10 +26,11 @@ class OpenFile : public Instruction {
   inline static const std::string kName = "open_file";
 
   explicit OpenFile(SyscallInterface& syscall, int repeat, const std::string& path_name,
-                    bool create, int output_fd_key);
+                    bool create, bool direct_io, int output_fd_key);
   explicit OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool create,
+                    bool direct_io, int output_fd_key);
+  explicit OpenFile(SyscallInterface& syscall, int repeat, bool create, bool direct_io,
                     int output_fd_key);
-  explicit OpenFile(SyscallInterface& syscall, int repeat, bool create, int output_fd_key);
 
  private:
   void SetUpSingle() override;
@@ -38,6 +39,7 @@ class OpenFile : public Instruction {
   bool random_name_;
   std::string path_name_;
   bool create_;
+  bool direct_io_;
   int input_key_;
   int output_fd_key_;
   std::mt19937_64 gen_;

@@ -20,6 +20,7 @@ message OpenFile {
   }
   optional string output_fd = 3;
   optional bool create = 4 [default = true];
+  optional bool direct_io = 5 [default = false];
 }
 
 message DeleteFile {
