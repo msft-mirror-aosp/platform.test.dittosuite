@@ -55,6 +55,7 @@ CmdArguments ParseArguments(int argc, char** argv) {
                                            {"log-stream", required_argument, 0, 2},
                                            {"log-level", required_argument, 0, 3},
                                            {"parameters", required_argument, 0, 4},
+                                           {"help", no_argument, 0, 5},
                                            {0, 0, 0, 0}};
 
     int c = getopt_long(argc, argv, "", long_options, &option_index);
@@ -78,6 +79,7 @@ CmdArguments ParseArguments(int argc, char** argv) {
         }
         break;
       }
+      case 5:
       default: {
         std::cout << "Usage: ./dittobench [options] [.ditto file]" << std::endl;
         std::cout << std::endl;
