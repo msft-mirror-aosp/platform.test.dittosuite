@@ -51,10 +51,11 @@ CmdArguments ParseArguments(int argc, char** argv) {
   CmdArguments arguments;
   while (true) {
     int option_index = 0;
-    static struct option long_options[] = {
-        {"results-output", required_argument, 0, 1}, {"log-stream", required_argument, 0, 2},
-        {"log-delayed", no_argument, 0, 3},          {"log-level", required_argument, 0, 4},
-        {"parameters", required_argument, 0, 5},     {0, 0, 0, 0}};
+    static struct option long_options[] = {{"results-output", required_argument, 0, 1},
+                                           {"log-stream", required_argument, 0, 2},
+                                           {"log-level", required_argument, 0, 3},
+                                           {"parameters", required_argument, 0, 4},
+                                           {0, 0, 0, 0}};
 
     int c = getopt_long(argc, argv, "", long_options, &option_index);
     if (c == -1) break;
@@ -67,12 +68,9 @@ CmdArguments ParseArguments(int argc, char** argv) {
         dittosuite::Logger::GetInstance().SetLogStream(ArgToLogStream(optarg));
         break;
       case 3:
-        // TODO(robertasn): set log delayed in Logger
-        break;
-      case 4:
         dittosuite::Logger::GetInstance().SetLogLevel(ArgToLogLevel(optarg));
         break;
-      case 5: {
+      case 4: {
         char* token = strtok(optarg, ",");
         while (token != nullptr) {
           arguments.parameters.push_back(token);
