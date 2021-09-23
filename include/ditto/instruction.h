@@ -21,8 +21,8 @@
 #include <thread>
 
 #include <ditto/result.h>
+#include <ditto/sampler.h>
 #include <ditto/syscall.h>
-#include <ditto/time_sampler.h>
 
 namespace dittosuite {
 
