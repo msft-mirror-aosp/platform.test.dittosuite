@@ -51,10 +51,12 @@ CmdArguments ParseArguments(int argc, char** argv) {
   CmdArguments arguments;
   while (true) {
     int option_index = 0;
-    static struct option long_options[] = {
-        {"results-output", required_argument, 0, 1}, {"log-stream", required_argument, 0, 2},
-        {"log-delayed", no_argument, 0, 3},          {"log-level", required_argument, 0, 4},
-        {"parameters", required_argument, 0, 5},     {0, 0, 0, 0}};
+    static struct option long_options[] = {{"results-output", required_argument, 0, 1},
+                                           {"log-stream", required_argument, 0, 2},
+                                           {"log-level", required_argument, 0, 3},
+                                           {"parameters", required_argument, 0, 4},
+                                           {"help", no_argument, 0, 5},
+                                           {0, 0, 0, 0}};
 
     int c = getopt_long(argc, argv, "", long_options, &option_index);
     if (c == -1) break;
@@ -67,12 +69,9 @@ CmdArguments ParseArguments(int argc, char** argv) {
         dittosuite::Logger::GetInstance().SetLogStream(ArgToLogStream(optarg));
         break;
       case 3:
-        // TODO(robertasn): set log delayed in Logger
-        break;
-      case 4:
         dittosuite::Logger::GetInstance().SetLogLevel(ArgToLogLevel(optarg));
         break;
-      case 5: {
+      case 4: {
         char* token = strtok(optarg, ",");
         while (token != nullptr) {
           arguments.parameters.push_back(token);
@@ -80,9 +79,33 @@ CmdArguments ParseArguments(int argc, char** argv) {
         }
         break;
       }
-      default:
-        // TODO(robertasn): print usage
+      case 5:
+      default: {
+        std::cout << "Usage: ./dittobench [options] [.ditto file]" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Options:" << std::endl;
+
+        std::cout << "--results-output - ";
+        std::cout << "(default: report) Select the results output format. ";
+        std::cout << "Options: report, csv with 0, 1 respectively." << std::endl;
+
+        std::cout << "--log-stream     - ";
+        std::cout << "(default: stdout) Select the output stream for the log messages. ";
+        std::cout << "Options: stdout, logcat with 0, 1 respectively." << std::endl;
+
+        std::cout << "--log-level      - ";
+        std::cout << "(default: INFO) Select to output messages which are at or below the set ";
+        std::cout << "level. ";
+        std::cout << "Options: VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL with 0, 1, 2, 3, 4 and ";
+        std::cout << "5 respectively." << std::endl;
+
+        std::cout << "--parameters     - ";
+        std::cout << "If the benchmark is parametric, all the parameters (separated by commas) ";
+        std::cout << "can be given through this option." << std::endl;
+
+        exit(EXIT_SUCCESS);
         break;
+      }
     }
   }
 
