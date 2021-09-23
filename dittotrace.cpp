@@ -74,7 +74,7 @@ std::map<int, std::vector<std::string>> SplitByPid(const std::vector<std::string
   std::map<int, std::vector<std::string>> lines_by_pid;
 
   for (const auto& line : lines) {
-    int pid = atoi(line.substr(0, line.find(' ')).c_str());
+    int pid = strtoll(line.substr(0, line.find(' ')).c_str(), nullptr, 10);
     lines_by_pid[pid].push_back(line);
   }
 
@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
         // If the return value is -1, ignore it
         if (syscall.return_value.find("-1") != std::string::npos) continue;
 
-        int fd = atoi(syscall.return_value.c_str());
+        int fd = strtoll(syscall.return_value.c_str(), nullptr, 10);
 
         // Create .ditto instruction set for this fd with open file instruction
         instruction_set_by_fd[fd] = std::make_unique<dittosuiteproto::InstructionSet>();
