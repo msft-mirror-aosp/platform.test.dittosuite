@@ -17,6 +17,7 @@
 #include <stdio.h>
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -32,6 +33,14 @@ enum LOG_LEVEL {
 };
 
 enum LOG_STREAM { LOG_STREAM_STDOUT, LOG_STREAM_LOGCAT };
+
+// returns the message containing the error message and its origin (file name and line)
+inline std::string MakeErrorLocationMessage(const std::string& error_message,
+                                            const std::string& file_name, const int& line) {
+  std::stringstream ss;
+  ss << error_message << ", IN " << file_name << ", LINE " << line;
+  return ss.str();
+}
 
 class Logger {
  public:
@@ -57,11 +66,12 @@ class Logger {
 
 #define DITTO_LOGGER dittosuite::Logger::GetInstance()
 
-#define DITTO_LOG(VERBOSITY, X)                                            \
-  do {                                                                     \
-    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) { \
-      DITTO_LOGGER.WriteLogMessage(X, dittosuite::LOG_LEVEL_##VERBOSITY);  \
-    }                                                                      \
+#define DITTO_LOG(VERBOSITY, X)                                                                 \
+  do {                                                                                          \
+    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) {                      \
+      DITTO_LOGGER.WriteLogMessage(dittosuite::MakeErrorLocationMessage(X, __FILE__, __LINE__), \
+                                   dittosuite::LOG_LEVEL_##VERBOSITY);                          \
+    }                                                                                           \
   } while (false)
 
 #define LOGF(X)          \
@@ -75,11 +85,13 @@ class Logger {
 #define LOGD(X) DITTO_LOG(DEBUG, X)
 #define LOGV(X) DITTO_LOG(VERBOSE, X)
 
-#define DITTO_PLOG(VERBOSITY, X)                                               \
-  do {                                                                         \
-    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) {     \
-      DITTO_LOGGER.WriteLogErrorMessage(X, dittosuite::LOG_LEVEL_##VERBOSITY); \
-    }                                                                          \
+#define DITTO_PLOG(VERBOSITY, X)                                           \
+  do {                                                                     \
+    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) { \
+      DITTO_LOGGER.WriteLogErrorMessage(                                   \
+          dittosuite::MakeErrorLocationMessage(X, __FILE__, __LINE__),     \
+          dittosuite::LOG_LEVEL_##VERBOSITY);                              \
+    }                                                                      \
   } while (false)
 
 #define PLOGF(X)          \
