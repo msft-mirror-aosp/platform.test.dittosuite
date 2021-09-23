@@ -51,9 +51,9 @@ std::vector<std::string> ReadLines(const std::string& file_path) {
 Syscall ProcessLine(const std::string& line) {
   Syscall syscall;
 
-  syscall.name = line.substr(0, line.find("("));
-  std::string raw_arguments = line.substr(line.find("(") + 1, line.find(")") - line.find("(") - 1);
-  syscall.return_value = line.substr(line.find(")"));
+  syscall.name = line.substr(0, line.find('('));
+  std::string raw_arguments = line.substr(line.find('(') + 1, line.find(')') - line.find('(') - 1);
+  syscall.return_value = line.substr(line.find(')'));
   syscall.return_value = syscall.return_value.substr(syscall.return_value.find("= ") + 2);
 
   size_t next = 0;
@@ -74,7 +74,7 @@ std::map<int, std::vector<std::string>> SplitByPid(const std::vector<std::string
   std::map<int, std::vector<std::string>> lines_by_pid;
 
   for (const auto& line : lines) {
-    int pid = atoi(line.substr(0, line.find(" ")).c_str());
+    int pid = atoi(line.substr(0, line.find(' ')).c_str());
     lines_by_pid[pid].push_back(line);
   }
 
