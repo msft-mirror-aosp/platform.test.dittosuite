@@ -34,14 +34,6 @@ enum LOG_LEVEL {
 
 enum LOG_STREAM { LOG_STREAM_STDOUT, LOG_STREAM_LOGCAT };
 
-// returns the message containing the error message and its origin (file name and line)
-inline std::string MakeErrorLocationMessage(const std::string& error_message,
-                                            const std::string& file_name, const int& line) {
-  std::stringstream ss;
-  ss << error_message << ", IN " << file_name << ", LINE " << line;
-  return ss.str();
-}
-
 class Logger {
  public:
   Logger(Logger const&) = delete;
@@ -51,8 +43,8 @@ class Logger {
   void SetLogStream(LOG_STREAM log_stream);
   LOG_LEVEL GetLogLevel() const;
   LOG_STREAM GetLogStream() const;
-  void WriteLogMessage(const std::string& message, LOG_LEVEL log_level);
-  void WriteLogErrorMessage(const std::string& message, LOG_LEVEL log_level);
+  void WriteLogMessage(LOG_LEVEL log_level, const std::string& message,
+                       const std::string& file_name, int line, bool print_errno);
 
  protected:
   Logger() {}
@@ -66,41 +58,32 @@ class Logger {
 
 #define DITTO_LOGGER dittosuite::Logger::GetInstance()
 
-#define DITTO_LOG(VERBOSITY, X)                                                                 \
-  do {                                                                                          \
-    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) {                      \
-      DITTO_LOGGER.WriteLogMessage(dittosuite::MakeErrorLocationMessage(X, __FILE__, __LINE__), \
-                                   dittosuite::LOG_LEVEL_##VERBOSITY);                          \
-    }                                                                                           \
+#define DITTO_LOG(VERBOSITY, X, print_errno)                                                 \
+  do {                                                                                       \
+    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) {                   \
+      DITTO_LOGGER.WriteLogMessage(dittosuite::LOG_LEVEL_##VERBOSITY, X, __FILE__, __LINE__, \
+                                   print_errno);                                             \
+    }                                                                                        \
   } while (false)
 
-#define LOGF(X)          \
-  do {                   \
-    DITTO_LOG(FATAL, X); \
-    exit(EXIT_FAILURE);  \
+#define LOGF(X)                 \
+  do {                          \
+    DITTO_LOG(FATAL, X, false); \
+    exit(EXIT_FAILURE);         \
   } while (false)
-#define LOGE(X) DITTO_LOG(ERROR, X)
-#define LOGW(X) DITTO_LOG(WARNING, X)
-#define LOGI(X) DITTO_LOG(INFO, X)
-#define LOGD(X) DITTO_LOG(DEBUG, X)
-#define LOGV(X) DITTO_LOG(VERBOSE, X)
+#define LOGE(X) DITTO_LOG(ERROR, X, false)
+#define LOGW(X) DITTO_LOG(WARNING, X, false)
+#define LOGI(X) DITTO_LOG(INFO, X, false)
+#define LOGD(X) DITTO_LOG(DEBUG, X, false)
+#define LOGV(X) DITTO_LOG(VERBOSE, X, false)
 
-#define DITTO_PLOG(VERBOSITY, X)                                           \
-  do {                                                                     \
-    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) { \
-      DITTO_LOGGER.WriteLogErrorMessage(                                   \
-          dittosuite::MakeErrorLocationMessage(X, __FILE__, __LINE__),     \
-          dittosuite::LOG_LEVEL_##VERBOSITY);                              \
-    }                                                                      \
+#define PLOGF(X)               \
+  do {                         \
+    DITTO_LOG(FATAL, X, true); \
+    exit(EXIT_FAILURE);        \
   } while (false)
-
-#define PLOGF(X)          \
-  do {                    \
-    DITTO_PLOG(FATAL, X); \
-    exit(EXIT_FAILURE);   \
-  } while (false)
-#define PLOGE(X) DITTO_PLOG(ERROR, X)
-#define PLOGW(X) DITTO_PLOG(WARNING, X)
-#define PLOGI(X) DITTO_PLOG(INFO, X)
-#define PLOGD(X) DITTO_PLOG(DEBUG, X)
-#define PLOGV(X) DITTO_PLOG(VERBOSE, X)
+#define PLOGE(X) DITTO_LOG(ERROR, X, true)
+#define PLOGW(X) DITTO_LOG(WARNING, X, true)
+#define PLOGI(X) DITTO_LOG(INFO, X, true)
+#define PLOGD(X) DITTO_LOG(DEBUG, X, true)
+#define PLOGV(X) DITTO_LOG(VERBOSE, X, true)

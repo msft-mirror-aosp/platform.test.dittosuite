@@ -24,6 +24,7 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 namespace dittosuite {
@@ -81,26 +82,25 @@ android::base::LogSeverity LogLevelToAndroidLogLevel(LOG_LEVEL log_level) {
 }
 #endif
 
-void Logger::WriteLogMessage(const std::string& message, LOG_LEVEL log_level) {
-  std::string message_to_print = LogLevelToString(log_level) + ": " + message;
+void Logger::WriteLogMessage(LOG_LEVEL log_level, const std::string& message,
+                             const std::string& file_name, int line, bool print_errno) {
+  std::stringstream ss;
+  ss << file_name << ":" << line << ": " << LogLevelToString(log_level) << ": " << message;
+  if (print_errno) {
+    ss << ": " << strerror(errno);
+  }
   switch (log_stream_) {
     case LOG_STREAM_STDOUT:
-      std::cout << message_to_print << '\n';
+      std::cout << ss.str() << std::endl;
       break;
 #ifdef __ANDROID__
     case LOG_STREAM_LOGCAT:
-      LOG(LogLevelToAndroidLogLevel(log_level)) << message_to_print;
+      LOG(LogLevelToAndroidLogLevel(log_level)) << ss.str();
       break;
 #endif
     default:
       break;
   }
-}
-
-void Logger::WriteLogErrorMessage(const std::string& message, LOG_LEVEL log_level) {
-  std::string errno_suffix = ": ";
-  errno_suffix += strerror(errno);
-  WriteLogMessage(message + errno_suffix, log_level);
 }
 
 }  // namespace dittosuite
