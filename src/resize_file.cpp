@@ -28,10 +28,14 @@ void ResizeFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
   int64_t file_size = GetFileSize(syscall_, fd);
 
-  if (size_ > file_size && syscall_.FAllocate(fd, 0, 0, size_) != 0) {
-    LOGF("Error while calling fallocate()");
-  } else if (syscall_.FTruncate(fd, size_) != 0) {
-    LOGF("Error while calling ftruncate()");
+  if (size_ > file_size) {
+    if (syscall_.FAllocate(fd, 0, 0, size_) != 0) {
+      PLOGF("Error while calling fallocate()");
+    }
+  } else if (size_ < file_size) {
+    if (syscall_.FTruncate(fd, size_) != 0) {
+      PLOGF("Error while calling ftruncate()");
+    }
   }
 }
 
