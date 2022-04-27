@@ -17,7 +17,7 @@
 #include <ditto/open_file.h>
 #include <ditto/syscall.h>
 
-class OpenFileTest : public InstructionTest {
+class OpenFileTest : public InstructionTestWithParam<dittosuite::OpenFile::AccessMode> {
  protected:
   std::string file_name = "test";
   std::string path = absolute_path + file_name;
@@ -26,20 +26,27 @@ class OpenFileTest : public InstructionTest {
   void TearDown() override { unlink(path.c_str()); }
 };
 
-TEST_F(OpenFileTest, FileCreatedWithPathName) {
+TEST_P(OpenFileTest, FileCreatedWithPathName) {
+  dittosuite::OpenFile::AccessMode access_mode = GetParam();
   dittosuite::OpenFile instruction(dittosuite::Syscall::GetSyscall(), 1, file_name, true, false, -1,
-                                   dittosuite::OpenFile::AccessMode::WRITE_ONLY);
+                                   access_mode);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);
 }
 
-TEST_F(OpenFileTest, FileCreatedWithVariable) {
+TEST_P(OpenFileTest, FileCreatedWithVariable) {
+  dittosuite::OpenFile::AccessMode access_mode = GetParam();
   dittosuite::SharedVariables::Set(thread_ids, "input", path);
   dittosuite::OpenFile instruction(dittosuite::Syscall::GetSyscall(), 1,
                                    dittosuite::SharedVariables::GetKey(thread_ids, "input"), true,
-                                   false, -1, dittosuite::OpenFile::AccessMode::WRITE_ONLY);
+                                   false, -1, access_mode);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);
 }
+
+INSTANTIATE_TEST_CASE_P(OpenFileTestParametric, OpenFileTest,
+                        ::testing::Values(dittosuite::OpenFile::READ_ONLY,
+                                          dittosuite::OpenFile::WRITE_ONLY,
+                                          dittosuite::OpenFile::READ_WRITE));
