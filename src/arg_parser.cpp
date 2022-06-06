@@ -47,31 +47,60 @@ LOG_LEVEL ArgToLogLevel(char* optarg) {
   return LOG_LEVEL_INFO;  // by default, the log level is info
 }
 
+void PrintHelpAndExit(char **argv) {
+  std::cerr << "Usage: " << argv[0] << " [OPTION]... [FILE]" << std::endl;
+  std::cerr << "Benchmarking tool for generic workloads." << std::endl;
+  std::cerr << std::endl;
+
+  std::cerr << "  -f, --format[=FMT]";
+  std::cerr << "\tresults output format." << std::endl;
+  std::cerr << "\t\t\tFMT can be: report (or 0, default), csv (or 1)" << std::endl;
+
+  std::cerr << "  -p, --param[=PAR]...";
+  std::cerr << "\tif the benchmark is parametric, all the parameters can be passed" << std::endl;
+  std::cerr << "\t\t\tthrough PAR (comma separated)" << std::endl;
+
+  std::cerr << "  -l, --log[=LOG]";
+  std::cerr << "\toutput stream for the log messages." << std::endl;
+  std::cerr << "\t\t\tLOG can be one of: stdout (or 0, default), logcat (or 1)" << std::endl;
+
+  std::cerr << "  -v, --verbosity[=VER]";
+  std::cerr << "\toutput messages verbosity." << std::endl;
+  std::cerr << "\t\t\tVER can be one of: VERBOSE (or 5), DEBUG (or 4), INFO (or 3, default)," << std::endl;
+  std::cerr << "\t\t\tWARNING (or 2), ERROR (or 1), FATAL (or 0)" << std::endl;
+
+  std::cerr << "  -h, --help";
+  std::cerr << "\t\tdisplay this help and exit" << std::endl;
+
+  exit(EXIT_SUCCESS);
+}
+
 CmdArguments ParseArguments(int argc, char** argv) {
   CmdArguments arguments;
+
   while (true) {
     int option_index = 0;
-    static struct option long_options[] = {{"results-output", required_argument, 0, 1},
-                                           {"log-stream", required_argument, 0, 2},
-                                           {"log-level", required_argument, 0, 3},
-                                           {"parameters", required_argument, 0, 4},
-                                           {"help", no_argument, 0, 5},
+    static struct option long_options[] = {{"format", required_argument, 0, 'f'},
+                                           {"param", required_argument, 0, 'p'},
+                                           {"log", required_argument, 0, 'l'},
+                                           {"verbosity", required_argument, 0, 'v'},
+                                           {"help", no_argument, 0, 'h'},
                                            {0, 0, 0, 0}};
 
     int c = getopt_long(argc, argv, "", long_options, &option_index);
     if (c == -1) break;
 
     switch (c) {
-      case 1:
+      case 'f':
         arguments.results_output = ArgToResultsOutput(optarg);
         break;
-      case 2:
+      case 'l':
         dittosuite::Logger::GetInstance().SetLogStream(ArgToLogStream(optarg));
         break;
-      case 3:
+      case 'v':
         dittosuite::Logger::GetInstance().SetLogLevel(ArgToLogLevel(optarg));
         break;
-      case 4: {
+      case 'p': {
         char* token = strtok(optarg, ",");
         while (token != nullptr) {
           arguments.parameters.push_back(token);
@@ -79,38 +108,18 @@ CmdArguments ParseArguments(int argc, char** argv) {
         }
         break;
       }
-      case 5:
+      case 'h':
+        [[fallthrough]];
       default: {
-        std::cout << "Usage: ./dittobench [options] [.ditto file]" << std::endl;
-        std::cout << std::endl;
-        std::cout << "Options:" << std::endl;
-
-        std::cout << "--results-output - ";
-        std::cout << "(default: report) Select the results output format. ";
-        std::cout << "Options: report, csv with 0, 1 respectively." << std::endl;
-
-        std::cout << "--log-stream     - ";
-        std::cout << "(default: stdout) Select the output stream for the log messages. ";
-        std::cout << "Options: stdout, logcat with 0, 1 respectively." << std::endl;
-
-        std::cout << "--log-level      - ";
-        std::cout << "(default: INFO) Select to output messages which are at or below the set ";
-        std::cout << "level. ";
-        std::cout << "Options: VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL with 0, 1, 2, 3, 4 and ";
-        std::cout << "5 respectively." << std::endl;
-
-        std::cout << "--parameters     - ";
-        std::cout << "If the benchmark is parametric, all the parameters (separated by commas) ";
-        std::cout << "can be given through this option." << std::endl;
-
-        exit(EXIT_SUCCESS);
+        PrintHelpAndExit(argv);
         break;
       }
     }
   }
 
   if (optind >= argc) {
-    LOGF("Expected .ditto file");
+    LOGE("Expected .ditto file");
+    PrintHelpAndExit(argv);
   }
 
   arguments.file_path = argv[optind];
