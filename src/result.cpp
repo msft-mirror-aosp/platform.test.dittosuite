@@ -78,6 +78,8 @@ void Result::Print(const ResultsOutput results_output, const std::string& instru
     case ResultsOutput::kCsv:
       MakeStatisticsCsv();
       break;
+    case ResultsOutput::kNull:
+      break;
   }
 }
 
