@@ -15,29 +15,29 @@
 #include <ditto/logger.h>
 #include <ditto/sampler.h>
 
-int64_t TimespecToNs(const timespec& t) {
+int64_t TimespecToNanos(const timespec& t) {
   return t.tv_sec * 1e9 + t.tv_nsec;
 }
 
-double TimespecToDouble(const timespec& t) {
-  return static_cast<double>(TimespecToNs(t));
+double TimespecToDoubleNanos(const timespec& t) {
+  return static_cast<double>(TimespecToNanos(t));
 }
 
-std::vector<int64_t> TimespecToNs(const std::vector<timespec>& tv) {
+std::vector<int64_t> TimespecToNanos(const std::vector<timespec>& tv) {
   std::vector<int64_t> nsv;
   nsv.reserve(tv.size());
-  for (const auto& it : tv) nsv.push_back(TimespecToNs(it));
+  for (const auto& it : tv) nsv.push_back(TimespecToNanos(it));
   return nsv;
 }
 
-std::vector<double> TimespecToDouble(const std::vector<timespec>& tv) {
+std::vector<double> TimespecToDoubleNanos(const std::vector<timespec>& tv) {
   std::vector<double> nsv;
   nsv.reserve(tv.size());
-  for (const auto& it : tv) nsv.push_back(TimespecToDouble(it));
+  for (const auto& it : tv) nsv.push_back(TimespecToDoubleNanos(it));
   return nsv;
 }
 
-timespec NsToTimespec(const int64_t t_ns) {
+timespec NanosToTimespec(const int64_t t_ns) {
   timespec result;
   result.tv_sec = t_ns / 1e9;
   result.tv_nsec = t_ns % static_cast<int64_t>(1e9);
@@ -100,11 +100,11 @@ timespec operator+(const timespec& t1, const timespec& t2) {
 timespec operator/(const timespec& t1, uint64_t t2_ns) {
   if (t2_ns == 0) LOGF("Division by 0 for timespec");
 
-  auto t1_ns = TimespecToNs(t1);
+  auto t1_ns = TimespecToNanos(t1);
 
-  return NsToTimespec(t1_ns / t2_ns);
+  return NanosToTimespec(t1_ns / t2_ns);
 }
 
 timespec operator/(const timespec& t1, const timespec& t2) {
-  return t1 / TimespecToNs(t2);
+  return t1 / TimespecToNanos(t2);
 }

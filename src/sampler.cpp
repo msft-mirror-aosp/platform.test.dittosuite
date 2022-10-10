@@ -31,7 +31,7 @@ void TimeSampler::MeasureEnd() {
 }
 
 void BandwidthSampler::Measure(const size_t file_size, const timespec& duration) {
-  double bandwidth = file_size * 1e6 / TimespecToNs(duration);  // currently bytes/milliseconds
+  double bandwidth = file_size * 1e6 / TimespecToNanos(duration);  // currently bytes/milliseconds
   bandwidth = bandwidth * 1e3 / (1 << 10);                      // Kb / s
   samples_.push_back(bandwidth);
 }
