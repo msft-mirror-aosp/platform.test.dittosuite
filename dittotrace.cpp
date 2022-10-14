@@ -132,7 +132,7 @@ std::map<int, std::vector<Syscall>> ProcessLines(
 
 int main(int argc, char** argv) {
   if (argc != 3) {
-    std::cerr << "Invalid number of arguments." << std::endl;
+    std::cerr << "Invalid number of arguments.\n";
     exit(EXIT_FAILURE);
   }
 
