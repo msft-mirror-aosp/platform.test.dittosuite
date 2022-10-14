@@ -36,7 +36,7 @@ ReadWriteFile::ReadWriteFile(SyscallInterface& syscall, const std::string& name,
       input_fd_key_(input_fd_key),
       update_size_(size == -1),
       update_block_size_(block_size == -1) {
-  if (access_order == kRandom && starting_offset != 0) {
+  if (access_order == Order::kRandom && starting_offset != 0) {
     LOGE(
         "Starting offset is not 0, although the chosen access_order is RANDOM. Starting offset "
         "will be "
@@ -51,7 +51,7 @@ std::unique_ptr<Result> ReadWriteFile::CollectResults(const std::string& prefix)
 }
 
 void ReadWriteFile::SetUp() {
-  if (reseeding_ == kEachRoundOfCycles) {
+  if (reseeding_ == Reseeding::kEachRoundOfCycles) {
     gen_.seed(seed_);
   }
 }
@@ -79,14 +79,14 @@ void ReadWriteFile::SetUpSingle() {
   }
   std::fill(buffer_.get(), buffer_.get() + block_size_, 170);  // 170 = 10101010
 
-  if (reseeding_ == kEachCycle) {
+  if (reseeding_ == Reseeding::kEachCycle) {
     gen_.seed(seed_);
   }
 
   units_.clear();
 
   switch (access_order_) {
-    case kSequential: {
+    case Order::kSequential: {
       int64_t offset = starting_offset_;
       for (int64_t i = 0; i < (size_ / block_size_); i++) {
         if (offset > file_size - block_size_) {
@@ -97,7 +97,7 @@ void ReadWriteFile::SetUpSingle() {
       }
       break;
     }
-    case kRandom: {
+    case Order::kRandom: {
       std::uniform_int_distribution<> uniform_distribution(0, file_size - block_size_);
 
       for (int64_t i = 0; i < (size_ / block_size_); i++) {

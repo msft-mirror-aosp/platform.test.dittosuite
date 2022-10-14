@@ -85,13 +85,13 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       {
         switch (options.access_mode()) {
           case dittosuiteproto::AccessMode::READ_ONLY:
-            access_mode = dittosuite::OpenFile::AccessMode::READ_ONLY;
+            access_mode = OpenFile::AccessMode::kReadOnly;
             break;
           case dittosuiteproto::AccessMode::WRITE_ONLY:
-            access_mode = dittosuite::OpenFile::AccessMode::WRITE_ONLY;
+            access_mode = OpenFile::AccessMode::kWriteOnly;
             break;
           case dittosuiteproto::AccessMode::READ_WRITE:
-            access_mode = dittosuite::OpenFile::AccessMode::READ_WRITE;
+            access_mode = OpenFile::AccessMode::kReadWrite;
             break;
           default:
             LOGF("Invalid instruction OpenFile access mode: it should be at least read or write");
@@ -231,13 +231,13 @@ int InstructionFactory::current_thread_id_ = 0;
 Reseeding InstructionFactory::ConvertReseeding(const dittosuiteproto::Reseeding proto_reseeding) {
   switch (proto_reseeding) {
     case dittosuiteproto::Reseeding::ONCE: {
-      return kOnce;
+      return Reseeding::kOnce;
     }
     case dittosuiteproto::Reseeding::EACH_ROUND_OF_CYCLES: {
-      return kEachRoundOfCycles;
+      return Reseeding::kEachRoundOfCycles;
     }
     case dittosuiteproto::Reseeding::EACH_CYCLE: {
-      return kEachCycle;
+      return Reseeding::kEachCycle;
     }
     default: {
       LOGF("Invalid Reseeding was provided");
@@ -248,10 +248,10 @@ Reseeding InstructionFactory::ConvertReseeding(const dittosuiteproto::Reseeding 
 Order InstructionFactory::ConvertOrder(const dittosuiteproto::Order proto_order) {
   switch (proto_order) {
     case dittosuiteproto::Order::SEQUENTIAL: {
-      return kSequential;
+      return Order::kSequential;
     }
     case dittosuiteproto::Order::RANDOM: {
-      return kRandom;
+      return Order::kRandom;
     }
     default: {
       LOGF("Invalid Order was provided");
@@ -264,10 +264,10 @@ int InstructionFactory::ConvertReadFAdvise(
   switch (proto_fadvise) {
     case dittosuiteproto::ReadFile_ReadFAdvise_AUTOMATIC: {
       switch (access_order) {
-        case kSequential: {
+        case Order::kSequential: {
           return POSIX_FADV_SEQUENTIAL;
         }
-        case kRandom: {
+        case Order::kRandom: {
           return POSIX_FADV_RANDOM;
         }
       }

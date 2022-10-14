@@ -23,67 +23,60 @@
 
 namespace dittosuite {
 
-enum LOG_LEVEL {
-  LOG_LEVEL_VERBOSE,
-  LOG_LEVEL_DEBUG,
-  LOG_LEVEL_INFO,
-  LOG_LEVEL_WARNING,
-  LOG_LEVEL_ERROR,
-  LOG_LEVEL_FATAL
-};
+enum class LogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
 
-enum LOG_STREAM { LOG_STREAM_STDOUT, LOG_STREAM_LOGCAT };
+enum class LogStream { kStdout, kLogcat };
 
 class Logger {
  public:
   Logger(Logger const&) = delete;
   void operator=(Logger const&) = delete;
   static Logger& GetInstance();
-  void SetLogLevel(LOG_LEVEL log_level);
-  void SetLogStream(LOG_STREAM log_stream);
-  LOG_LEVEL GetLogLevel() const;
-  LOG_STREAM GetLogStream() const;
-  void WriteLogMessage(LOG_LEVEL log_level, const std::string& message,
-                       const std::string& file_name, int line, bool print_errno);
+  void SetLogLevel(LogLevel log_level);
+  void SetLogStream(LogStream log_stream);
+  LogLevel GetLogLevel() const;
+  LogStream GetLogStream() const;
+  void WriteLogMessage(LogLevel log_level, const std::string& message, const std::string& file_name,
+                       int line, bool print_errno);
 
  protected:
   Logger() {}
 
  private:
-  LOG_LEVEL log_level_;
-  LOG_STREAM log_stream_;
+  LogLevel log_level_;
+  LogStream log_stream_;
 };
 
 }  // namespace dittosuite
 
 #define DITTO_LOGGER dittosuite::Logger::GetInstance()
 
-#define DITTO_LOG(VERBOSITY, X, print_errno)                                                 \
-  do {                                                                                       \
-    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) {                   \
-      DITTO_LOGGER.WriteLogMessage(dittosuite::LOG_LEVEL_##VERBOSITY, X, __FILE__, __LINE__, \
-                                   print_errno);                                             \
-    }                                                                                        \
+#define DITTO_LOG(VERBOSITY, X, print_errno)                                               \
+  do {                                                                                     \
+    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LogLevel::VERBOSITY) {                   \
+      DITTO_LOGGER.WriteLogMessage(dittosuite::LogLevel::VERBOSITY, X, __FILE__, __LINE__, \
+                                   print_errno);                                           \
+    }                                                                                      \
   } while (false)
 
-#define LOGF(X)                 \
+#define LOGF(X)                  \
+  do {                           \
+    DITTO_LOG(kFatal, X, false); \
+    exit(EXIT_FAILURE);          \
+  } while (false)
+#define LOGE(X) DITTO_LOG(kError, X, false)
+#define LOGW(X) DITTO_LOG(kWarning, X, false)
+#define LOGI(X) DITTO_LOG(kInfo, X, false)
+#define LOGD(X) DITTO_LOG(kDebug, X, false)
+#define LOGV(X) DITTO_LOG(kVerbose, X, false)
+
+#define PLOGF(X)                \
   do {                          \
-    DITTO_LOG(FATAL, X, false); \
+    DITTO_LOG(kFatal, X, true); \
     exit(EXIT_FAILURE);         \
   } while (false)
-#define LOGE(X) DITTO_LOG(ERROR, X, false)
-#define LOGW(X) DITTO_LOG(WARNING, X, false)
-#define LOGI(X) DITTO_LOG(INFO, X, false)
-#define LOGD(X) DITTO_LOG(DEBUG, X, false)
-#define LOGV(X) DITTO_LOG(VERBOSE, X, false)
-
-#define PLOGF(X)               \
-  do {                         \
-    DITTO_LOG(FATAL, X, true); \
-    exit(EXIT_FAILURE);        \
-  } while (false)
-#define PLOGE(X) DITTO_LOG(ERROR, X, true)
-#define PLOGW(X) DITTO_LOG(WARNING, X, true)
-#define PLOGI(X) DITTO_LOG(INFO, X, true)
-#define PLOGD(X) DITTO_LOG(DEBUG, X, true)
-#define PLOGV(X) DITTO_LOG(VERBOSE, X, true)
+#define PLOGE(X) DITTO_LOG(kError, X, true)
+#define PLOGW(X) DITTO_LOG(kWarning, X, true)
+#define PLOGI(X) DITTO_LOG(kInfo, X, true)
+#define PLOGD(X) DITTO_LOG(kDebug, X, true)
+#define PLOGV(X) DITTO_LOG(kVerbose, X, true)
