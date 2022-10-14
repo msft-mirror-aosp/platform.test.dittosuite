@@ -36,7 +36,7 @@ static int bin_size;                 // bin size corresponding to the normalizat
 
 namespace dittosuite {
 
-Result::Result(const std::string& name, const int& repeat) : name_(name), repeat_(repeat) {}
+Result::Result(const std::string& name, const int repeat) : name_(name), repeat_(repeat) {}
 
 void Result::AddMeasurement(const std::string& name, const std::vector<double>& samples) {
   samples_[name] = samples;
@@ -69,7 +69,7 @@ std::string Result::ComputeNextInstructionPath(const std::string& instruction_pa
   return instruction_path + (instruction_path != "" ? "/" : "") + name_;
 }
 
-void Result::Print(const ResultsOutput& results_output, const std::string& instruction_path) {
+void Result::Print(const ResultsOutput results_output, const std::string& instruction_path) {
   switch (results_output) {
     case kReport:
       PrintHistograms(instruction_path);
@@ -191,7 +191,7 @@ void Result::PrintHistogramHeader(const std::string& measurement_name) {
 }
 
 // makes (normalized) histogram from vector
-void Result::MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value) {
+void Result::MakeHistogramFromVector(const std::vector<int>& freq_vector, const int min_value) {
   int sum = 0;
   int max_frequency = *std::max_element(freq_vector.begin(), freq_vector.end());
   for (unsigned int i = 0; i < freq_vector.size(); i++) {
@@ -231,7 +231,7 @@ std::vector<int> Result::ComputeNormalizedFrequencyVector(const std::string& mea
   return freq_vector;
 }
 
-Result::TimeUnit Result::GetTimeUnit(const int64_t& min_value) {
+Result::TimeUnit Result::GetTimeUnit(const int64_t min_value) {
   TimeUnit result;
   if (min_value <= 1e7) {
     // time unit in nanoseconds
@@ -253,7 +253,7 @@ Result::TimeUnit Result::GetTimeUnit(const int64_t& min_value) {
   return result;
 }
 
-Result::BandwidthUnit Result::GetBandwidthUnit(const int64_t& min_value) {
+Result::BandwidthUnit Result::GetBandwidthUnit(const int64_t min_value) {
   BandwidthUnit result;
   if (min_value <= (1 << 15)) {
     // bandwidth unit in KB/s
