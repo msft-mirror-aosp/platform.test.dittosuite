@@ -84,7 +84,7 @@ void Result::Print(const ResultsOutput results_output, const std::string& instru
 }
 
 void PrintTableBorder() {
-  for (int i = 0; i < kTableWidth; i++) std::cout << "-";
+  std::cout << std::setfill('-') << std::setw(kTableWidth) << "" << std::setfill(' ');
   std::cout << '\n';
 }
 
@@ -95,15 +95,15 @@ void PrintStatisticsTableHeader() {
   std::cout << "| ";  // beginning of table row
   std::cout << std::setw(70) << std::left << "Instruction name";
   std::cout << kTableDivider;
-  std::cout << std::setw(15) << std::left << " Min";
+  std::cout << std::setw(15) << std::right << " Min";
   std::cout << kTableDivider;
-  std::cout << std::setw(15) << std::left << " Max";
+  std::cout << std::setw(15) << " Max";
   std::cout << kTableDivider;
-  std::cout << std::setw(15) << std::left << " Mean";
+  std::cout << std::setw(15) << " Mean";
   std::cout << kTableDivider;
-  std::cout << std::setw(15) << std::left << " Median";
+  std::cout << std::setw(15) << " Median";
   std::cout << kTableDivider;
-  std::cout << std::setw(15) << std::left << " SD";
+  std::cout << std::setw(15) << " SD";
   std::cout << kTableDivider;
   std::cout << '\n';
   PrintTableBorder();
@@ -186,7 +186,7 @@ void Result::PrintHistogramHeader(const std::string& measurement_name) {
     std::cout << "Bandwidth(" << bandwidth_unit_.name << ") |";
     std::cout << " Normalized number of bandwidth samples\n";
   }
-  for (int i = 0; i <= kMaxHistogramWidth + 15; i++) std::cout << "-";
+  std::cout << std::setfill('-') << std::setw(kMaxHistogramWidth) << "" << std::setfill(' ');
   std::cout << '\n';
 }
 
@@ -197,10 +197,13 @@ void Result::MakeHistogramFromVector(const std::vector<int>& freq_vector, const 
   for (unsigned int i = 0; i < freq_vector.size(); i++) {
     std::cout.width(kSampleDisplayWidth);
     std::cout << min_value + bin_size * i << kTableDivider;
-    for (int j = 0; j < freq_vector[i] * kMaxHistogramWidth / max_frequency; j++) std::cout << "x";
-    std::cout << " {" << freq_vector[i] << "}";
+
+    int hist_width = ceil(static_cast<double>(freq_vector[i]) * kMaxHistogramWidth / max_frequency);
+    std::cout << std::setfill('#') << std::setw(hist_width) << "" << std::setfill(' ');
+
+    std::cout << " { " << freq_vector[i] << " }\n";
+
     sum += freq_vector[i];
-    std::cout << '\n';
   }
 
   std::cout << '\n';
@@ -314,7 +317,7 @@ void Result::PrintMeasurementStatisticInCsv(std::ostream& csv_stream, const std:
 }
 
 void PrintEmptyMeasurementInCsv(std::ostream& csv_stream) {
-  for (int i = 0; i < 5; i++) csv_stream << kCsvDelimiter;
+  csv_stream << std::setfill(kCsvDelimiter) << std::setw(5) << "" << std::setfill(' ');
 }
 
 // Recursive function to print one row at a time using the .csv stream given as a parameter
