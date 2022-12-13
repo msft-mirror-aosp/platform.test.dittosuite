@@ -17,11 +17,11 @@
 #include <cstdint>
 #include <ctime>
 
-int64_t TimespecToNs(const timespec& t);
-double TimespecToDouble(const timespec& t);
-std::vector<int64_t> TimespecToNs(const std::vector<timespec>& tv);
-std::vector<double> TimespecToDouble(const std::vector<timespec>& tv);
-timespec NsToTimespec(int64_t time_ns);
+int64_t TimespecToNanos(const timespec& t);
+double TimespecToDoubleNanos(const timespec& t);
+std::vector<int64_t> TimespecToNanos(const std::vector<timespec>& tv);
+std::vector<double> TimespecToDoubleNanos(const std::vector<timespec>& tv);
+timespec NanosToTimespec(int64_t time_ns);
 
 bool operator==(const timespec& t1, const timespec& t2);
 bool operator!=(const timespec& t1, const timespec& t2);

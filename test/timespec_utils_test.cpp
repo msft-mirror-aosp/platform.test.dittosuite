@@ -25,29 +25,29 @@ std::vector<timespec> tss = {{0, 0},         {0, 1}, {1, 0}, {1, 1},
 std::vector<int64_t> tss_ns = {0,          1,          1000000000, 1000000001,
                                1999999999, 2000000002, 2000000003, 3000000001};
 
-TEST(TimespecUtilsTest, TimespecToNs) {
+TEST(TimespecUtilsTest, TimespecToNanos) {
   for (unsigned int i = 0; i < tss.size(); ++i) {
-    ASSERT_EQ(TimespecToNs(tss[i]), tss_ns[i]);
+    ASSERT_EQ(TimespecToNanos(tss[i]), tss_ns[i]);
   }
 }
 
-TEST(TimespecUtilsTest, NsToTimespec) {
+TEST(TimespecUtilsTest, NanosToTimespec) {
   for (unsigned int i = 0; i < tss.size(); ++i) {
-    ASSERT_EQ(tss[i], NsToTimespec(tss_ns[i]));
+    ASSERT_EQ(tss[i], NanosToTimespec(tss_ns[i]));
   }
 }
 
-TEST(TimespecUtilsTest, TimespecToNsInverse) {
+TEST(TimespecUtilsTest, TimespecToNanosInverse) {
   for (const auto& ts0 : tss) {
-    ASSERT_EQ(ts0, NsToTimespec(TimespecToNs(ts0)));
+    ASSERT_EQ(ts0, NanosToTimespec(TimespecToNanos(ts0)));
   }
 }
 
 TEST(TimespecUtilsTest, EqualityOperator) {
   for (const auto& ts0 : tss) {
     for (const auto& ts1 : tss) {
-      auto ts0_ns = TimespecToNs(ts0);
-      auto ts1_ns = TimespecToNs(ts1);
+      auto ts0_ns = TimespecToNanos(ts0);
+      auto ts1_ns = TimespecToNanos(ts1);
 
       ASSERT_EQ(ts0 == ts1, ts0_ns == ts1_ns);
     }
@@ -57,8 +57,8 @@ TEST(TimespecUtilsTest, EqualityOperator) {
 TEST(TimespecUtilsTest, DisequalityOperator) {
   for (const auto& ts0 : tss) {
     for (const auto& ts1 : tss) {
-      auto ts0_ns = TimespecToNs(ts0);
-      auto ts1_ns = TimespecToNs(ts1);
+      auto ts0_ns = TimespecToNanos(ts0);
+      auto ts1_ns = TimespecToNanos(ts1);
 
       ASSERT_EQ(ts0 != ts1, ts0_ns != ts1_ns);
     }
@@ -68,8 +68,8 @@ TEST(TimespecUtilsTest, DisequalityOperator) {
 TEST(TimespecUtilsTest, LessThanOperator) {
   for (const auto& ts0 : tss) {
     for (const auto& ts1 : tss) {
-      auto ts0_ns = TimespecToNs(ts0);
-      auto ts1_ns = TimespecToNs(ts1);
+      auto ts0_ns = TimespecToNanos(ts0);
+      auto ts1_ns = TimespecToNanos(ts1);
 
       ASSERT_EQ(ts0 < ts1, ts0_ns < ts1_ns);
     }
@@ -79,8 +79,8 @@ TEST(TimespecUtilsTest, LessThanOperator) {
 TEST(TimespecUtilsTest, LessThanOrEqualOperator) {
   for (const auto& ts0 : tss) {
     for (const auto& ts1 : tss) {
-      auto ts0_ns = TimespecToNs(ts0);
-      auto ts1_ns = TimespecToNs(ts1);
+      auto ts0_ns = TimespecToNanos(ts0);
+      auto ts1_ns = TimespecToNanos(ts1);
 
       ASSERT_EQ(ts0 <= ts1, ts0_ns <= ts1_ns);
     }
@@ -90,8 +90,8 @@ TEST(TimespecUtilsTest, LessThanOrEqualOperator) {
 TEST(TimespecUtilsTest, GreaterThanOperator) {
   for (const auto& ts0 : tss) {
     for (const auto& ts1 : tss) {
-      auto ts0_ns = TimespecToNs(ts0);
-      auto ts1_ns = TimespecToNs(ts1);
+      auto ts0_ns = TimespecToNanos(ts0);
+      auto ts1_ns = TimespecToNanos(ts1);
 
       ASSERT_EQ(ts0 > ts1, ts0_ns > ts1_ns);
     }
@@ -101,8 +101,8 @@ TEST(TimespecUtilsTest, GreaterThanOperator) {
 TEST(TimespecUtilsTest, GreaterThanOrEqualOperator) {
   for (const auto& ts0 : tss) {
     for (const auto& ts1 : tss) {
-      auto ts0_ns = TimespecToNs(ts0);
-      auto ts1_ns = TimespecToNs(ts1);
+      auto ts0_ns = TimespecToNanos(ts0);
+      auto ts1_ns = TimespecToNanos(ts1);
 
       ASSERT_EQ(ts0 >= ts1, ts0_ns >= ts1_ns);
     }
@@ -112,13 +112,13 @@ TEST(TimespecUtilsTest, GreaterThanOrEqualOperator) {
 TEST(TimespecUtilsTest, SumOperator) {
   for (const auto& ts0 : tss) {
     for (const auto& ts1 : tss) {
-      auto ts0_ns = TimespecToNs(ts0);
-      auto ts1_ns = TimespecToNs(ts1);
+      auto ts0_ns = TimespecToNanos(ts0);
+      auto ts1_ns = TimespecToNanos(ts1);
       auto sum_ns = ts0_ns + ts1_ns;
       auto sum_ts = ts0 + ts1;
 
-      ASSERT_EQ(TimespecToNs(sum_ts), sum_ns);
-      ASSERT_EQ(sum_ts, NsToTimespec(sum_ns));
+      ASSERT_EQ(TimespecToNanos(sum_ts), sum_ns);
+      ASSERT_EQ(sum_ts, NanosToTimespec(sum_ns));
     }
   }
 }
@@ -126,8 +126,8 @@ TEST(TimespecUtilsTest, SumOperator) {
 TEST(TimespecUtilsTest, SubtractOperator) {
   for (const auto& ts0 : tss) {
     for (const auto& ts1 : tss) {
-      auto ts0_ns = TimespecToNs(ts0);
-      auto ts1_ns = TimespecToNs(ts1);
+      auto ts0_ns = TimespecToNanos(ts0);
+      auto ts1_ns = TimespecToNanos(ts1);
       auto sub_ns = ts0_ns - ts1_ns;
       timespec sub_ts;
 
@@ -136,8 +136,8 @@ TEST(TimespecUtilsTest, SubtractOperator) {
       } else {
         sub_ts = ts0 - ts1;
 
-        ASSERT_EQ(TimespecToNs(sub_ts), sub_ns);
-        ASSERT_EQ(sub_ts, NsToTimespec(sub_ns));
+        ASSERT_EQ(TimespecToNanos(sub_ts), sub_ns);
+        ASSERT_EQ(sub_ts, NanosToTimespec(sub_ns));
       }
     }
   }
@@ -146,8 +146,8 @@ TEST(TimespecUtilsTest, SubtractOperator) {
 TEST(TimespecUtilsTest, DivideOperator) {
   for (const auto& ts0 : tss) {
     for (const auto& ts1 : tss) {
-      auto ts0_ns = TimespecToNs(ts0);
-      auto ts1_ns = TimespecToNs(ts1);
+      auto ts0_ns = TimespecToNanos(ts0);
+      auto ts1_ns = TimespecToNanos(ts1);
 
       if (ts1_ns == 0) {
         EXPECT_DEATH(ts0 / ts1, "");
@@ -156,8 +156,8 @@ TEST(TimespecUtilsTest, DivideOperator) {
         timespec div_ts;
         div_ts = ts0 / ts1;
 
-        ASSERT_EQ(TimespecToNs(div_ts), div_ns);
-        ASSERT_EQ(div_ts, NsToTimespec(div_ns));
+        ASSERT_EQ(TimespecToNanos(div_ts), div_ns);
+        ASSERT_EQ(div_ts, NanosToTimespec(div_ns));
       }
     }
   }
