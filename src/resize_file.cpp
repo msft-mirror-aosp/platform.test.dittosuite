@@ -35,4 +35,31 @@ void ResizeFile::RunSingle() {
   }
 }
 
+ResizeFileRandom::ResizeFileRandom(int repeat, int64_t min, int64_t max, uint64_t seed,
+                                   Reseeding reseeding, int input_fd_key)
+    : ResizeFile(repeat, -1, input_fd_key),
+      min_(min),
+      max_(max),
+      gen_(seed),
+      seed_(seed),
+      reseeding_(reseeding) {}
+
+void ResizeFileRandom::SetUp() {
+  if (reseeding_ == kEachRoundOfCycles) {
+    gen_.seed(seed_);
+  }
+  Instruction::SetUp();
+}
+
+void ResizeFileRandom::SetUpSingle() {
+  if (reseeding_ == kEachCycle) {
+    gen_.seed(seed_);
+  }
+
+  std::uniform_int_distribution<> uniform_distribution(min_, max_);
+  size_ = uniform_distribution(gen_);
+
+  Instruction::SetUpSingle();
+}
+
 }  // namespace dittosuite

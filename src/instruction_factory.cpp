@@ -151,6 +151,20 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       return std::make_unique<ReadDirectory>(Syscall::GetSyscall(), repeat,
                                              options.directory_name(), output_key);
     }
+    case InstructionType::kInstructionResizeFileRandom: {
+      const auto& options = proto_instruction.instruction_resize_file_random();
+
+      uint32_t seed = options.seed();
+      if (!options.has_seed()) {
+        seed = time(nullptr);
+      }
+
+      auto reseeding = ConvertReseeding(options.reseeding());
+      int fd_key = SharedVariables::GetKey(options.input_fd());
+
+      return std::make_unique<ResizeFileRandom>(repeat, options.min(), options.max(), seed,
+                                                reseeding, fd_key);
+    }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");
     }
