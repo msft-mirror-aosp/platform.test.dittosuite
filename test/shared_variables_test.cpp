@@ -19,7 +19,9 @@
 using dittosuite::SharedVariables;
 
 TEST(SharedVariablesTest, SharedVariablesTestSetSingle) {
-  auto key = SharedVariables::GetKey("variable_name");
+  std::list<int> thread_ids;
+  thread_ids.push_back(0);
+  auto key = SharedVariables::GetKey(thread_ids, "variable_name");
 
   SharedVariables::Variant shared_variable;
   shared_variable = 1;
@@ -29,8 +31,10 @@ TEST(SharedVariablesTest, SharedVariablesTestSetSingle) {
 }
 
 TEST(SharedVariablesTest, SharedVariablesTestSetMultipleSameNames) {
-  auto first_key = SharedVariables::GetKey("first_variable_name");
-  auto second_key = SharedVariables::GetKey("first_variable_name");
+  std::list<int> thread_ids;
+  thread_ids.push_back(1);
+  auto first_key = SharedVariables::GetKey(thread_ids, "first_variable_name");
+  auto second_key = SharedVariables::GetKey(thread_ids, "first_variable_name");
 
   ASSERT_EQ(first_key, second_key);
 
@@ -49,8 +53,10 @@ TEST(SharedVariablesTest, SharedVariablesTestSetMultipleSameNames) {
 }
 
 TEST(SharedVariablesTest, SharedVariablesTestSetMultipleDifferentNames) {
-  auto first_key = SharedVariables::GetKey("first_variable_name");
-  auto second_key = SharedVariables::GetKey("second_variable_name");
+  std::list<int> thread_ids;
+  thread_ids.push_back(2);
+  auto first_key = SharedVariables::GetKey(thread_ids, "first_variable_name");
+  auto second_key = SharedVariables::GetKey(thread_ids, "second_variable_name");
 
   ASSERT_NE(first_key, second_key);
 
@@ -64,4 +70,41 @@ TEST(SharedVariablesTest, SharedVariablesTestSetMultipleDifferentNames) {
 
   ASSERT_EQ(SharedVariables::Get(first_key), first_shared_variable);
   ASSERT_EQ(SharedVariables::Get(second_key), second_shared_variable);
+}
+
+TEST(SharedVariablesTest, DifferentKeyForDifferentThread) {
+  std::list<int> first_thread_ids;
+  first_thread_ids.push_back(3);
+  auto first_key = SharedVariables::GetKey(first_thread_ids, "variable_name");
+
+  std::list<int> second_thread_ids;
+  second_thread_ids.push_back(4);
+  auto second_key = SharedVariables::GetKey(second_thread_ids, "variable_name");
+
+  ASSERT_NE(first_key, second_key);
+}
+
+TEST(SharedVariablesTest, SameKeyForChildThread) {
+  std::list<int> thread_ids;
+  thread_ids.push_back(5);
+
+  auto first_key = SharedVariables::GetKey(thread_ids, "variable_name");
+
+  thread_ids.push_back(6);
+  auto second_key = SharedVariables::GetKey(thread_ids, "variable_name");
+
+  ASSERT_EQ(first_key, second_key);
+}
+
+TEST(SharedVariablesTest, SameKeyForGrandchildThread) {
+  std::list<int> thread_ids;
+  thread_ids.push_back(7);
+
+  auto first_key = SharedVariables::GetKey(thread_ids, "variable_name");
+
+  thread_ids.push_back(8);
+  thread_ids.push_back(9);
+  auto second_key = SharedVariables::GetKey(thread_ids, "variable_name");
+
+  ASSERT_EQ(first_key, second_key);
 }
