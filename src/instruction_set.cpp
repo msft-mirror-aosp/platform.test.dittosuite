@@ -115,7 +115,7 @@ std::unique_ptr<Result> InstructionSet::CollectResults(const std::string& prefix
       duration.resize(samples.size() / repeat);
     }
 
-    for (int i = 0; i < samples.size() / repeat; ++i) {
+    for (unsigned int i = 0; i < samples.size() / repeat; ++i) {
       for (int j = 0; j < repeat; ++j) {
         duration[i] += samples[i * repeat + j];
       }
