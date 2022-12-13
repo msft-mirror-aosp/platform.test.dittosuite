@@ -7,7 +7,7 @@ message InstructionCreateFile {
 }
 
 message InstructionDeleteFile {
-  required string file = 9;
+  required string file = 1;
 }
 
 message Instruction {
