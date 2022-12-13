@@ -52,7 +52,7 @@ class Result {
   std::vector<int> ComputeNormalizedFrequencyVector();
   void PrintStatisticsTableContent(const std::string& instruction_path);
   std::string ComputeNextInstructionPath(const std::string& instruction_path);
-  void PrintStatisticInCsv(std::fstream& csv_stream, const std::string& instruction_path);
+  void PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path);
   void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value);
   TimeUnit GetTimeUnit(const timespec& min_value);
 };
