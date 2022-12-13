@@ -16,9 +16,11 @@
 
 #include <fcntl.h>
 
+#include <cstdlib>
 #include <fstream>
 
 #include <ditto/instruction_factory.h>
+#include <ditto/logger.h>
 #include <ditto/shared_variables.h>
 
 #include <google/protobuf/text_format.h>
@@ -37,7 +39,11 @@ std::unique_ptr<Instruction> Parser::Parse() {
   std::unique_ptr<dittosuiteproto::Benchmark> benchmark =
       std::make_unique<dittosuiteproto::Benchmark>();
   google::protobuf::io::FileInputStream file_input(open(file_path_.c_str(), O_CLOEXEC));
-  google::protobuf::TextFormat::Parse(&file_input, benchmark.get());
+
+  if (!google::protobuf::TextFormat::Parse(&file_input, benchmark.get())) {
+    LOGE("Error while parsing .ditto file");
+    exit(EXIT_FAILURE);
+  }
 
   auto absolute_path_key = SharedVariables::GetKey("absolute_path");
   SharedVariables::Set(absolute_path_key, benchmark->global().absolute_path());
