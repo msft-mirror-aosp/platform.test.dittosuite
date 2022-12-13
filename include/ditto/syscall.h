@@ -29,6 +29,7 @@ class SyscallInterface {
  public:
   virtual ~SyscallInterface() {}
 
+  virtual int Access(const std::string& path_name, int mode) = 0;
   virtual int Close(int fd) = 0;
   virtual int CloseDir(DIR* dirp) = 0;
   virtual int FAdvise(int fd, int64_t offset, int64_t len, int advice) = 0;
@@ -52,6 +53,7 @@ class Syscall : public SyscallInterface {
 
   static Syscall& GetSyscall();
 
+  int Access(const std::string& path_name, int mode) override;
   int Close(int fd) override;
   int CloseDir(DIR* dirp) override;
   int FAdvise(int fd, int64_t offset, int64_t len, int advice) override;

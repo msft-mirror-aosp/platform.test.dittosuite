@@ -14,6 +14,7 @@ class MockSyscall : public dittosuite::SyscallInterface {
 
   // Set default returns for each syscall (mostly return 0 to indicate a successful call)
   MockSyscall() {
+    ON_CALL(*this, Access(_, _)).WillByDefault(Return(0));
     ON_CALL(*this, Close(_)).WillByDefault(Return(0));
     ON_CALL(*this, CloseDir(_)).WillByDefault(Return(0));
     ON_CALL(*this, FAdvise(_, _, _, _)).WillByDefault(Return(0));
@@ -31,6 +32,7 @@ class MockSyscall : public dittosuite::SyscallInterface {
     ON_CALL(*this, Write(_, _, _, _)).WillByDefault(ReturnArg<2>());
   }
 
+  MOCK_METHOD(int, Access, (const std::string& path_name, int mode), (override));
   MOCK_METHOD(int, Close, (int fd), (override));
   MOCK_METHOD(int, CloseDir, (DIR * dirp), (override));
   MOCK_METHOD(int, FAdvise, (int fd, int64_t offset, int64_t len, int advice), (override));
