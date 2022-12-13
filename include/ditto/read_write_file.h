@@ -76,17 +76,14 @@ class ReadFile : public ReadWriteFile {
  public:
   inline static const std::string kName = "instruction_read_file";
 
-  enum ReadFAdvise { kAutomatic, kNormal, kSequential, kRandom };
-
   explicit ReadFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
-                    Type type, u_int32_t seed, Reseeding reseeding, ReadFAdvise fadvise,
-                    int input_fd_key);
+                    Type type, u_int32_t seed, Reseeding reseeding, int fadvise, int input_fd_key);
 
  private:
   void SetUpSingle() override;
   void RunSingle() override;
 
-  ReadFAdvise fadvise_;
+  int fadvise_;
 };
 
 }  // namespace dittosuite
