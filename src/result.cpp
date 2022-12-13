@@ -47,7 +47,7 @@ void Result::Analyse() {
   max_ = StatisticsGetMax(time_samples_);
   mean_ = StatisticsGetMean(time_samples_);
   median_ = StatisticsGetMedian(time_samples_);
-  sd_ = NsToTimespec(StatisticsGetSd(time_samples_));
+  sd_ = StatisticsGetSd(time_samples_);
 }
 
 std::string Result::ComputeNextInstructionPath(const std::string& instruction_path) {
@@ -61,7 +61,7 @@ void Result::Print(const std::string& instruction_path) {
   std::cout << "Max: " << max_.tv_sec << "s, " << max_.tv_nsec << "ns" << std::endl;
   std::cout << "Mean: " << mean_.tv_sec << "s, " << mean_.tv_nsec << "ns" << std::endl;
   std::cout << "Median: " << median_.tv_sec << "s, " << median_.tv_nsec << "ns" << std::endl;
-  std::cout << "SD: " << sd_.tv_sec << "s, " << sd_.tv_nsec << "ns" << std::endl << std::endl;
+  std::cout << "SD: " << sd_ << std::endl << std::endl;
 
   for (const auto& sub_result : sub_results_) {
     sub_result->Print(next_instruction_path);
@@ -122,7 +122,7 @@ void Result::PrintStatisticsTableContent(const std::string& instruction_path) {
   std::cout << kTableDivider;
   PrintTimespecInTable(median_);
   std::cout << kTableDivider;
-  PrintTimespecInTable(sd_);
+  std::cout << std::setw(15) << sd_;
   std::cout << kTableDivider;  // ended current row
   PrintTableBorder();
   for (const auto& sub_result : sub_results_) {
@@ -221,7 +221,7 @@ void Result::PrintStatisticInCsv(std::ostream& csv_stream, const std::string& in
   csv_stream << TimespecToNs(max_) << kCsvDelimiter;
   csv_stream << TimespecToNs(mean_) << kCsvDelimiter;
   csv_stream << TimespecToNs(median_) << kCsvDelimiter;
-  csv_stream << TimespecToNs(sd_);
+  csv_stream << sd_;
   csv_stream << std::endl;  // ending of row
 
   for (const auto& sub_result : sub_results_) {
