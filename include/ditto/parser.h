@@ -14,22 +14,19 @@
 
 #pragma once
 
-#include <string>
+#include <ditto/instruction.h>
 
-#include "instruction.h"
+#include <queue>
+#include <string>
 
 namespace dittosuite {
 
-class CreateFile : public Instruction {
+class Parser {
  public:
-  explicit CreateFile(const std::string& file);
-
-  void setup() override;
-  void run() override;
-  void teardown() override;
+  static std::queue<std::unique_ptr<Instruction> > parse(std::string& file_name);
 
  private:
-  std::string file_;
+  Parser();
 };
 
 } // namespace dittosuite

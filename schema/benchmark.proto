@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+package dittosuiteproto;
+
+message InstructionCreateFile {
+    required string file = 5;
+}
+
+message Instruction {
+    oneof instruction_oneof {
+        InstructionCreateFile instruction_create_file = 4;
+    }
+}
+
+message Global {
+
+}
+
+message Main {
+    repeated Instruction instructions = 3;
+}
+
+message Benchmark {
+    // TODO(robertasn): include Global message
+    required Main main = 2;
+}
