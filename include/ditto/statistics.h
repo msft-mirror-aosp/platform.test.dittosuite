@@ -30,17 +30,21 @@ namespace dittosuite {
 
 template <class T>
 T StatisticsGetMin(const std::vector<T>& samples) {
+  if (samples.empty()) LOGF("Cannot compute the min on an empty vector");
+
   return *std::min_element(samples.begin(), samples.end());
 }
 
 template <class T>
 T StatisticsGetMax(const std::vector<T>& samples) {
+  if (samples.empty()) LOGF("Cannot compute the max on an empty vector");
+
   return *std::max_element(samples.begin(), samples.end());
 }
 
 template <class T>
 T StatisticsGetMean(const std::vector<T>& samples) {
-  if (samples.empty()) PLOGF("Cannot compute statistics on an empty vector");
+  if (samples.empty()) LOGF("Cannot compute the mean on an empty vector");
 
   T result = std::accumulate(samples.begin(), samples.end(), T{});
   return result / samples.size();
@@ -48,6 +52,8 @@ T StatisticsGetMean(const std::vector<T>& samples) {
 
 template <class T>
 T StatisticsGetMedian(const std::vector<T>& samples) {
+  if (samples.empty()) LOGF("Cannot compute the median on an empty vector");
+
   auto my_vector_copy = samples;
   auto n = samples.size();
 
@@ -71,6 +77,8 @@ T StatisticsGetMedian(const std::vector<T>& samples) {
 // sd = sqrt( sum( (x_i - x)^2 ) / N )
 template <class T>
 double StatisticsGetSd(const std::vector<T>& samples) {
+  if (samples.empty()) LOGF("Cannot compute the sd on an empty vector");
+
   T mean = StatisticsGetMean(samples);
   double variance;
 
