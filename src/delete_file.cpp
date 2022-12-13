@@ -27,16 +27,8 @@ DeleteFile::DeleteFile(int repeat, const std::string& file)
       file_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) + file) {
 }
 
-void DeleteFile::SetUp() {
-  Instruction::SetUp();
-}
-
 void DeleteFile::RunSingle() {
   unlink(file_.c_str());
-}
-
-void DeleteFile::TearDown() {
-  Instruction::TearDown();
 }
 
 }  // namespace dittosuite
