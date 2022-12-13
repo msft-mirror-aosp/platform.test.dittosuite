@@ -84,12 +84,13 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       if (options.has_input()) {
         int input_key = SharedVariables::GetKey(thread_ids, options.input());
         return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, input_key,
-                                          options.create(), fd_key);
+                                          options.create(), options.direct_io(), fd_key);
       } else if (options.has_path_name()) {
         return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.path_name(),
-                                          options.create(), fd_key);
+                                          options.create(), options.direct_io(), fd_key);
       } else {
-        return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.create(), fd_key);
+        return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.create(),
+                                          options.direct_io(), fd_key);
       }
     }
     case InstructionType::kDeleteFile: {

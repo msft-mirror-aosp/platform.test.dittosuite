@@ -21,26 +21,30 @@
 namespace dittosuite {
 
 OpenFile::OpenFile(SyscallInterface& syscall, int repeat, const std::string& path_name, bool create,
-                   int output_fd_key)
+                   bool direct_io, int output_fd_key)
     : Instruction(syscall, kName, repeat),
       random_name_(false),
       path_name_(GetAbsolutePath() + path_name),
       create_(create),
+      direct_io_(direct_io),
       input_key_(-1),
       output_fd_key_(output_fd_key) {}
 
 OpenFile::OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool create,
-                   int output_fd_key)
+                   bool direct_io, int output_fd_key)
     : Instruction(syscall, kName, repeat),
       random_name_(false),
       create_(create),
+      direct_io_(direct_io),
       input_key_(input_key),
       output_fd_key_(output_fd_key) {}
 
-OpenFile::OpenFile(SyscallInterface& syscall, int repeat, bool create, int output_fd_key)
+OpenFile::OpenFile(SyscallInterface& syscall, int repeat, bool create, bool direct_io,
+                   int output_fd_key)
     : Instruction(syscall, kName, repeat),
       random_name_(true),
       create_(create),
+      direct_io_(direct_io),
       input_key_(-1),
       output_fd_key_(output_fd_key),
       gen_(time(nullptr)) {}
@@ -58,8 +62,13 @@ void OpenFile::SetUpSingle() {
 }
 
 void OpenFile::RunSingle() {
-  int fd =
-      syscall_.Open(path_name_, (create_ ? O_CREAT : 0) | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR);
+  int open_flags = O_CLOEXEC | O_RDWR;
+  int open_mode = S_IRUSR | S_IWUSR;
+
+  if (create_) open_flags |= O_CREAT;
+  if (direct_io_) open_flags |= O_DIRECT;
+
+  int fd = syscall_.Open(path_name_, open_flags, open_mode);
 
   if (fd == -1) {
     LOGF("Error while trying to open the file");
