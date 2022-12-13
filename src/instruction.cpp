@@ -24,4 +24,14 @@ void Instruction::Run() {
   }
 }
 
+void Instruction::SetAbsolutePath(const std::string& absolute_path) {
+  absolute_path_ = absolute_path;
+}
+
+std::string Instruction::GetAbsolutePath() {
+  return absolute_path_;
+}
+
+std::string Instruction::absolute_path_ = "";
+
 }  // namespace dittosuite
