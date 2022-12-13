@@ -12,6 +12,7 @@ cc_defaults {
       "src/logger.cpp",
       "src/open_file.cpp",
       "src/parser.cpp",
+      "src/resize_file.cpp",
       "src/shared_variables.cpp",
     ],
     cflags: [
@@ -42,6 +43,7 @@ cc_test {
       "test/delete_file_test.cpp",
       "test/logger_test.cpp",
       "test/open_file_test.cpp",
+      "test/resize_file_test.cpp",
       "test/shared_variables_test.cpp",
     ],
     defaults: ["dittobench_defaults"],

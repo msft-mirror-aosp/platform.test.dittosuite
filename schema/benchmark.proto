@@ -16,6 +16,11 @@ message InstructionCloseFile {
   required string input_fd = 1;
 }
 
+message InstructionResizeFile {
+  required string input_fd = 1;
+  required int64 size = 2;
+}
+
 message Instruction {
   optional int32 repeat = 1 [default = 1];
   oneof instruction_oneof {
@@ -23,6 +28,7 @@ message Instruction {
     InstructionOpenFile instruction_open_file = 3;
     InstructionDeleteFile instruction_delete_file = 4;
     InstructionCloseFile instruction_close_file = 5;
+    InstructionResizeFile instruction_resize_file = 6;
   }
 }
 

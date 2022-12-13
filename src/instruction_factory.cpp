@@ -19,6 +19,7 @@
 #include <ditto/instruction_set.h>
 #include <ditto/logger.h>
 #include <ditto/open_file.h>
+#include <ditto/resize_file.h>
 #include <ditto/shared_variables.h>
 
 namespace dittosuite {
@@ -62,6 +63,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       const auto& options = proto_instruction.instruction_close_file();
 
       auto instruction = std::make_unique<CloseFile>(repeat);
+      instruction->SetInputFdKey(SharedVariables::GetKey(options.input_fd()));
+
+      return instruction;
+    }
+    case InstructionType::kInstructionResizeFile: {
+      const auto& options = proto_instruction.instruction_resize_file();
+
+      auto instruction = std::make_unique<ResizeFile>(repeat, options.size());
       instruction->SetInputFdKey(SharedVariables::GetKey(options.input_fd()));
 
       return instruction;
