@@ -40,32 +40,34 @@ class Logger {
   LOG_LEVEL GetLogLevel() const;
   LOG_STREAM GetLogStream() const;
   void WriteLogMessage(const std::string message, LOG_LEVEL log_level);
-  LOG_LEVEL log_level_;
-  LOG_STREAM log_stream_;
 
  protected:
   Logger() {}
+
+ private:
+  LOG_LEVEL log_level_;
+  LOG_STREAM log_stream_;
 };
 
-#define LOGE(X)                                                \
-  if (Logger::GetInstance().log_level_ <= LOG_LEVEL_ERROR) {   \
-    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_ERROR); \
+#define LOGE(X)                                                 \
+  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_ERROR) { \
+    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_ERROR);  \
   }
-#define LOGW(X)                                                  \
-  if (Logger::GetInstance().log_level_ <= LOG_LEVEL_WARNING) {   \
-    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_WARNING); \
+#define LOGW(X)                                                   \
+  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_WARNING) { \
+    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_WARNING);  \
   }
-#define LOGI(X)                                               \
-  if (Logger::GetInstance().log_level_ <= LOG_LEVEL_INFO) {   \
-    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_INFO); \
+#define LOGI(X)                                                \
+  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_INFO) { \
+    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_INFO);  \
   }
-#define LOGD(X)                                                \
-  if (Logger::GetInstance().log_level_ <= LOG_LEVEL_DEBUG) {   \
-    Logger::GetInstance().WriteLogMessage(x, LOG_LEVEL_DEBUG); \
+#define LOGD(X)                                                 \
+  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_DEBUG) { \
+    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_DEBUG);  \
   }
-#define LOGV(X)                                                  \
-  if (Logger::GetInstance().log_level_ <= LOG_LEVEL_VERBOSE) {   \
-    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_VERBOSE); \
+#define LOGV(X)                                                   \
+  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_VERBOSE) { \
+    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_VERBOSE);  \
   }
 
 }  // namespace dittosuite
