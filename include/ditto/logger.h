@@ -53,61 +53,42 @@ class Logger {
   LOG_STREAM log_stream_;
 };
 
-#define LOGF(X)                                                   \
-  do {                                                            \
-    if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_FATAL) { \
-      Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_FATAL);  \
-    }                                                             \
-    exit(EXIT_FAILURE);                                           \
-  } while (false)
-
-#define LOGE(X)                                                 \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_ERROR) { \
-    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_ERROR);  \
-  }
-#define LOGW(X)                                                   \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_WARNING) { \
-    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_WARNING);  \
-  }
-#define LOGI(X)                                                \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_INFO) { \
-    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_INFO);  \
-  }
-#define LOGD(X)                                                 \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_DEBUG) { \
-    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_DEBUG);  \
-  }
-#define LOGV(X)                                                   \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_VERBOSE) { \
-    Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_VERBOSE);  \
-  }
-
-#define PLOGF(X)                                                      \
-  do {                                                                \
-    if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_FATAL) {     \
-      Logger::GetInstance().WriteLogErrorMessage(X, LOG_LEVEL_FATAL); \
-    }                                                                 \
-    exit(EXIT_FAILURE);                                               \
-  } while (false)
-#define PLOGE(X)                                                    \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_ERROR) {     \
-    Logger::GetInstance().WriteLogErrorMessage(X, LOG_LEVEL_ERROR); \
-  }
-#define PLOGW(X)                                                      \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_WARNING) {     \
-    Logger::GetInstance().WriteLogErrorMessage(X, LOG_LEVEL_WARNING); \
-  }
-#define PLOGI(X)                                                   \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_INFO) {     \
-    Logger::GetInstance().WriteLogErrorMessage(X, LOG_LEVEL_INFO); \
-  }
-#define PLOGD(X)                                                    \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_DEBUG) {     \
-    Logger::GetInstance().WriteLogErrorMessage(X, LOG_LEVEL_DEBUG); \
-  }
-#define PLOGV(X)                                                      \
-  if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_VERBOSE) {     \
-    Logger::GetInstance().WriteLogErrorMessage(X, LOG_LEVEL_VERBOSE); \
-  }
-
 }  // namespace dittosuite
+
+#define DITTO_LOGGER dittosuite::Logger::GetInstance()
+
+#define LOG(VERBOSITY, X)                                                  \
+  do {                                                                     \
+    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) { \
+      DITTO_LOGGER.WriteLogMessage(X, dittosuite::LOG_LEVEL_##VERBOSITY);  \
+    }                                                                      \
+  } while (false)
+
+#define LOGF(X)         \
+  do {                  \
+    LOG(FATAL, X);      \
+    exit(EXIT_FAILURE); \
+  } while (false)
+#define LOGE(X) LOG(ERROR, X)
+#define LOGW(X) LOG(WARNING, X)
+#define LOGI(X) LOG(INFO, X)
+#define LOGD(X) LOG(DEBUG, X)
+#define LOGV(X) LOG(VERBOSE, X)
+
+#define PLOG(VERBOSITY, X)                                                     \
+  do {                                                                         \
+    if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) {     \
+      DITTO_LOGGER.WriteLogErrorMessage(X, dittosuite::LOG_LEVEL_##VERBOSITY); \
+    }                                                                          \
+  } while (false)
+
+#define PLOGF(X)        \
+  do {                  \
+    PLOG(FATAL, X);     \
+    exit(EXIT_FAILURE); \
+  } while (false)
+#define PLOGE(X) PLOG(ERROR, X)
+#define PLOGW(X) PLOG(WARNING, X)
+#define PLOGI(X) PLOG(INFO, X)
+#define PLOGD(X) PLOG(DEBUG, X)
+#define PLOGV(X) PLOG(VERBOSE, X)
