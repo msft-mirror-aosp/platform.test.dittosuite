@@ -264,6 +264,26 @@ TEST_F(WriteFileTest, UsedFileSize) {
   write_file.Run();
 }
 
+TEST_F(WriteFileTest, UsedFileSizeRepeated) {
+  std::vector<int64_t> sizes = {1024, 2048};
+  {
+    InSequence sq;
+    for (const auto& size : sizes) {
+      EXPECT_CALL(syscall_, FStat(fd_, _)).WillOnce(Invoke([&](int, struct stat64* buf) {
+        buf->st_size = size;
+        return 0;
+      }));
+      // Expect a single Write() with the correct block_size (equal to file size)
+      EXPECT_CALL(syscall_, Write(fd_, _, size, _));
+    }
+  }
+
+  auto write_file =
+      dittosuite::WriteFile(syscall_, sizes.size(), -1, -1, 0, dittosuite::kSequential, 0,
+                            dittosuite::kOnce, false, input_key_);
+  write_file.Run();
+}
+
 TEST_F(WriteFileDeathTest, DiedDueToInvalidFd) {
   SharedVariables::Set(input_key_, -1);
   auto instruction =
