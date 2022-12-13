@@ -68,6 +68,8 @@ void WriteFile::SetUp() {
       break;
     }
   }
+
+  Instruction::SetUp();
 }
 
 void WriteFile::RunSingle() {
@@ -83,6 +85,8 @@ void WriteFile::RunSingle() {
   }
 }
 
-void WriteFile::TearDown() {}
+void WriteFile::TearDown() {
+  Instruction::TearDown();
+}
 
 }  // namespace dittosuite
