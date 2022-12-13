@@ -12,34 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "instruction_test.cpp"
+
 #include <fcntl.h>
 #include <unistd.h>
 
-#include <gtest/gtest.h>
-
 #include <ditto/delete_file.h>
-#include <ditto/shared_variables.h>
 #include <ditto/syscall.h>
 
-#ifdef __ANDROID__
-const std::string absolute_path = "/data/local/tmp/";
-#else
-const std::string absolute_path = "";
-#endif
-
-class DeleteFileTest : public ::testing::Test {
+class DeleteFileTest : public InstructionTest {
  protected:
   std::string file_name = "test";
   std::string path = absolute_path + file_name;
-  std::list<int> thread_ids;
 
-  // Create a file for testing and set absolute_path
+  // Create a file for testing
   void SetUp() override {
-    thread_ids.push_back(0);
-    auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
-    dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
-    dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
-
+    InstructionTest::SetUp();
     ASSERT_NE(open(path.c_str(), O_CREAT | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR), -1);
   }
   // Make sure that the file created in SetUp() is actually deleted

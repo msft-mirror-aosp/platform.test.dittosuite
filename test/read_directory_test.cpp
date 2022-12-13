@@ -12,35 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "instruction_test.cpp"
+
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#include <gtest/gtest.h>
-
 #include <ditto/read_directory.h>
-#include <ditto/shared_variables.h>
 #include <ditto/syscall.h>
 
-#ifdef __ANDROID__
-const std::string absolute_path = "/data/local/tmp/";
-#else
-const std::string absolute_path = "";
-#endif
-
-class ReadDirectoryTest : public ::testing::Test {
+class ReadDirectoryTest : public InstructionTest {
  protected:
   std::string directory_name = "test_directory";
   std::string path = absolute_path + directory_name;
   std::vector<std::string> files{path + "/test1", path + "/test2", path + "/test3"};
-  std::list<int> thread_ids;
 
-  // Create folder with several files for testing and set absolute_path
+  // Create folder with several files for testing
   void SetUp() override {
-    thread_ids.push_back(0);
-    auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
-    dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
-    dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
-
+    InstructionTest::SetUp();
     ASSERT_NE(mkdir(path.c_str(), S_IRWXU), -1);
     for (const auto& file : files) {
       ASSERT_NE(open(file.c_str(), O_CREAT | O_CLOEXEC, S_IRUSR | S_IWUSR), -1);
