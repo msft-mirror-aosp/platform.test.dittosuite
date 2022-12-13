@@ -36,7 +36,25 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
   for (const auto& instruction : proto_instruction_set.instructions()) {
     instructions.push_back(std::move(InstructionFactory::CreateFromProtoInstruction(instruction)));
   }
-  return std::make_unique<InstructionSet>(repeat, std::move(instructions));
+
+  if (proto_instruction_set.has_iterate_options()) {
+    auto options = proto_instruction_set.iterate_options();
+
+    int list_key = SharedVariables::GetKey(options.list_name());
+    int item_key = SharedVariables::GetKey(options.item_name());
+    auto type = ConvertAccessType(options.type());
+    auto reseeding = ConvertReseeding(options.reseeding());
+
+    uint32_t seed = options.seed();
+    if (!options.has_seed()) {
+      seed = time(nullptr);
+    }
+
+    return std::make_unique<InstructionSet>(repeat, std::move(instructions), list_key, item_key,
+                                            type, reseeding, seed);
+  } else {
+    return std::make_unique<InstructionSet>(repeat, std::move(instructions));
+  }
 }
 
 std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
@@ -92,9 +110,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       auto type = ConvertAccessType(options.type());
 
-      u_int32_t seed = options.seed();
+      uint32_t seed = options.seed();
       if (!options.has_seed()) {
-        seed = time(0);
+        seed = time(nullptr);
       }
 
       auto reseeding = ConvertReseeding(options.reseeding());
@@ -109,9 +127,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       auto type = ConvertAccessType(options.type());
 
-      u_int32_t seed = options.seed();
+      uint32_t seed = options.seed();
       if (!options.has_seed()) {
-        seed = time(0);
+        seed = time(nullptr);
       }
 
       auto fadvise = ConvertReadFAdvise(type, options.fadvise());

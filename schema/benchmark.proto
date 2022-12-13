@@ -87,6 +87,15 @@ message Instruction {
 
 message InstructionSet {
   repeated Instruction instructions = 1;
+  optional InstructionSetIterate iterate_options = 2;
+}
+
+message InstructionSetIterate {
+  required string list_name = 1;
+  required string item_name = 2;
+  optional AccessType type = 3 [default = SEQUENTIAL];
+  optional Reseeding reseeding = 4 [default = ONCE];
+  optional uint32 seed = 5;
 }
 
 message Global {
