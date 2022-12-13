@@ -39,7 +39,8 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
                                                                proto_instruction.instruction_set());
     case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionOpenFile: {
       std::unique_ptr<OpenFile> open_file_instruction = std::make_unique<OpenFile>(
-          proto_instruction.repeat(), proto_instruction.instruction_open_file().file());
+          proto_instruction.repeat(), proto_instruction.instruction_open_file().file(),
+          proto_instruction.instruction_open_file().create());
       if (proto_instruction.instruction_open_file().has_output_fd()) {
         auto output_fd_key =
             SharedVariables::GetKey(proto_instruction.instruction_open_file().output_fd());

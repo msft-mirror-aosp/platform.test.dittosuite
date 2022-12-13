@@ -22,7 +22,7 @@ namespace dittosuite {
 
 class OpenFile : public Instruction {
  public:
-  explicit OpenFile(int repeat, const std::string& file);
+  explicit OpenFile(int repeat, const std::string& file, bool create);
 
   void SetUp() override;
   void TearDown() override;
@@ -34,6 +34,7 @@ class OpenFile : public Instruction {
   void RunSingle() override;
 
   std::string file_;
+  bool create_;
   int output_fd_key_;
 };
 
