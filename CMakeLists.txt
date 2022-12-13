@@ -12,6 +12,7 @@ include_directories(include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(dittobench
+	src/arg_parser.cpp
 	src/dittobench.cpp
 	src/close_file.cpp
 	src/delete_file.cpp
