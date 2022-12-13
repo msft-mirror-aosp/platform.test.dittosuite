@@ -21,33 +21,36 @@
 namespace dittosuite {
 
 OpenFile::OpenFile(SyscallInterface& syscall, int repeat, const std::string& path_name, bool create,
-                   bool direct_io, int output_fd_key)
+                   bool direct_io, int output_fd_key, AccessMode access_mode)
     : Instruction(syscall, kName, repeat),
       random_name_(false),
       path_name_(GetAbsolutePath() + path_name),
       create_(create),
       direct_io_(direct_io),
       input_key_(-1),
-      output_fd_key_(output_fd_key) {}
+      output_fd_key_(output_fd_key),
+      access_mode_(access_mode) {}
 
 OpenFile::OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool create,
-                   bool direct_io, int output_fd_key)
+                   bool direct_io, int output_fd_key, AccessMode access_mode)
     : Instruction(syscall, kName, repeat),
       random_name_(false),
       create_(create),
       direct_io_(direct_io),
       input_key_(input_key),
-      output_fd_key_(output_fd_key) {}
+      output_fd_key_(output_fd_key),
+      access_mode_(access_mode) {}
 
 OpenFile::OpenFile(SyscallInterface& syscall, int repeat, bool create, bool direct_io,
-                   int output_fd_key)
+                   int output_fd_key, AccessMode access_mode)
     : Instruction(syscall, kName, repeat),
       random_name_(true),
       create_(create),
       direct_io_(direct_io),
       input_key_(-1),
       output_fd_key_(output_fd_key),
-      gen_(time(nullptr)) {}
+      gen_(time(nullptr)),
+      access_mode_(access_mode) {}
 
 void OpenFile::SetUpSingle() {
   if (input_key_ != -1) {
@@ -62,9 +65,21 @@ void OpenFile::SetUpSingle() {
 }
 
 void OpenFile::RunSingle() {
-  int open_flags = O_CLOEXEC | O_RDWR;
   int open_mode = S_IRUSR | S_IWUSR;
 
+  int open_flags = 0;
+  switch (access_mode_) {
+    case AccessMode::READ_ONLY:
+      open_flags |= O_RDONLY;
+      break;
+    case AccessMode::WRITE_ONLY:
+      open_flags |= O_WRONLY;
+      break;
+    case AccessMode::READ_WRITE:
+      open_flags |= O_RDWR;
+      break;
+  }
+  open_flags |= O_CLOEXEC;
   if (create_) open_flags |= O_CREAT;
   if (direct_io_) open_flags |= O_DIRECT;
 
