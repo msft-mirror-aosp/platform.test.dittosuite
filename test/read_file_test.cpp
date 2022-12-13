@@ -257,6 +257,15 @@ TEST_F(ReadFileTest, ReadMultipleBlocksRandomRepeatedReseededEachCycle) {
   ASSERT_EQ(static_cast<int>(blocks.size()), number_of_unique_blocks);
 }
 
+TEST_F(ReadFileTest, UsedFileSize) {
+  // Expect a single Read() with the correct block_size (equal to file size)
+  EXPECT_CALL(syscall_, Read(fd_, _, MockSyscall::kDefaultFileSize, _));
+
+  auto read_file = dittosuite::ReadFile(syscall_, 1, -1, -1, 0, dittosuite::kSequential, 0,
+                                        dittosuite::kOnce, 0, input_key_);
+  read_file.Run();
+}
+
 TEST_F(ReadFileDeathTest, DiedDueToInvalidFd) {
   SharedVariables::Set(input_key_, -1);
   auto read_file = dittosuite::ReadFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
