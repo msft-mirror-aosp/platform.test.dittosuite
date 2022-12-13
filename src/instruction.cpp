@@ -18,17 +18,23 @@ namespace dittosuite {
 
 Instruction::Instruction(const std::string& name, int repeat) : name_(name), repeat_(repeat) {}
 
-void Instruction::SetUp() {
-  time_sampler_.MeasureStart();
-}
+void Instruction::SetUp() {}
 
 void Instruction::Run() {
   for (int i = 0; i < repeat_; i++) {
+    SetUpSingle();
     RunSingle();
+    TearDownSingle();
   }
 }
 
-void Instruction::TearDown() {
+void Instruction::TearDown() {}
+
+void Instruction::SetUpSingle() {
+  time_sampler_.MeasureStart();
+}
+
+void Instruction::TearDownSingle() {
   time_sampler_.MeasureEnd();
 }
 

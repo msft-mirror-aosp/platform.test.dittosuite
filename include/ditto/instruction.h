@@ -39,13 +39,14 @@ class Instruction {
   static int GetAbsolutePathKey();
 
  protected:
+  virtual void SetUpSingle();
+  virtual void RunSingle() = 0;
+  virtual void TearDownSingle();
+
   static int absolute_path_key_;
   std::string name_;
   int repeat_;
   TimeSampler time_sampler_;
-
- private:
-  virtual void RunSingle() = 0;
 };
 
 } // namespace dittosuite

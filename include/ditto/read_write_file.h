@@ -30,9 +30,8 @@ class ReadWriteFile : public Instruction {
   explicit ReadWriteFile(const std::string& name, int repeat, int64_t size, int64_t block_size,
                          ReadWriteType type, u_int32_t seed, int input_fd_key);
 
-  virtual void SetUp() override;
-
  protected:
+  virtual void SetUpSingle() override;
   virtual void RunSingle() override;
 
   int64_t size_;
@@ -72,9 +71,8 @@ class ReadFile : public ReadWriteFile {
   explicit ReadFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
                     u_int32_t seed, ReadFAdvise fadvise, int input_fd_key);
 
-  void SetUp() override;
-
  private:
+  void SetUpSingle() override;
   void RunSingle() override;
 
   ReadFAdvise fadvise_;
