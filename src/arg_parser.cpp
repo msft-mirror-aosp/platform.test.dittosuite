@@ -87,7 +87,8 @@ CmdArguments ParseArguments(int argc, char** argv) {
     LOGF("Expected .ditto file");
   }
 
-  dittosuite::Parser::GetParser().SetFilePath(argv[optind]);
+  arguments.file_path = argv[optind];
+
   return arguments;
 }
 
