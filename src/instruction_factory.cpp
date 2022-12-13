@@ -15,6 +15,7 @@
 #include <ditto/instruction_factory.h>
 
 #include <ditto/create_file.h>
+#include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
 #include <ditto/logger.h>
 
@@ -38,6 +39,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionCreateFile:
       return std::make_unique<CreateFile>(proto_instruction.repeat(),
                                           proto_instruction.instruction_create_file().file());
+    case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionDeleteFile:
+      return std::make_unique<DeleteFile>(proto_instruction.repeat(),
+                                          proto_instruction.instruction_delete_file().file());
     case dittosuiteproto::Instruction::InstructionOneofCase::INSTRUCTION_ONEOF_NOT_SET:
       LOGE("Instruction was not set in .ditto file");
       return nullptr;
