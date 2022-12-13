@@ -49,11 +49,13 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionOpenFile: {
       const auto& options = proto_instruction.instruction_open_file();
 
-      auto instruction = std::make_unique<OpenFile>(repeat, options.file(), options.create());
-
+      int fd_key = -1;
       if (options.has_output_fd()) {
-        instruction->SetOutputFdKey(SharedVariables::GetKey(options.output_fd()));
+        fd_key = SharedVariables::GetKey(options.output_fd());
       }
+
+      auto instruction =
+          std::make_unique<OpenFile>(repeat, options.file(), options.create(), fd_key);
 
       return instruction;
     }
@@ -65,16 +67,16 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionCloseFile: {
       const auto& options = proto_instruction.instruction_close_file();
 
-      auto instruction = std::make_unique<CloseFile>(repeat);
-      instruction->SetInputFdKey(SharedVariables::GetKey(options.input_fd()));
+      int fd_key = SharedVariables::GetKey(options.input_fd());
+      auto instruction = std::make_unique<CloseFile>(repeat, fd_key);
 
       return instruction;
     }
     case InstructionType::kInstructionResizeFile: {
       const auto& options = proto_instruction.instruction_resize_file();
 
-      auto instruction = std::make_unique<ResizeFile>(repeat, options.size());
-      instruction->SetInputFdKey(SharedVariables::GetKey(options.input_fd()));
+      int fd_key = SharedVariables::GetKey(options.input_fd());
+      auto instruction = std::make_unique<ResizeFile>(repeat, options.size(), fd_key);
 
       return instruction;
     }
@@ -102,9 +104,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         seed = time(0);
       }
 
-      auto instruction =
-          std::make_unique<WriteFile>(repeat, options.size(), options.block_size(), type, seed);
-      instruction->SetInputFdKey(SharedVariables::GetKey(options.input_fd()));
+      int fd_key = SharedVariables::GetKey(options.input_fd());
+      auto instruction = std::make_unique<WriteFile>(repeat, options.size(), options.block_size(),
+                                                     type, seed, fd_key);
 
       return instruction;
     }

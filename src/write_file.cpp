@@ -26,13 +26,13 @@
 namespace dittosuite {
 
 WriteFile::WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                     u_int32_t seed)
+                     u_int32_t seed, int input_fd_key)
     : Instruction(repeat),
       size_(size),
       block_size_(block_size),
       type_(type),
       gen_(seed),
-      input_fd_key_(-1) {
+      input_fd_key_(input_fd_key) {
   buffer_ = std::make_unique<char[]>(block_size_);
   std::fill(buffer_.get(), buffer_.get() + block_size_, 170);  // 170 = 10101010
 }
@@ -78,14 +78,6 @@ void WriteFile::RunSingle() {
 }
 
 void WriteFile::TearDown() {}
-
-int WriteFile::GetInputFdKey() {
-  return input_fd_key_;
-}
-
-void WriteFile::SetInputFdKey(int input_fd_key) {
-  input_fd_key_ = input_fd_key;
-}
 
 int64_t WriteFile::GetFileSize(int fd) {
   struct stat64 sb;

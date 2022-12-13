@@ -25,11 +25,11 @@
 
 namespace dittosuite {
 
-OpenFile::OpenFile(int repeat, const std::string& file, bool create)
+OpenFile::OpenFile(int repeat, const std::string& file, bool create, int output_fd_key)
     : Instruction(repeat),
       file_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) + file),
       create_(create),
-      output_fd_key_(-1) {}
+      output_fd_key_(output_fd_key) {}
 
 void OpenFile::SetUp() {}
 
@@ -47,13 +47,5 @@ void OpenFile::RunSingle() {
 }
 
 void OpenFile::TearDown() {}
-
-int OpenFile::GetOutputFdKey() {
-  return output_fd_key_;
-}
-
-void OpenFile::SetOutputFdKey(int output_fd_key) {
-  output_fd_key_ = output_fd_key;
-}
 
 }  // namespace dittosuite
