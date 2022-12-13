@@ -19,6 +19,7 @@
 #include <fstream>
 
 #include <ditto/instruction_factory.h>
+#include <ditto/shared_variables.h>
 
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -39,8 +40,10 @@ std::unique_ptr<Instruction> Parser::Parse() {
   google::protobuf::TextFormat::Parse(&file_input, benchmark.get());
 
   Instruction::SetAbsolutePath(benchmark->global().absolute_path());
+  auto instructions = InstructionFactory::CreateFromProtoInstruction(benchmark->main());
+  SharedVariables::ClearKeys();
 
-  return InstructionFactory::CreateFromProtoInstruction(benchmark->main());
+  return instructions;
 }
 
 void Parser::SetFilePath(const std::string& file_path) {

@@ -18,6 +18,7 @@
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
 #include <ditto/logger.h>
+#include <ditto/shared_variables.h>
 
 namespace dittosuite {
 
@@ -36,9 +37,16 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionSet:
       return InstructionFactory::CreateFromProtoInstructionSet(proto_instruction.repeat(),
                                                                proto_instruction.instruction_set());
-    case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionCreateFile:
-      return std::make_unique<CreateFile>(proto_instruction.repeat(),
-                                          proto_instruction.instruction_create_file().file());
+    case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionCreateFile: {
+      std::unique_ptr<CreateFile> create_file_instruction = std::make_unique<CreateFile>(
+          proto_instruction.repeat(), proto_instruction.instruction_create_file().file());
+      if (proto_instruction.instruction_create_file().has_output_fd()) {
+        auto output_fd_key =
+            SharedVariables::GetKey(proto_instruction.instruction_create_file().output_fd());
+        create_file_instruction->SetOutputFdKey(output_fd_key);
+      }
+      return create_file_instruction;
+    }
     case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionDeleteFile:
       return std::make_unique<DeleteFile>(proto_instruction.repeat(),
                                           proto_instruction.instruction_delete_file().file());

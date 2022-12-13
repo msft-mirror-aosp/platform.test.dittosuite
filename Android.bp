@@ -11,6 +11,7 @@ cc_defaults {
       "src/instruction.cpp",
       "src/logger.cpp",
       "src/parser.cpp",
+      "src/shared_variables.cpp",
     ],
     cflags: [
       "-Wall",
@@ -40,6 +41,7 @@ cc_test {
       "test/create_file_test.cpp",
       "test/delete_file_test.cpp",
       "test/logger_test.cpp",
+      "test/shared_variables_test.cpp",
     ],
     defaults: ["dittobench_defaults"],
 }
