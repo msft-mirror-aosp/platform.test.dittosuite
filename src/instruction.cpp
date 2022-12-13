@@ -16,7 +16,7 @@
 
 namespace dittosuite {
 
-Instruction::Instruction(int repeat) : repeat_(repeat) {}
+Instruction::Instruction(const std::string& name, int repeat) : name_(name), repeat_(repeat) {}
 
 void Instruction::SetUp() {}
 

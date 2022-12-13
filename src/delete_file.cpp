@@ -23,7 +23,7 @@
 namespace dittosuite {
 
 DeleteFile::DeleteFile(int repeat, const std::string& file)
-    : Instruction(repeat),
+    : Instruction(kName, repeat),
       file_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) + file) {
 }
 

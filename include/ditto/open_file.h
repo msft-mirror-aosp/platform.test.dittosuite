@@ -22,6 +22,8 @@ namespace dittosuite {
 
 class OpenFile : public Instruction {
  public:
+  inline static const std::string kName = "instruction_open_file";
+
   explicit OpenFile(int repeat, const std::string& file, bool create, int output_fd_key);
 
  private:

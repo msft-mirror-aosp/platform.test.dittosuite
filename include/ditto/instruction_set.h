@@ -23,6 +23,8 @@ namespace dittosuite {
 
 class InstructionSet : public Instruction {
  public:
+  inline static const std::string kName = "instruction_set";
+
   explicit InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions);
 
   void SetUp() override;

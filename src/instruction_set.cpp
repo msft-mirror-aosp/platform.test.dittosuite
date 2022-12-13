@@ -17,7 +17,7 @@
 namespace dittosuite {
 
 InstructionSet::InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions)
-    : Instruction(repeat), instructions_(std::move(instructions)) {}
+    : Instruction(kName, repeat), instructions_(std::move(instructions)) {}
 
 void InstructionSet::SetUp() {
   Instruction::SetUp();

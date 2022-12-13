@@ -27,8 +27,8 @@ namespace dittosuite {
 
 class ReadWriteFile : public Instruction {
  public:
-  explicit ReadWriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                         u_int32_t seed, int input_fd_key);
+  explicit ReadWriteFile(const std::string& name, int repeat, int64_t size, int64_t block_size,
+                         ReadWriteType type, u_int32_t seed, int input_fd_key);
 
   virtual void SetUp() override;
 
@@ -52,6 +52,8 @@ class ReadWriteFile : public Instruction {
 
 class WriteFile : public ReadWriteFile {
  public:
+  inline static const std::string kName = "instruction_write_file";
+
   explicit WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
                      u_int32_t seed, bool fsync, int input_fd_key);
 
@@ -63,6 +65,8 @@ class WriteFile : public ReadWriteFile {
 
 class ReadFile : public ReadWriteFile {
  public:
+  inline static const std::string kName = "instruction_read_file";
+
   enum ReadFAdvise { kAutomatic, kNormal, kSequential, kRandom };
 
   explicit ReadFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
