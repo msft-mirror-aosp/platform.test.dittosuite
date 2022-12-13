@@ -30,9 +30,9 @@ class Result {
  public:
   explicit Result(const std::string& name, const int& repeat);
 
-  void AddMeasurement(const std::string& type, const std::vector<int64_t>& samples);
+  void AddMeasurement(const std::string& type, const std::vector<double>& samples);
   void AddSubResult(std::unique_ptr<Result> result);
-  std::vector<int64_t> GetSamples(const std::string& measurement_name) const;
+  std::vector<double> GetSamples(const std::string& measurement_name) const;
   int GetRepeat() const;
   void Print(const ResultsOutput& results_output, const std::string& instruction_path);
 
@@ -48,13 +48,12 @@ class Result {
     std::string name;
   };
   struct Statistics {
-    int64_t min, max, mean, median;
-    double sd;
+    double min, max, mean, median, sd;
   };
   TimeUnit time_unit_;
   BandwidthUnit bandwidth_unit_;
   std::string name_;
-  std::map<std::string, std::vector<int64_t>> samples_;
+  std::map<std::string, std::vector<double>> samples_;
   std::map<std::string, Statistics> statistics_;
   std::vector<std::unique_ptr<Result>> sub_results_;
   int repeat_;
