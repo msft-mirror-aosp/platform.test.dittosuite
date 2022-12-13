@@ -18,7 +18,9 @@ namespace dittosuite {
 
 Instruction::Instruction(const std::string& name, int repeat) : name_(name), repeat_(repeat) {}
 
-void Instruction::SetUp() {}
+void Instruction::SetUp() {
+  time_sampler_.MeasureStart();
+}
 
 void Instruction::Run() {
   for (int i = 0; i < repeat_; i++) {
@@ -26,7 +28,9 @@ void Instruction::Run() {
   }
 }
 
-void Instruction::TearDown() {}
+void Instruction::TearDown() {
+  time_sampler_.MeasureEnd();
+}
 
 void Instruction::SetAbsolutePathKey(int absolute_path_key) {
   absolute_path_key_ = absolute_path_key;
