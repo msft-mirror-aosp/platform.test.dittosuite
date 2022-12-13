@@ -4,12 +4,12 @@ cc_defaults {
     static_libs: ["dittosuite-proto", "libbase_ndk"],
     shared_libs: ["libprotobuf-cpp-full", "liblog"],
     srcs: [
-      "src/create_file.cpp",
       "src/delete_file.cpp",
       "src/instruction_factory.cpp",
       "src/instruction_set.cpp",
       "src/instruction.cpp",
       "src/logger.cpp",
+      "src/open_file.cpp",
       "src/parser.cpp",
       "src/shared_variables.cpp",
     ],
@@ -38,9 +38,9 @@ cc_binary {
 cc_test {
     name: "dittobench_test",
     srcs: [
-      "test/create_file_test.cpp",
       "test/delete_file_test.cpp",
       "test/logger_test.cpp",
+      "test/open_file_test.cpp",
       "test/shared_variables_test.cpp",
     ],
     defaults: ["dittobench_defaults"],

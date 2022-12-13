@@ -12,29 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
+#include <unistd.h>
 
-#include <string>
+#include <gtest/gtest.h>
 
-#include <ditto/instruction.h>
+#include <ditto/open_file.h>
+#include <ditto/shared_variables.h>
 
-namespace dittosuite {
+TEST(OpenFileTest, OpenFileTestRun) {
+  int repeat = 1;
+  std::string file = "/data/local/tmp/newfile.txt";
 
-class CreateFile : public Instruction {
- public:
-  explicit CreateFile(int repeat, const std::string& file);
+  dittosuite::SharedVariables::Set("absolute_path", "");
 
-  void SetUp() override;
-  void TearDown() override;
+  dittosuite::OpenFile open_file_instruction(repeat, file);
+  open_file_instruction.Run();
 
-  int GetOutputFdKey();
-  void SetOutputFdKey(int output_fd_key);
-
- private:
-  void RunSingle() override;
-
-  std::string file_;
-  int output_fd_key_;
-};
-
-} // namespace dittosuite
+  ASSERT_EQ(access(file.c_str(), F_OK), 0);
+}

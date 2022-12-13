@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <ditto/create_file.h>
+#include <ditto/open_file.h>
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -23,14 +23,14 @@
 
 namespace dittosuite {
 
-CreateFile::CreateFile(int repeat, const std::string& file)
+OpenFile::OpenFile(int repeat, const std::string& file)
     : Instruction(repeat),
       file_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) + file),
       output_fd_key_(-1) {}
 
-void CreateFile::SetUp() {}
+void OpenFile::SetUp() {}
 
-void CreateFile::RunSingle() {
+void OpenFile::RunSingle() {
   int fd = open(file_.c_str(), O_CREAT | O_CLOEXEC, O_RDWR);
 
   if (output_fd_key_ != -1) {
@@ -38,15 +38,14 @@ void CreateFile::RunSingle() {
   }
 }
 
-void CreateFile::TearDown() {}
+void OpenFile::TearDown() {}
 
-int CreateFile::GetOutputFdKey() {
+int OpenFile::GetOutputFdKey() {
   return output_fd_key_;
 }
 
-void CreateFile::SetOutputFdKey(int output_fd_key) {
+void OpenFile::SetOutputFdKey(int output_fd_key) {
   output_fd_key_ = output_fd_key;
 }
 
-} // namespace dittosuite
-
+}  // namespace dittosuite
