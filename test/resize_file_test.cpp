@@ -23,24 +23,32 @@
 #include <ditto/resize_file.h>
 #include <ditto/shared_variables.h>
 
+#ifdef __ANDROID__
+const std::string absolute_path = "/data/local/tmp/";
+#else
+const std::string absolute_path = "";
+#endif
+
 TEST(ResizeFileTest, ResizeFileTestRun) {
   int repeat = 1;
-  std::string file = "/data/local/tmp/newfile.txt";
+  std::string file = "newfile.txt";
   int64_t size = 2048;
 
-  dittosuite::SharedVariables::Set("absolute_path", "");
+  auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
+  dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
+  dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
 
   int fd_key = dittosuite::SharedVariables::GetKey("test_file");
 
   dittosuite::OpenFile open_file_instruction(repeat, file, true, fd_key);
   open_file_instruction.Run();
 
-  ASSERT_EQ(access(file.c_str(), F_OK), 0);
+  ASSERT_EQ(access((absolute_path + file).c_str(), F_OK), 0);
 
   dittosuite::ResizeFile resize_file_instruction(repeat, size, fd_key);
   resize_file_instruction.Run();
 
   struct stat sb;
-  stat(file.c_str(), &sb);
+  stat((absolute_path + file).c_str(), &sb);
   ASSERT_EQ(sb.st_size, size);
 }
