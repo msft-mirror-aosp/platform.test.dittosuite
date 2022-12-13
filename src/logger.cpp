@@ -81,7 +81,7 @@ android::base::LogSeverity LogLevelToAndroidLogLevel(LOG_LEVEL log_level) {
 }
 #endif
 
-void Logger::WriteLogMessage(const std::string message, LOG_LEVEL log_level) {
+void Logger::WriteLogMessage(const std::string& message, LOG_LEVEL log_level) {
   std::string message_to_print = LogLevelToString(log_level) + ": " + message;
   switch (log_stream_) {
     case LOG_STREAM_STDOUT:
