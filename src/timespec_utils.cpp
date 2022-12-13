@@ -26,6 +26,10 @@ timespec NsToTimespec(const int64_t& t) {
   return result;
 }
 
+bool operator==(const timespec& t1, const timespec& t2) {
+  return t1.tv_sec == t2.tv_sec && t1.tv_nsec == t2.tv_nsec;
+}
+
 bool operator<(const timespec& t1, const timespec& t2) {
   return ((t1.tv_sec < t2.tv_sec) || (t1.tv_sec == t2.tv_sec && t1.tv_nsec < t2.tv_nsec));
 }
