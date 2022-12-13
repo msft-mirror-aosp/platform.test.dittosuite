@@ -42,12 +42,11 @@ class InstructionFactory {
   InstructionFactory();
 
   static Reseeding ConvertReseeding(const dittosuiteproto::Reseeding& proto_reseeding);
-  static AccessType ConvertAccessType(const dittosuiteproto::AccessType& proto_type);
-  static int ConvertReadFAdvise(
-      const AccessType& type,
-      const dittosuiteproto::ReadFile_ReadFAdvise& proto_fadvise);
+  static Order ConvertOrder(const dittosuiteproto::Order& proto_order);
+  static int ConvertReadFAdvise(const Order& access_order,
+                                const dittosuiteproto::ReadFile_ReadFAdvise& proto_fadvise);
 
   static int current_thread_id_;
 };
 
-} // namespace dittosuite
+}  // namespace dittosuite

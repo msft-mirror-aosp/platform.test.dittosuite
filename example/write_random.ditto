@@ -16,7 +16,7 @@ main: {
       {
         write_file: {
           input_fd: "test_file",
-          type: RANDOM
+          access_order: RANDOM
         }
       },
       {

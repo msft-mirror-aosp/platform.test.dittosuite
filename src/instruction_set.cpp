@@ -30,12 +30,12 @@ overloaded(Ts...) -> overloaded<Ts...>;
 
 InstructionSet::InstructionSet(SyscallInterface& syscall, int repeat,
                                std::vector<std::unique_ptr<Instruction>> instructions, int list_key,
-                               int item_key, AccessType type, Reseeding reseeding, uint32_t seed)
+                               int item_key, Order access_order, Reseeding reseeding, uint32_t seed)
     : Instruction(syscall, kName, repeat),
       instructions_(std::move(instructions)),
       list_key_(list_key),
       item_key_(item_key),
-      type_(type),
+      access_order_(access_order),
       reseeding_(reseeding),
       seed_(seed),
       gen_(seed) {}
@@ -67,7 +67,7 @@ void InstructionSet::RunSingle() {
                             std::uniform_int_distribution<> uniform_distribution(0,
                                                                                  list.size() - 1);
                             for (unsigned int i = 0; i < list.size(); ++i) {
-                              switch (type_) {
+                              switch (access_order_) {
                                 case kSequential: {
                                   SharedVariables::Set(item_key_, list[i]);
                                   break;

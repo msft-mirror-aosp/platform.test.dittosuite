@@ -28,8 +28,8 @@ namespace dittosuite {
 class ReadWriteFile : public Instruction {
  public:
   explicit ReadWriteFile(SyscallInterface& syscall, const std::string& name, int repeat,
-                         int64_t size, int64_t block_size, int64_t starting_offset, AccessType type,
-                         uint32_t seed, Reseeding reseeding, int input_fd_key);
+                         int64_t size, int64_t block_size, int64_t starting_offset,
+                         Order access_order, uint32_t seed, Reseeding reseeding, int input_fd_key);
   std::unique_ptr<Result> CollectResults(const std::string& prefix) override;
 
  protected:
@@ -41,7 +41,7 @@ class ReadWriteFile : public Instruction {
   int64_t size_;
   int64_t block_size_;
   int64_t starting_offset_;
-  AccessType type_;
+  Order access_order_;
   std::mt19937_64 gen_;
   uint64_t seed_;
   Reseeding reseeding_;
@@ -66,8 +66,8 @@ class WriteFile : public ReadWriteFile {
   inline static const std::string kName = "write_file";
 
   explicit WriteFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
-                     int64_t starting_offset, AccessType type, uint32_t seed, Reseeding reseeding,
-                     bool fsync, int input_fd_key);
+                     int64_t starting_offset, Order access_order, uint32_t seed,
+                     Reseeding reseeding, bool fsync, int input_fd_key);
 
  private:
   void RunSingle() override;
@@ -80,7 +80,7 @@ class ReadFile : public ReadWriteFile {
   inline static const std::string kName = "read_file";
 
   explicit ReadFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
-                    int64_t starting_offset, AccessType type, uint32_t seed, Reseeding reseeding,
+                    int64_t starting_offset, Order access_order, uint32_t seed, Reseeding reseeding,
                     int fadvise, int input_fd_key);
 
  private:

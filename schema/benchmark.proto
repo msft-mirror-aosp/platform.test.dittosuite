@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package dittosuiteproto;
 
-enum AccessType {
+enum Order {
   SEQUENTIAL = 0;
   RANDOM = 1;
 }
@@ -52,7 +52,7 @@ message WriteFile {
   optional int64 size = 2 [default = -1];
   optional int64 block_size = 3 [default = 4096];
   optional int64 starting_offset = 4 [default = 0];
-  optional AccessType type = 5 [default = SEQUENTIAL];
+  optional Order access_order = 5 [default = SEQUENTIAL];
   optional uint32 seed = 6;
   optional bool fsync = 7 [default = false];
   optional Reseeding reseeding = 8 [default = ONCE];
@@ -69,7 +69,7 @@ message ReadFile {
   optional int64 size = 2 [default = -1];
   optional int64 block_size = 3 [default = 4096];
   optional int64 starting_offset = 4 [default = 0];
-  optional AccessType type = 5 [default = SEQUENTIAL];
+  optional Order access_order = 5 [default = SEQUENTIAL];
   optional uint32 seed = 6;
   optional ReadFAdvise fadvise = 7 [default = AUTOMATIC];
   optional Reseeding reseeding = 8 [default = ONCE];
@@ -116,7 +116,7 @@ message InstructionSet {
 message InstructionSetIterate {
   required string list_name = 1;
   required string item_name = 2;
-  optional AccessType type = 3 [default = SEQUENTIAL];
+  optional Order access_order = 3 [default = SEQUENTIAL];
   optional Reseeding reseeding = 4 [default = ONCE];
   optional uint32 seed = 5;
 }
