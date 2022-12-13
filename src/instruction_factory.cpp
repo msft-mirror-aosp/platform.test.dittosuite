@@ -14,6 +14,8 @@
 
 #include <ditto/instruction_factory.h>
 
+#include <sys/types.h>
+
 #include <ditto/close_file.h>
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
@@ -21,6 +23,7 @@
 #include <ditto/open_file.h>
 #include <ditto/resize_file.h>
 #include <ditto/shared_variables.h>
+#include <ditto/write_file.h>
 
 namespace dittosuite {
 typedef dittosuiteproto::Instruction::InstructionOneofCase InstructionType;
@@ -71,6 +74,36 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       const auto& options = proto_instruction.instruction_resize_file();
 
       auto instruction = std::make_unique<ResizeFile>(repeat, options.size());
+      instruction->SetInputFdKey(SharedVariables::GetKey(options.input_fd()));
+
+      return instruction;
+    }
+    case InstructionType::kInstructionWriteFile: {
+      const auto& options = proto_instruction.instruction_write_file();
+
+      ReadWriteType type;
+      switch (options.type()) {
+        case dittosuiteproto::ReadWriteType::sequential: {
+          type = ReadWriteType::kSequential;
+          break;
+        }
+        case dittosuiteproto::ReadWriteType::random: {
+          type = ReadWriteType::kRandom;
+          break;
+        }
+        default: {
+          LOGE("Invalid ReadWriteType was provided");
+          return nullptr;
+        }
+      }
+
+      u_int32_t seed = options.seed();
+      if (!options.has_seed()) {
+        seed = time(0);
+      }
+
+      auto instruction =
+          std::make_unique<WriteFile>(repeat, options.size(), options.block_size(), type, seed);
       instruction->SetInputFdKey(SharedVariables::GetKey(options.input_fd()));
 
       return instruction;
