@@ -19,7 +19,7 @@
 #include <vector>
 
 #ifdef __ANDROID__
-#include "test/dittosuite/schema/benchmark.pb.h"
+#include <benchmark.pb.h>
 #else
 #include "schema/benchmark.pb.h"
 #endif
