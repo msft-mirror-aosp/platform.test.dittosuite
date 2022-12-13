@@ -24,8 +24,8 @@ namespace dittosuite {
 
 TEST(DittoLogger, SimpleLog) {
   for (int i = 10; i <= 11; i++) {
-    Logger::GetInstance().setLevel(LOG_LEVEL_ERROR);
-    std::cout << "My log level:  " << Logger::GetInstance().logLevel << '\n';
+    Logger::GetInstance().SetLogLevel(LOG_LEVEL_ERROR);
+    std::cout << "My log level:  " << Logger::GetInstance().log_level_ << '\n';
     LOGW("This is a warning");
     LOGE("This is an error");
     LOGI("This is an info");
@@ -35,8 +35,8 @@ TEST(DittoLogger, SimpleLog) {
 TEST(DittoLogger, SetAndGetLevel) {
   for (const auto l :
        {LOG_LEVEL_VERBOSE, LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR}) {
-    Logger::GetInstance().setLevel(l);
-    ASSERT_EQ(Logger::GetInstance().GetLevel(), l);
+    Logger::GetInstance().SetLogLevel(l);
+    ASSERT_EQ(Logger::GetInstance().log_level_, l);
   }
 }
 
