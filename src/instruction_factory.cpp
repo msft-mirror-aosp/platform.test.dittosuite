@@ -13,20 +13,39 @@
 // limitations under the License.
 
 #include <ditto/instruction_factory.h>
+
 #include <ditto/create_file.h>
+#include <ditto/instruction_set.h>
+#include <ditto/logger.h>
 
 namespace dittosuite {
-  std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
-      const dittosuiteproto::Instruction& proto_instruction) {
-    switch (proto_instruction.instruction_oneof_case()) {
-        case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionCreateFile:
-          return std::make_unique<CreateFile>(proto_instruction.instruction_create_file().file());
-        case dittosuiteproto::Instruction::InstructionOneofCase::INSTRUCTION_ONEOF_NOT_SET:
-        default:
-          // TODO: LOG() << "Invalid Instruction";
-          return nullptr;
-      }
+
+std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSet(
+    const int& repeat, const dittosuiteproto::InstructionSet& proto_instruction_set) {
+  std::vector<std::unique_ptr<Instruction>> instructions;
+  for (const auto& instruction : proto_instruction_set.instructions()) {
+    instructions.push_back(std::move(InstructionFactory::CreateFromProtoInstruction(instruction)));
   }
+  return std::make_unique<InstructionSet>(repeat, std::move(instructions));
+}
+
+std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
+    const dittosuiteproto::Instruction& proto_instruction) {
+  switch (proto_instruction.instruction_oneof_case()) {
+    case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionSet:
+      return InstructionFactory::CreateFromProtoInstructionSet(proto_instruction.repeat(),
+                                                               proto_instruction.instruction_set());
+    case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionCreateFile:
+      return std::make_unique<CreateFile>(proto_instruction.repeat(),
+                                          proto_instruction.instruction_create_file().file());
+    case dittosuiteproto::Instruction::InstructionOneofCase::INSTRUCTION_ONEOF_NOT_SET:
+      LOGE("Instruction was not set in .ditto file");
+      return nullptr;
+    default:
+      LOGE("Invalid instruction was set in .ditto file");
+      return nullptr;
+  }
+}
 
 } // namespace dittosuite
 
