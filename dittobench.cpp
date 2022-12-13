@@ -35,5 +35,6 @@ int main(int argc, char** argv) {
   result->Print("");
   result->PrintHistograms("");
   result->PrintStatisticsTable();
+  result->MakeStatisticsCsv();
   return 0;
 }
