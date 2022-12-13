@@ -23,5 +23,6 @@ namespace dittosuite {
 
 int64_t GetFileSize(SyscallInterface& syscall, int fd);
 std::string GetFilePath(SyscallInterface& syscall, int fd);
+bool FileExists(SyscallInterface& syscall, const std::string& path_name);
 
 }  // namespace dittosuite
