@@ -45,18 +45,18 @@ TEST_F(ReadFileTest, SetFAdvise) {
 
   EXPECT_CALL(syscall_, FAdvise(fd_, 0, MockSyscall::kDefaultFileSize, fadvise));
 
-  auto read_file =
-      dittosuite::ReadFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
-                           dittosuite::kSequential, 0, dittosuite::kOnce, fadvise, input_key_);
+  auto read_file = dittosuite::ReadFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
+                                        dittosuite::Order::kSequential, 0,
+                                        dittosuite::Reseeding::kOnce, fadvise, input_key_);
   read_file.Run();
 }
 
 TEST_F(ReadFileTest, ReadSingleBlockSequential) {
   EXPECT_CALL(syscall_, Read(fd_, _, MockSyscall::kDefaultFileSize, 0));
 
-  auto read_file =
-      dittosuite::ReadFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
-                           dittosuite::kSequential, 0, dittosuite::kOnce, 0, input_key_);
+  auto read_file = dittosuite::ReadFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
+                                        dittosuite::Order::kSequential, 0,
+                                        dittosuite::Reseeding::kOnce, 0, input_key_);
   read_file.Run();
 }
 
@@ -64,9 +64,9 @@ TEST_F(ReadFileTest, ReadSingleBlockSequentialRepeated) {
   int repeat = 2;
   EXPECT_CALL(syscall_, Read(fd_, _, MockSyscall::kDefaultFileSize, 0)).Times(repeat);
 
-  auto read_file =
-      dittosuite::ReadFile(syscall_, repeat, -1, MockSyscall::kDefaultFileSize, 0,
-                           dittosuite::kSequential, 0, dittosuite::kOnce, 0, input_key_);
+  auto read_file = dittosuite::ReadFile(syscall_, repeat, -1, MockSyscall::kDefaultFileSize, 0,
+                                        dittosuite::Order::kSequential, 0,
+                                        dittosuite::Reseeding::kOnce, 0, input_key_);
   read_file.Run();
 }
 
@@ -74,7 +74,8 @@ TEST_F(ReadFileTest, ReadSingleBlockRandom) {
   EXPECT_CALL(syscall_, Read(fd_, _, MockSyscall::kDefaultFileSize, 0));
 
   auto read_file = dittosuite::ReadFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
-                                        dittosuite::kRandom, 0, dittosuite::kOnce, 0, input_key_);
+                                        dittosuite::Order::kRandom, 0, dittosuite::Reseeding::kOnce,
+                                        0, input_key_);
   read_file.Run();
 }
 
@@ -83,7 +84,8 @@ TEST_F(ReadFileTest, ReadSingleBlockRandomRepeated) {
   EXPECT_CALL(syscall_, Read(fd_, _, MockSyscall::kDefaultFileSize, 0)).Times(repeat);
 
   auto read_file = dittosuite::ReadFile(syscall_, repeat, -1, MockSyscall::kDefaultFileSize, 0,
-                                        dittosuite::kRandom, 0, dittosuite::kOnce, 0, input_key_);
+                                        dittosuite::Order::kRandom, 0, dittosuite::Reseeding::kOnce,
+                                        0, input_key_);
   read_file.Run();
 }
 
@@ -108,8 +110,9 @@ TEST_F(ReadFileTest, ReadMultipleBlocksSequential) {
     EXPECT_CALL(syscall_, Read(fd_, _, block_size, block_size * 3));
   }
 
-  auto read_file = dittosuite::ReadFile(syscall_, 1, size, block_size, 0, dittosuite::kSequential,
-                                        0, dittosuite::kOnce, 0, input_key_);
+  auto read_file =
+      dittosuite::ReadFile(syscall_, 1, size, block_size, 0, dittosuite::Order::kSequential, 0,
+                           dittosuite::Reseeding::kOnce, 0, input_key_);
   read_file.Run();
 }
 
@@ -138,8 +141,8 @@ TEST_F(ReadFileTest, ReadMultipleBlocksSequentialRepeated) {
   }
 
   auto read_file =
-      dittosuite::ReadFile(syscall_, repeat, size, block_size, 0, dittosuite::kSequential, 0,
-                           dittosuite::kOnce, 0, input_key_);
+      dittosuite::ReadFile(syscall_, repeat, size, block_size, 0, dittosuite::Order::kSequential, 0,
+                           dittosuite::Reseeding::kOnce, 0, input_key_);
   read_file.Run();
 }
 
@@ -169,9 +172,9 @@ TEST_F(ReadFileTest, ReadMultipleBlocksRandomRepeatedReseededOnce) {
         return size;
       }));
 
-  auto read_file = std::make_unique<dittosuite::ReadFile>(syscall_, repeat, size, block_size, 0,
-                                                          dittosuite::kRandom, 0, dittosuite::kOnce,
-                                                          0, input_key_);
+  auto read_file = std::make_unique<dittosuite::ReadFile>(
+      syscall_, repeat, size, block_size, 0, dittosuite::Order::kRandom, 0,
+      dittosuite::Reseeding::kOnce, 0, input_key_);
   std::vector<std::unique_ptr<dittosuite::Instruction>> instructions;
   instructions.push_back(std::move(read_file));
   auto instruction_set = dittosuite::InstructionSet(syscall_, repeat, std::move(instructions));
@@ -208,8 +211,8 @@ TEST_F(ReadFileTest, ReadMultipleBlocksRandomRepeatedReseededEachRoundOfCycles) 
       }));
 
   auto read_file = std::make_unique<dittosuite::ReadFile>(
-      syscall_, repeat, size, block_size, 0, dittosuite::kRandom, 0, dittosuite::kEachRoundOfCycles,
-      0, input_key_);
+      syscall_, repeat, size, block_size, 0, dittosuite::Order::kRandom, 0,
+      dittosuite::Reseeding::kEachRoundOfCycles, 0, input_key_);
   std::vector<std::unique_ptr<dittosuite::Instruction>> instructions;
   instructions.push_back(std::move(read_file));
   auto instruction_set = dittosuite::InstructionSet(syscall_, repeat, std::move(instructions));
@@ -245,9 +248,9 @@ TEST_F(ReadFileTest, ReadMultipleBlocksRandomRepeatedReseededEachCycle) {
         return size;
       }));
 
-  auto read_file = std::make_unique<dittosuite::ReadFile>(syscall_, repeat, size, block_size, 0,
-                                                          dittosuite::kRandom, 0,
-                                                          dittosuite::kEachCycle, 0, input_key_);
+  auto read_file = std::make_unique<dittosuite::ReadFile>(
+      syscall_, repeat, size, block_size, 0, dittosuite::Order::kRandom, 0,
+      dittosuite::Reseeding::kEachCycle, 0, input_key_);
   std::vector<std::unique_ptr<dittosuite::Instruction>> instructions;
   instructions.push_back(std::move(read_file));
   auto instruction_set = dittosuite::InstructionSet(syscall_, repeat, std::move(instructions));
@@ -261,8 +264,8 @@ TEST_F(ReadFileTest, UsedFileSize) {
   // Expect a single Read() with the correct block_size (equal to file size)
   EXPECT_CALL(syscall_, Read(fd_, _, MockSyscall::kDefaultFileSize, _));
 
-  auto read_file = dittosuite::ReadFile(syscall_, 1, -1, -1, 0, dittosuite::kSequential, 0,
-                                        dittosuite::kOnce, 0, input_key_);
+  auto read_file = dittosuite::ReadFile(syscall_, 1, -1, -1, 0, dittosuite::Order::kSequential, 0,
+                                        dittosuite::Reseeding::kOnce, 0, input_key_);
   read_file.Run();
 }
 
@@ -282,15 +285,17 @@ TEST_F(ReadFileTest, UsedFileSizeRepeated) {
     }
   }
 
-  auto read_file = dittosuite::ReadFile(syscall_, sizes.size(), -1, -1, 0, dittosuite::kSequential,
-                                        0, dittosuite::kOnce, 0, input_key_);
+  auto read_file =
+      dittosuite::ReadFile(syscall_, sizes.size(), -1, -1, 0, dittosuite::Order::kSequential, 0,
+                           dittosuite::Reseeding::kOnce, 0, input_key_);
   read_file.Run();
 }
 
 TEST_F(ReadFileDeathTest, DiedDueToInvalidFd) {
   SharedVariables::Set(input_key_, -1);
   auto read_file = dittosuite::ReadFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
-                                        dittosuite::kRandom, 0, dittosuite::kOnce, 0, input_key_);
+                                        dittosuite::Order::kRandom, 0, dittosuite::Reseeding::kOnce,
+                                        0, input_key_);
 
   // Will fail when GetFileSize() is called for an invalid fd during setup
   EXPECT_CALL(syscall_, FStat(-1, _)).WillRepeatedly(Return(-1));

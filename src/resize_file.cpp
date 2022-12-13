@@ -49,14 +49,14 @@ ResizeFileRandom::ResizeFileRandom(SyscallInterface& syscall, int repeat, int64_
       reseeding_(reseeding) {}
 
 void ResizeFileRandom::SetUp() {
-  if (reseeding_ == kEachRoundOfCycles) {
+  if (reseeding_ == Reseeding::kEachRoundOfCycles) {
     gen_.seed(seed_);
   }
   Instruction::SetUp();
 }
 
 void ResizeFileRandom::SetUpSingle() {
-  if (reseeding_ == kEachCycle) {
+  if (reseeding_ == Reseeding::kEachCycle) {
     gen_.seed(seed_);
   }
 

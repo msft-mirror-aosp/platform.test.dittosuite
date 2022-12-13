@@ -26,8 +26,8 @@
 
 namespace dittosuite {
 
-enum Order { kSequential, kRandom };
-enum Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
+enum class Order { kSequential, kRandom };
+enum class Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
 
 class Instruction {
  public:

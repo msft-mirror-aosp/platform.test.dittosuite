@@ -34,55 +34,47 @@ Logger& Logger::GetInstance() {
   return logger;
 }
 
-void Logger::SetLogLevel(LOG_LEVEL log_level) {
+void Logger::SetLogLevel(const LogLevel log_level) {
   log_level_ = log_level;
 }
 
-void Logger::SetLogStream(LOG_STREAM log_stream) {
+void Logger::SetLogStream(const LogStream log_stream) {
   log_stream_ = log_stream;
 }
 
-LOG_LEVEL Logger::GetLogLevel() const {
+LogLevel Logger::GetLogLevel() const {
   return log_level_;
 }
 
-LOG_STREAM Logger::GetLogStream() const {
+LogStream Logger::GetLogStream() const {
   return log_stream_;
 }
 
-std::string LogLevelToString(LOG_LEVEL log_level) {
+std::string LogLevelToString(const LogLevel log_level) {
   static const std::string prefixes[] = {"VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL"};
-  return prefixes[log_level];
+  return prefixes[static_cast<int>(log_level)];
 }
 
 #ifdef __ANDROID__
-android::base::LogSeverity LogLevelToAndroidLogLevel(LOG_LEVEL log_level) {
+android::base::LogSeverity LogLevelToAndroidLogLevel(const LogLevel log_level) {
   switch (log_level) {
-    case LOG_LEVEL_VERBOSE:
+    case LogLevel::kVerbose:
       return android::base::VERBOSE;
-      break;
-    case LOG_LEVEL_DEBUG:
+    case LogLevel::kDebug:
       return android::base::DEBUG;
-      break;
-    case LOG_LEVEL_INFO:
+    case LogLevel::kInfo:
       return android::base::INFO;
-      break;
-    case LOG_LEVEL_WARNING:
+    case LogLevel::kWarning:
       return android::base::WARNING;
-      break;
-    case LOG_LEVEL_ERROR:
+    case LogLevel::kError:
       return android::base::ERROR;
-      break;
-    case LOG_LEVEL_FATAL:
+    case LogLevel::kFatal:
       return android::base::FATAL;
-      break;
-    default:
-      break;
   }
 }
 #endif
 
-void Logger::WriteLogMessage(LOG_LEVEL log_level, const std::string& message,
+void Logger::WriteLogMessage(const LogLevel log_level, const std::string& message,
                              const std::string& file_name, int line, bool print_errno) {
   std::stringstream ss;
   ss << file_name << ":" << line << ": " << LogLevelToString(log_level) << ": " << message;
@@ -90,15 +82,15 @@ void Logger::WriteLogMessage(LOG_LEVEL log_level, const std::string& message,
     ss << ": " << strerror(errno);
   }
   switch (log_stream_) {
-    case LOG_STREAM_STDOUT:
-      std::cout << ss.str() << std::endl;
-      break;
+    case LogStream::kLogcat:
 #ifdef __ANDROID__
-    case LOG_STREAM_LOGCAT:
       LOG(LogLevelToAndroidLogLevel(log_level)) << ss.str();
       break;
+#else
+      [[fallthrough]];
 #endif
-    default:
+    case LogStream::kStdout:
+      std::cout << ss.str() << std::endl;
       break;
   }
 }

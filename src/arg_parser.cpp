@@ -18,41 +18,42 @@ namespace dittosuite {
 
 ResultsOutput ArgToResultsOutput(const std::string_view optarg) {
   if (optarg == "csv" || optarg == "1") {
-    return kCsv;
+    return ResultsOutput::kCsv;
   }
-  return kReport;  // by default, the results output is the report (= 0)
+  return ResultsOutput::kReport;  // by default, the results output is the report (= 0)
 }
 
-LOG_STREAM ArgToLogStream(const std::string_view optarg) {
+LogStream ArgToLogStream(const std::string_view optarg) {
   if (optarg == "logcat" || optarg == "1") {
 #ifdef __ANDROID__
-    return LOG_STREAM_LOGCAT;
-#endif
+    return LogStream::kLogcat;
+#else
     PLOGF("Cannot set log stream as logcat outside of Android");
+#endif
   }
-  return LOG_STREAM_STDOUT;  // by default, the log stream is stdout
+  return LogStream::kStdout;  // by default, the log stream is stdout
 }
 
-LOG_LEVEL ArgToLogLevel(const std::string_view optarg) {
+LogLevel ArgToLogLevel(const std::string_view optarg) {
   if (optarg == "VERBOSE" || optarg == "0") {
-    return LOG_LEVEL_VERBOSE;
+    return LogLevel::kVerbose;
   }
   if (optarg == "DEBUG" || optarg == "1") {
-    return LOG_LEVEL_DEBUG;
+    return LogLevel::kDebug;
   }
   if (optarg == "INFO" || optarg == "2") {
-    return LOG_LEVEL_INFO;
+    return LogLevel::kInfo;
   }
   if (optarg == "WARNING" || optarg == "3") {
-    return LOG_LEVEL_WARNING;
+    return LogLevel::kWarning;
   }
   if (optarg == "ERROR" || optarg == "4") {
-    return LOG_LEVEL_ERROR;
+    return LogLevel::kError;
   }
   if (optarg == "FATAL" || optarg == "5") {
-    return LOG_LEVEL_FATAL;
+    return LogLevel::kFatal;
   }
-  return LOG_LEVEL_INFO;  // by default, the log level is info
+  return LogLevel::kInfo;  // by default, the log level is info
 }
 
 void PrintHelpAndExit(char **argv) {
