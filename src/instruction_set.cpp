@@ -28,10 +28,10 @@ struct overloaded : Ts... {
 template <class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
 
-InstructionSet::InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions,
-                               int list_key, int item_key, AccessType type, Reseeding reseeding,
-                               uint32_t seed)
-    : Instruction(kName, repeat),
+InstructionSet::InstructionSet(SyscallInterface& syscall, int repeat,
+                               std::vector<std::unique_ptr<Instruction>> instructions, int list_key,
+                               int item_key, AccessType type, Reseeding reseeding, uint32_t seed)
+    : Instruction(syscall, kName, repeat),
       instructions_(std::move(instructions)),
       list_key_(list_key),
       item_key_(item_key),
@@ -40,8 +40,9 @@ InstructionSet::InstructionSet(int repeat, std::vector<std::unique_ptr<Instructi
       seed_(seed),
       gen_(seed) {}
 
-InstructionSet::InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions)
-    : Instruction(kName, repeat),
+InstructionSet::InstructionSet(SyscallInterface& syscall, int repeat,
+                               std::vector<std::unique_ptr<Instruction>> instructions)
+    : Instruction(syscall, kName, repeat),
       instructions_(std::move(instructions)),
       list_key_(-1),
       item_key_(-1) {}

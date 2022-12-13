@@ -14,22 +14,18 @@
 
 #include <ditto/close_file.h>
 
-#include <unistd.h>
-
-#include <cstdlib>
-
 #include <ditto/logger.h>
 #include <ditto/shared_variables.h>
 
 namespace dittosuite {
 
-CloseFile::CloseFile(int repeat, int input_fd_key)
-    : Instruction(kName, repeat), input_fd_key_(input_fd_key) {}
+CloseFile::CloseFile(SyscallInterface& syscall, int repeat, int input_fd_key)
+    : Instruction(syscall, kName, repeat), input_fd_key_(input_fd_key) {}
 
 void CloseFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
 
-  if (close(fd) != 0) {
+  if (syscall_.Close(fd) != 0) {
     LOGF("Error while closing the file");
   }
 }

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <dirent.h>
-
 #include <vector>
 
 #include <ditto/logger.h>
@@ -22,15 +20,16 @@
 
 namespace dittosuite {
 
-ReadDirectory::ReadDirectory(int repeat, const std::string& directory_name, int output_key)
-    : Instruction(kName, repeat),
+ReadDirectory::ReadDirectory(SyscallInterface& syscall, int repeat,
+                             const std::string& directory_name, int output_key)
+    : Instruction(syscall, kName, repeat),
       directory_name_(GetAbsolutePath() + directory_name),
       output_key_(output_key) {}
 
 void ReadDirectory::RunSingle() {
   std::vector<std::string> output;
 
-  DIR* directory = opendir(directory_name_.c_str());
+  DIR* directory = syscall_.OpenDir(directory_name_);
 
   if (directory == nullptr) {
     LOGE("Error while calling opendir(). Directory name: " + directory_name_);
@@ -38,7 +37,7 @@ void ReadDirectory::RunSingle() {
   }
 
   struct dirent* entry;
-  while ((entry = readdir(directory)) != nullptr) {
+  while ((entry = syscall_.ReadDir(directory)) != nullptr) {
     // Only collect regular files
     if (entry->d_type == DT_REG) {
       output.push_back(directory_name_ + "/" + entry->d_name);
@@ -46,7 +45,7 @@ void ReadDirectory::RunSingle() {
   }
   SharedVariables::Set(output_key_, output);
 
-  closedir(directory);
+  syscall_.CloseDir(directory);
 }
 
 }  // namespace dittosuite
