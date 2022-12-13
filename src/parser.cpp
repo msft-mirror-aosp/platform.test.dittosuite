@@ -39,7 +39,10 @@ std::unique_ptr<Instruction> Parser::Parse() {
   google::protobuf::io::FileInputStream file_input(open(file_path_.c_str(), O_CLOEXEC));
   google::protobuf::TextFormat::Parse(&file_input, benchmark.get());
 
-  Instruction::SetAbsolutePath(benchmark->global().absolute_path());
+  auto absolute_path_key = SharedVariables::GetKey("absolute_path");
+  SharedVariables::Set(absolute_path_key, benchmark->global().absolute_path());
+  Instruction::SetAbsolutePathKey(absolute_path_key);
+
   auto instructions = InstructionFactory::CreateFromProtoInstruction(benchmark->main());
   SharedVariables::ClearKeys();
 
