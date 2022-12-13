@@ -19,7 +19,11 @@
 #include <ditto/instruction.h>
 #include <ditto/instruction_set.h>
 
+#ifdef __ANDROID__
+#include "test/dittosuite/schema/benchmark.pb.h"
+#else
 #include "schema/benchmark.pb.h"
+#endif
 
 namespace dittosuite {
 
