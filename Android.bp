@@ -6,7 +6,8 @@ cc_defaults {
     srcs: [
       "src/create_file.cpp",
       "src/instruction_factory.cpp",
-      "src/parser.cpp",
+      "src/logger.cpp",
+      "src/parser.cpp"
     ],
     cflags: [
       "-Wall",
@@ -32,6 +33,9 @@ cc_binary {
 
 cc_test {
     name: "dittobench_test",
-    srcs: ["test/create_file_test.cpp"],
+    srcs: [
+      "test/create_file_test.cpp",
+      "test/logger_test.cpp",
+    ],
     defaults: ["dittobench_defaults"],
 }
