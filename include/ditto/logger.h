@@ -18,26 +18,48 @@
 #include <string>
 #include <vector>
 
-namespace dittosuite{
-    enum LOG_LEVEL {LOG_LEVEL_VERBOSE, LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR};
+namespace dittosuite {
+enum LOG_LEVEL {
+  LOG_LEVEL_VERBOSE,
+  LOG_LEVEL_DEBUG,
+  LOG_LEVEL_INFO,
+  LOG_LEVEL_WARNING,
+  LOG_LEVEL_ERROR
+};
 
-    class Logger {
-        public:
-            Logger(Logger const&) = delete;
-            void operator=(Logger const&) = delete;
-            static Logger &GetInstance();
-            void setLevel(LOG_LEVEL newLogLevel);
-            LOG_LEVEL GetLevel() const;
-            void writeLogMessage(const std::string message, const std::string prefix);
-            LOG_LEVEL logLevel;
-        protected:
-            Logger() {}
-    };
+class Logger {
+ public:
+  Logger(Logger const&) = delete;
+  void operator=(Logger const&) = delete;
+  static Logger& GetInstance();
+  void setLevel(LOG_LEVEL newLogLevel);
+  LOG_LEVEL GetLevel() const;
+  void writeLogMessage(const std::string message, const std::string prefix);
+  LOG_LEVEL logLevel;
 
-#define LOGE(X) if (Logger::GetInstance().logLevel <= LOG_LEVEL_ERROR) {Logger::GetInstance().writeLogMessage(X, "ERROR");}
-#define LOGW(X) if (Logger::GetInstance().logLevel <= LOG_LEVEL_WARNING) {Logger::GetInstance().writeLogMessage(X, "WARNING");}
-#define LOGI(X) if (Logger::GetInstance().logLevel <= LOG_LEVEL_INFO) {Logger::GetInstance().writeLogMessage(X, "INFO");}
-#define LOGD(X) if (Logger::GetInstance().logLevel <= LOG_LEVEL_DEBUG) {Logger::GetInstance().writeLogMessage(X, "DEBUG");}
-#define LOGV(X) if (Logger::GetInstance().logLevel <= LOG_LEVEL_VERBOSE) {Logger::GetInstance().writeLogMessage(X, "VERBOSE");}
+ protected:
+  Logger() {}
+};
 
-}
+#define LOGE(X)                                            \
+  if (Logger::GetInstance().logLevel <= LOG_LEVEL_ERROR) { \
+    Logger::GetInstance().writeLogMessage(X, "ERROR");     \
+  }
+#define LOGW(X)                                              \
+  if (Logger::GetInstance().logLevel <= LOG_LEVEL_WARNING) { \
+    Logger::GetInstance().writeLogMessage(X, "WARNING");     \
+  }
+#define LOGI(X)                                           \
+  if (Logger::GetInstance().logLevel <= LOG_LEVEL_INFO) { \
+    Logger::GetInstance().writeLogMessage(X, "INFO");     \
+  }
+#define LOGD(X)                                            \
+  if (Logger::GetInstance().logLevel <= LOG_LEVEL_DEBUG) { \
+    Logger::GetInstance().writeLogMessage(X, "DEBUG");     \
+  }
+#define LOGV(X)                                              \
+  if (Logger::GetInstance().logLevel <= LOG_LEVEL_VERBOSE) { \
+    Logger::GetInstance().writeLogMessage(X, "VERBOSE");     \
+  }
+
+}  // namespace dittosuite
