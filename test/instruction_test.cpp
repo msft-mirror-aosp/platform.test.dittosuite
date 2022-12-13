@@ -21,7 +21,8 @@
 #include <ditto/shared_variables.h>
 
 #ifdef __ANDROID__
-const std::string absolute_path = "/data/local/tmp/";
+#include <android-base/file.h>
+const std::string absolute_path = android::base::GetExecutableDirectory();
 #else
 const std::string absolute_path = "";
 #endif
