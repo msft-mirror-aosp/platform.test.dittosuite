@@ -33,7 +33,7 @@ class Result {
   timespec GetMean() const;
   void AddSubResult(std::unique_ptr<Result> result);
   void Analyse();
-  void Print();
+  void Print(const std::string& instruction_path);
 
  private:
   std::string name_;
