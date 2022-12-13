@@ -24,7 +24,6 @@
 #include <ditto/shared_variables.h>
 
 #include <google/protobuf/text_format.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 #ifdef __ANDROID__
 #include "test/dittosuite/schema/benchmark.pb.h"
@@ -39,17 +38,29 @@ Parser& Parser::GetParser() {
   return parser;
 }
 
-void Parser::Parse(const std::string& file_path) {
+void Parser::Parse(const std::string& file_path, const std::vector<std::string>& parameters) {
   std::unique_ptr<dittosuiteproto::Benchmark> benchmark =
       std::make_unique<dittosuiteproto::Benchmark>();
 
-  int fd = open(file_path.c_str(), O_CLOEXEC);
-  if (fd == -1) {
+  std::ifstream file(file_path);
+  if (!file.is_open()) {
     LOGF("Provided .ditto file was not found");
   }
 
-  google::protobuf::io::FileInputStream file_input(fd);
-  if (!google::protobuf::TextFormat::Parse(&file_input, benchmark.get())) {
+  std::string file_contents((std::istreambuf_iterator<char>(file)),
+                            (std::istreambuf_iterator<char>()));
+
+  for (unsigned int i = 0; i < parameters.size(); i++) {
+    std::string to_replace("$PARAMETER_" + std::to_string(i + 1) + "$");
+    auto position = file_contents.find(to_replace);
+    if (position == std::string::npos) {
+      LOGW(to_replace + " does not exist in .ditto file");
+      continue;
+    }
+    file_contents.replace(position, to_replace.size(), parameters[i]);
+  }
+
+  if (!google::protobuf::TextFormat::ParseFromString(file_contents, benchmark.get())) {
     LOGF("Error while parsing .ditto file");
   }
 
