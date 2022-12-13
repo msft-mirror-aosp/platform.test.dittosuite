@@ -17,13 +17,17 @@ file(GLOB libditto_src
 
 add_library(libdittosuite STATIC ${libditto_src})
 
+target_link_libraries(libdittosuite
+	benchmark_proto
+	${Protobuf_LIBRARIES}
+	${Protobuf_PROTOC_LIBRARIES}
+	pthread
+)
+
 add_executable(dittobench dittobench.cpp)
 
 target_link_libraries(dittobench
 	libdittosuite
-	benchmark_proto
-	${Protobuf_LIBRARIES}
-	${Protobuf_PROTOC_LIBRARIES}
 )
 
 add_subdirectory(test)
