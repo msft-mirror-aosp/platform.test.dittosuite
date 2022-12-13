@@ -16,6 +16,21 @@
 
 namespace dittosuite {
 
+ResultsOutput ArgToResultsOutput(char* optarg) {
+  if (strcmp(optarg, "csv") == 0 || strcmp(optarg, "1") == 0) return kCsv;
+  return kReport;  // by default, the results output is the report (= 0)
+}
+
+LOG_STREAM ArgToLogStream(char* optarg) {
+  if (strcmp(optarg, "logcat") == 0 || strcmp(optarg, "1") == 0) {
+#ifdef __ANDROID__
+    return LOG_STREAM_LOGCAT;
+#endif
+    PLOGF("Cannot set log stream as logcat outside of Android");
+  }
+  return LOG_STREAM_STDOUT;  // by default, the log stream is stdout
+}
+
 LOG_LEVEL ArgToLogLevel(char* optarg) {
   if (strcmp(optarg, "VERBOSE") == 0 || strcmp(optarg, "0") == 0)
     return LOG_LEVEL_VERBOSE;
@@ -25,10 +40,15 @@ LOG_LEVEL ArgToLogLevel(char* optarg) {
     return LOG_LEVEL_INFO;
   else if (strcmp(optarg, "WARNING") == 0 || strcmp(optarg, "3") == 0)
     return LOG_LEVEL_WARNING;
-  return LOG_LEVEL_ERROR;
+  else if (strcmp(optarg, "ERROR") == 0 || strcmp(optarg, "4") == 0)
+    return LOG_LEVEL_ERROR;
+  else if (strcmp(optarg, "FATAL") == 0 || strcmp(optarg, "5") == 0)
+    return LOG_LEVEL_FATAL;
+  return LOG_LEVEL_INFO;  // by default, the log level is info
 }
 
-void ParseArguments(int argc, char** argv) {
+CmdArguments ParseArguments(int argc, char** argv) {
+  CmdArguments arguments;
   while (true) {
     int option_index = 0;
     static struct option long_options[] = {{"results-output", required_argument, 0, 1},
@@ -43,13 +63,13 @@ void ParseArguments(int argc, char** argv) {
 
     switch (c) {
       case 1:
-        // TODO(robertasn): set results output in the output class
+        arguments.results_output = ArgToResultsOutput(optarg);
         break;
       case 2:
         // TODO(robertasn): set results output path in the output class
         break;
       case 3:
-        // TODO(robertasn): set log stream in Logger
+        dittosuite::Logger::GetInstance().SetLogStream(ArgToLogStream(optarg));
         break;
       case 4:
         // TODO(robertasn): set log delayed in Logger
@@ -68,6 +88,7 @@ void ParseArguments(int argc, char** argv) {
   }
 
   dittosuite::Parser::GetParser().SetFilePath(argv[optind]);
+  return arguments;
 }
 
 }  // namespace dittosuite

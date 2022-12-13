@@ -23,7 +23,7 @@
 #include <ditto/parser.h>
 
 int main(int argc, char** argv) {
-  dittosuite::ParseArguments(argc, argv);
+  dittosuite::CmdArguments arguments = dittosuite::ParseArguments(argc, argv);
 
   dittosuite::Parser::GetParser().Parse();
 
@@ -40,10 +40,7 @@ int main(int argc, char** argv) {
   main->TearDown();
 
   auto result = main->CollectResults("");
-  result->Print("");
-  result->PrintHistograms("");
-  result->PrintStatisticsTables();
-  result->MakeStatisticsCsv();
+  result->Print(arguments.results_output, "");
 
   auto clean_up = dittosuite::Parser::GetParser().GetCleanUp();
   if (clean_up != nullptr) {

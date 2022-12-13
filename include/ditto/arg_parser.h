@@ -16,6 +16,7 @@
 
 #include <ditto/logger.h>
 #include <ditto/parser.h>
+#include <ditto/result.h>
 
 #include <getopt.h>
 #include <unistd.h>
@@ -23,7 +24,9 @@
 #include <cstring>
 
 namespace dittosuite {
-
-void ParseArguments(int argc, char** argv);
+struct CmdArguments {
+  ResultsOutput results_output = kReport;
+};
+CmdArguments ParseArguments(int argc, char** argv);
 
 }  // namespace dittosuite
