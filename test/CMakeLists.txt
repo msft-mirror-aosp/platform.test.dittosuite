@@ -8,6 +8,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(GoogleTest)
 include(GoogleTest)
 
+include_directories(include)
+
 function(add_gtest test_src)
 	get_filename_component(test_name ${test_src} NAME_WE)
 
