@@ -22,6 +22,7 @@
 #include <ditto/close_file.h>
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
+#include <ditto/invalidate_cache.h>
 #include <ditto/logger.h>
 #include <ditto/multithreading.h>
 #include <ditto/open_file.h>
@@ -187,6 +188,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       return std::make_unique<Multithreading>(Syscall::GetSyscall(), repeat,
                                               std::move(instructions));
+    }
+    case InstructionType::kInvalidateCache: {
+      return std::make_unique<InvalidateCache>(Syscall::GetSyscall(), repeat);
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");

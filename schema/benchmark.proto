@@ -88,6 +88,8 @@ message Multithreading {
   repeated Thread threads = 1;
 }
 
+message InvalidateCache {}
+
 message Instruction {
   optional int32 repeat = 1 [default = 1];
   oneof instruction_oneof {
@@ -101,6 +103,7 @@ message Instruction {
     ReadDirectory read_directory = 9;
     ResizeFileRandom resize_file_random = 10;
     Multithreading multithreading = 11;
+    InvalidateCache invalidate_cache = 12;
   }
 }
 
