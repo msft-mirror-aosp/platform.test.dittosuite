@@ -30,30 +30,40 @@ const std::string absolute_path = "/data/local/tmp/";
 const std::string absolute_path = "";
 #endif
 
-TEST(ResizeFileTest, ResizeFileTestRun) {
-  int repeat = 1;
-  std::string file = "newfile.txt";
-  int64_t size = 2048;
+class ResizeFileTest : public ::testing::Test {
+ protected:
+  std::string file_name = "test";
+  std::string path = absolute_path + file_name;
   std::list<int> thread_ids;
 
-  thread_ids.push_back(0);
-  auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
-  dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
-  dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
+  // Set absolute_path
+  void SetUp() override {
+    thread_ids.push_back(0);
+    auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
+    dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
+    dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
+  }
+  // Make sure that the files, which have been created in the tests, are deleted
+  void TearDown() override { unlink(path.c_str()); }
+};
+
+TEST_F(ResizeFileTest, ResizeFileTestRun) {
+  int repeat = 1;
+  int64_t size = 2048;
 
   int fd_key = dittosuite::SharedVariables::GetKey(thread_ids, "test_file");
 
-  dittosuite::OpenFile open_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, file, true,
-                                             fd_key);
+  dittosuite::OpenFile open_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, file_name,
+                                             true, fd_key);
   open_file_instruction.Run();
 
-  ASSERT_EQ(access((absolute_path + file).c_str(), F_OK), 0);
+  ASSERT_EQ(access(path.c_str(), F_OK), 0);
 
   dittosuite::ResizeFile resize_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, size,
                                                  fd_key);
   resize_file_instruction.Run();
 
   struct stat sb;
-  stat((absolute_path + file).c_str(), &sb);
+  stat(path.c_str(), &sb);
   ASSERT_EQ(sb.st_size, size);
 }
