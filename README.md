@@ -10,6 +10,21 @@ the goodness of a solution.
 Specularly, Dittobench interprets the Dittolang operations and executes them on
 a real device, tracking the behavior and measuring the performance.
 
+# Dependencies
+
+## Android
+
+The project is currently being developed as part of the Android Open Source
+Project (AOSP) and is supposed to run out-of-the-box.
+
+## Linux
+
+The following utilities are required to build the project on Linux:
+
+```
+sudo apt install cmake protobuf-compiler
+```
+
 # Use cases
 
 
