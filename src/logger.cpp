@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -21,26 +21,23 @@
 
 #include <ditto/logger.h>
 
-namespace dittosuite{
+namespace dittosuite {
 
-    Logger &Logger::GetInstance()
-    {
-        static Logger logger;
-        return logger;
-    }
-
-    void Logger::setLevel(LOG_LEVEL newLogLevel)
-    {
-         logLevel = newLogLevel;
-    }
-
-    LOG_LEVEL Logger::GetLevel() const {
-      return logLevel;
-    }
-
-    void Logger::writeLogMessage(std::string message, std::string prefix)
-    {
-        std::cout << prefix << ": " << message << '\n';
-    }
-
+Logger& Logger::GetInstance() {
+  static Logger logger;
+  return logger;
 }
+
+void Logger::setLevel(LOG_LEVEL newLogLevel) {
+  logLevel = newLogLevel;
+}
+
+LOG_LEVEL Logger::GetLevel() const {
+  return logLevel;
+}
+
+void Logger::writeLogMessage(std::string message, std::string prefix) {
+  std::cout << prefix << ": " << message << '\n';
+}
+
+}  // namespace dittosuite
