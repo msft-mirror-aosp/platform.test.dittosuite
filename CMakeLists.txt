@@ -13,6 +13,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(dittobench
 	src/dittobench.cpp
+	src/close_file.cpp
 	src/delete_file.cpp
 	src/instruction.cpp
 	src/instruction_factory.cpp
