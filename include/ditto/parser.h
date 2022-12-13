@@ -26,13 +26,19 @@ class Parser {
   void operator=(const Parser&) = delete;
 
   static Parser& GetParser();
-  std::unique_ptr<Instruction> Parse();
+  void Parse();
+  std::unique_ptr<Instruction> GetInit();
+  std::unique_ptr<Instruction> GetMain();
+  std::unique_ptr<Instruction> GetCleanUp();
   void SetFilePath(const std::string& file_path);
 
  private:
   Parser(){};
 
   std::string file_path_;
+  std::unique_ptr<Instruction> init_;
+  std::unique_ptr<Instruction> main_;
+  std::unique_ptr<Instruction> clean_up_;
 };
 
 } // namespace dittosuite

@@ -25,8 +25,16 @@
 int main(int argc, char** argv) {
   dittosuite::ParseArguments(argc, argv);
 
-  auto main = dittosuite::Parser::GetParser().Parse();
+  dittosuite::Parser::GetParser().Parse();
 
+  auto init = dittosuite::Parser::GetParser().GetInit();
+  if (init != nullptr) {
+    init->SetUp();
+    init->Run();
+    init->TearDown();
+  }
+
+  auto main = dittosuite::Parser::GetParser().GetMain();
   main->SetUp();
   main->Run();
   main->TearDown();
@@ -36,5 +44,12 @@ int main(int argc, char** argv) {
   result->PrintHistograms("");
   result->PrintStatisticsTable();
   result->MakeStatisticsCsv();
+
+  auto clean_up = dittosuite::Parser::GetParser().GetCleanUp();
+  if (clean_up != nullptr) {
+    clean_up->SetUp();
+    clean_up->Run();
+    clean_up->TearDown();
+  }
   return 0;
 }
