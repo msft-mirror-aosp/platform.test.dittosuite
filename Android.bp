@@ -15,6 +15,8 @@ cc_defaults {
     */
     tidy_checks: [
       "-bugprone-unhandled-self-assignment",
+      "-cert-msc32-c",
+      "-cert-msc51-cpp",
       "-cert-oop54-cpp",
     ],
 }
