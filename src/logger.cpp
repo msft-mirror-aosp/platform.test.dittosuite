@@ -23,7 +23,7 @@
 
 namespace dittosuite{
 
-    Logger Logger::getInstance()
+    Logger &Logger::GetInstance()
     {
         static Logger logger;
         return logger;
