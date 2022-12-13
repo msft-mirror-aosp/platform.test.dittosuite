@@ -23,10 +23,11 @@ InvalidateCache::InvalidateCache(SyscallInterface& syscall, int repeat)
 
 void InvalidateCache::RunSingle() {
   syscall_.Sync();
+  std::string cache_file = "/proc/sys/vm/drop_caches";
 
-  int fd = syscall_.Open("/proc/sys/vm/drop_caches", O_WRONLY, 0);
+  int fd = syscall_.Open(cache_file, O_WRONLY, 0);
   if (fd == -1) {
-    PLOGF("Error while calling open() in InvalidateCache. Make sure to run the benchmark as root");
+    PLOGF("Cannot open \"" + cache_file + "\", which requires root privileges");
   }
 
   char data = '3';

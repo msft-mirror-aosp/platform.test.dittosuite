@@ -32,8 +32,7 @@ void ReadDirectory::RunSingle() {
   DIR* directory = syscall_.OpenDir(directory_name_);
 
   if (directory == nullptr) {
-    LOGE("Error while calling opendir(). Directory name: " + directory_name_);
-    exit(EXIT_FAILURE);
+    PLOGF("Cannot open \"" + directory_name_ + "\"");
   }
 
   struct dirent* entry;
