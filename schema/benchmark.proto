@@ -7,6 +7,12 @@ enum ReadWriteType {
   RANDOM = 1;
 }
 
+enum ReadWriteReseeding {
+  ONCE = 0;
+  EACH_ROUND_OF_CYCLES = 1;
+  EACH_CYCLE = 2;
+}
+
 message InstructionOpenFile {
   required string file = 1;
   optional string output_fd = 2;
@@ -30,9 +36,11 @@ message InstructionWriteFile {
   required string input_fd = 1;
   optional int64 size = 2 [default = -1];
   optional int64 block_size = 3 [default = 4096];
-  optional ReadWriteType type = 4 [default = SEQUENTIAL];
-  optional uint32 seed = 5;
-  optional bool fsync = 6 [default = false];
+  optional int64 starting_offset = 4 [default = 0];
+  optional ReadWriteType type = 5 [default = SEQUENTIAL];
+  optional uint32 seed = 6;
+  optional bool fsync = 7 [default = false];
+  optional ReadWriteReseeding reseeding = 8 [default = ONCE];
 }
 
 message InstructionReadFile {
@@ -45,9 +53,11 @@ message InstructionReadFile {
   required string input_fd = 1;
   optional int64 size = 2 [default = -1];
   optional int64 block_size = 3 [default = 4096];
-  optional ReadWriteType type = 4 [default = SEQUENTIAL];
-  optional uint32 seed = 5;
-  optional ReadFAdvise fadvise = 6 [default = AUTOMATIC];
+  optional int64 starting_offset = 4 [default = 0];
+  optional ReadWriteType type = 5 [default = SEQUENTIAL];
+  optional uint32 seed = 6;
+  optional ReadFAdvise fadvise = 7 [default = AUTOMATIC];
+  optional ReadWriteReseeding reseeding = 8 [default = ONCE];
 }
 
 message Instruction {

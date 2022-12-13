@@ -18,6 +18,7 @@
 
 #include <ditto/instruction.h>
 #include <ditto/instruction_set.h>
+#include <ditto/read_write_file.h>
 
 #ifdef __ANDROID__
 #include "test/dittosuite/schema/benchmark.pb.h"
@@ -36,6 +37,9 @@ class InstructionFactory {
 
  private:
   InstructionFactory();
+
+  static ReadWriteFile::Reseeding ConvertReadWriteReseeding(
+      const dittosuiteproto::ReadWriteReseeding& proto_reseeding);
 };
 
 } // namespace dittosuite

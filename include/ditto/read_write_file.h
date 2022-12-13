@@ -27,8 +27,11 @@ namespace dittosuite {
 
 class ReadWriteFile : public Instruction {
  public:
+  enum Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
+
   explicit ReadWriteFile(const std::string& name, int repeat, int64_t size, int64_t block_size,
-                         ReadWriteType type, u_int32_t seed, int input_fd_key);
+                         int64_t starting_offset, ReadWriteType type, u_int32_t seed,
+                         Reseeding reseeding, int input_fd_key);
 
  protected:
   virtual void SetUpSingle() override;
@@ -36,8 +39,11 @@ class ReadWriteFile : public Instruction {
 
   int64_t size_;
   int64_t block_size_;
+  int64_t starting_offset_;
   ReadWriteType type_;
   std::mt19937_64 gen_;
+  uint64_t seed_;
+  Reseeding reseeding_;
   int input_fd_key_;
 
   struct Unit {
@@ -47,14 +53,18 @@ class ReadWriteFile : public Instruction {
 
   std::vector<Unit> units_;
   std::unique_ptr<char[]> buffer_;
+
+ private:
+  void SetUp() override;
 };
 
 class WriteFile : public ReadWriteFile {
  public:
   inline static const std::string kName = "instruction_write_file";
 
-  explicit WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                     u_int32_t seed, bool fsync, int input_fd_key);
+  explicit WriteFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
+                     ReadWriteType type, u_int32_t seed, Reseeding reseeding, bool fsync,
+                     int input_fd_key);
 
  private:
   void RunSingle() override;
@@ -68,8 +78,9 @@ class ReadFile : public ReadWriteFile {
 
   enum ReadFAdvise { kAutomatic, kNormal, kSequential, kRandom };
 
-  explicit ReadFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                    u_int32_t seed, ReadFAdvise fadvise, int input_fd_key);
+  explicit ReadFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
+                    ReadWriteType type, u_int32_t seed, Reseeding reseeding, ReadFAdvise fadvise,
+                    int input_fd_key);
 
  private:
   void SetUpSingle() override;
