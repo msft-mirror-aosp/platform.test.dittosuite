@@ -3,8 +3,8 @@ syntax = "proto2";
 package dittosuiteproto;
 
 enum ReadWriteType {
-  sequential = 0;
-  random = 1;
+  SEQUENTIAL = 0;
+  RANDOM = 1;
 }
 
 message InstructionOpenFile {
@@ -30,7 +30,7 @@ message InstructionWriteFile {
   required string input_fd = 1;
   required int64 size = 2;
   optional int64 block_size = 3 [default = 4096];
-  optional ReadWriteType type = 4 [default = sequential];
+  optional ReadWriteType type = 4 [default = SEQUENTIAL];
   optional uint32 seed = 5;
   optional bool fsync = 6 [default = false];
 }
