@@ -17,6 +17,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
+#include <random>
+
 #include <ditto/close_file.h>
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
@@ -82,9 +84,11 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         int input_key = SharedVariables::GetKey(thread_ids, options.input());
         return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, input_key,
                                           options.create(), fd_key);
-      } else {
+      } else if (options.has_path_name()) {
         return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.path_name(),
                                           options.create(), fd_key);
+      } else {
+        return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.create(), fd_key);
       }
     }
     case InstructionType::kInstructionDeleteFile: {
