@@ -44,7 +44,7 @@ class DeleteFileTest : public ::testing::Test {
 };
 
 TEST_F(DeleteFileTest, FileDeletedWithPathName) {
-  dittosuite::DeleteFile instruction(1, file_name, -1);
+  dittosuite::DeleteFile instruction(1, file_name);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), -1);
@@ -52,7 +52,7 @@ TEST_F(DeleteFileTest, FileDeletedWithPathName) {
 
 TEST_F(DeleteFileTest, FileDeletedWithVariable) {
   dittosuite::SharedVariables::Set("input", file_name);
-  dittosuite::DeleteFile instruction(1, "", dittosuite::SharedVariables::GetKey("input"));
+  dittosuite::DeleteFile instruction(1, dittosuite::SharedVariables::GetKey("input"));
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), -1);
