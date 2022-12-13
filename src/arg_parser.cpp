@@ -57,29 +57,28 @@ LogLevel ArgToLogLevel(const std::string_view optarg) {
 }
 
 void PrintHelpAndExit(std::string_view program_name) {
-  std::cerr << "Usage: " << program_name << " [OPTION]... [FILE]" << std::endl;
-  std::cerr << "Benchmarking tool for generic workloads." << std::endl;
-  std::cerr << std::endl;
+  std::cerr << "Usage: " << program_name << " [OPTION]... [FILE]\n"
+            << "Benchmarking tool for generic workloads.\n\n"
 
-  std::cerr << "  -f, --format[=FMT]";
-  std::cerr << "\tresults output format." << std::endl;
-  std::cerr << "\t\t\tFMT can be: report (or 0, default), csv (or 1)" << std::endl;
+            << "  -f, --format[=FMT]"
+            << "\tresults output format.\n"
+            << "\t\t\tFMT can be: report (or 0, default), csv (or 1)\n"
 
-  std::cerr << "  -p, --param[=PAR]...";
-  std::cerr << "\tif the benchmark is parametric, all the parameters can be passed" << std::endl;
-  std::cerr << "\t\t\tthrough PAR (comma separated)" << std::endl;
+            << "  -p, --param[=PAR]..."
+            << "\tif the benchmark is parametric, all the parameters can be passed\n"
+            << "\t\t\tthrough PAR (comma separated)\n"
 
-  std::cerr << "  -l, --log[=LOG]";
-  std::cerr << "\toutput stream for the log messages." << std::endl;
-  std::cerr << "\t\t\tLOG can be one of: stdout (or 0, default), logcat (or 1)" << std::endl;
+            << "  -l, --log[=LOG]"
+            << "\toutput stream for the log messages.\n"
+            << "\t\t\tLOG can be one of: stdout (or 0, default), logcat (or 1)\n"
 
-  std::cerr << "  -v, --verbosity[=VER]";
-  std::cerr << "\toutput messages verbosity." << std::endl;
-  std::cerr << "\t\t\tVER can be one of: VERBOSE (or 5), DEBUG (or 4), INFO (or 3, default)," << std::endl;
-  std::cerr << "\t\t\tWARNING (or 2), ERROR (or 1), FATAL (or 0)" << std::endl;
+            << "  -v, --verbosity[=VER]"
+            << "\toutput messages verbosity.\n"
+            << "\t\t\tVER can be one of: VERBOSE (or 5), DEBUG (or 4), INFO (or 3, default),\n"
+            << "\t\t\tWARNING (or 2), ERROR (or 1), FATAL (or 0)\n"
 
-  std::cerr << "  -h, --help";
-  std::cerr << "\t\tdisplay this help and exit" << std::endl;
+            << "  -h, --help"
+            << "\t\tdisplay this help and exit\n";
 
   exit(EXIT_SUCCESS);
 }

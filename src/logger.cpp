@@ -90,7 +90,7 @@ void Logger::WriteLogMessage(const LogLevel log_level, const std::string& messag
       [[fallthrough]];
 #endif
     case LogStream::kStdout:
-      std::cout << ss.str() << std::endl;
+      std::cout << ss.str() << '\n';
       break;
   }
 }
