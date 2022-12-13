@@ -43,6 +43,10 @@ SharedVariables::Variant SharedVariables::Get(int key) {
   return variables_[key];
 }
 
+SharedVariables::Variant SharedVariables::Get(const std::string& variable_name) {
+  return Get(GetKey(variable_name));
+}
+
 void SharedVariables::Set(int key, const SharedVariables::Variant& value) {
   if (key < 0 || static_cast<unsigned int>(key) >= variables_.size()) {
     LOGE("Shared variable with the provided key does not exist");
