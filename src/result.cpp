@@ -14,6 +14,7 @@
 
 #include <ditto/result.h>
 #include <ditto/statistics.h>
+#include <ditto/timespec_utils.h>
 
 #include <algorithm>
 #include <fstream>
