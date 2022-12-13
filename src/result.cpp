@@ -12,40 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
-
-#include <memory>
-#include <string>
-
 #include <ditto/result.h>
-#include <ditto/time_sampler.h>
 
 namespace dittosuite {
 
-enum ReadWriteType { kSequential, kRandom };
+Result::Result(const std::string& name, std::vector<timespec> time_samples)
+    : name_(name), time_samples_(time_samples) {}
 
-class Instruction {
- public:
-  explicit Instruction(const std::string& name, int repeat);
-  virtual ~Instruction() = default;
+std::string Result::GetName() {
+  return name_;
+}
+std::vector<timespec> Result::GetTimeSamples() {
+  return time_samples_;
+}
 
-  virtual void SetUp();
-  void Run();
-  virtual void TearDown();
+void Result::AddSubResult(std::unique_ptr<Result> result) {
+  sub_results_.push_back(std::move(result));
+}
 
-  virtual std::unique_ptr<Result> CollectResults();
-
-  static void SetAbsolutePathKey(int absolute_path_key);
-  static int GetAbsolutePathKey();
-
- protected:
-  static int absolute_path_key_;
-  std::string name_;
-  int repeat_;
-  TimeSampler time_sampler_;
-
- private:
-  virtual void RunSingle() = 0;
-};
-
-} // namespace dittosuite
+}  // namespace dittosuite

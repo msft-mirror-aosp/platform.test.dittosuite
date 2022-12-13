@@ -14,38 +14,27 @@
 
 #pragma once
 
+#include <time.h>
+
 #include <memory>
 #include <string>
-
-#include <ditto/result.h>
-#include <ditto/time_sampler.h>
+#include <vector>
 
 namespace dittosuite {
 
-enum ReadWriteType { kSequential, kRandom };
-
-class Instruction {
+class Result {
  public:
-  explicit Instruction(const std::string& name, int repeat);
-  virtual ~Instruction() = default;
+  explicit Result(const std::string& name, std::vector<timespec> time_samples);
 
-  virtual void SetUp();
-  void Run();
-  virtual void TearDown();
-
-  virtual std::unique_ptr<Result> CollectResults();
-
-  static void SetAbsolutePathKey(int absolute_path_key);
-  static int GetAbsolutePathKey();
-
- protected:
-  static int absolute_path_key_;
-  std::string name_;
-  int repeat_;
-  TimeSampler time_sampler_;
+  std::string GetName();
+  std::vector<timespec> GetTimeSamples();
+  void AddSubResult(std::unique_ptr<Result> result);
 
  private:
-  virtual void RunSingle() = 0;
+  std::string name_;
+  std::vector<timespec> time_samples_;
+
+  std::vector<std::unique_ptr<Result>> sub_results_;
 };
 
-} // namespace dittosuite
+}  // namespace dittosuite

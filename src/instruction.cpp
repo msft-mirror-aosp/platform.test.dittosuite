@@ -32,6 +32,10 @@ void Instruction::TearDown() {
   time_sampler_.MeasureEnd();
 }
 
+std::unique_ptr<Result> Instruction::CollectResults() {
+  return std::make_unique<Result>(name_, time_sampler_.GetTimeSamples());
+}
+
 void Instruction::SetAbsolutePathKey(int absolute_path_key) {
   absolute_path_key_ = absolute_path_key;
 }
