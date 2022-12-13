@@ -51,13 +51,13 @@ std::vector<std::string> ReadLines(const std::string& file_path) {
 Syscall ProcessLine(const std::string& line) {
   Syscall syscall;
 
-  syscall.name = line.substr(0, line.find("("));
-  std::string raw_arguments = line.substr(line.find("(") + 1, line.find(")") - line.find("(") - 1);
-  syscall.return_value = line.substr(line.find(")"));
+  syscall.name = line.substr(0, line.find('('));
+  std::string raw_arguments = line.substr(line.find('(') + 1, line.find(')') - line.find('(') - 1);
+  syscall.return_value = line.substr(line.find(')'));
   syscall.return_value = syscall.return_value.substr(syscall.return_value.find("= ") + 2);
 
-  int next = 0;
-  int last = 0;
+  size_t next = 0;
+  size_t last = 0;
   while ((next = raw_arguments.find(", ", last)) != std::string::npos) {
     std::string part = raw_arguments.substr(last, next - last);
     last = next + 2;
@@ -74,7 +74,7 @@ std::map<int, std::vector<std::string>> SplitByPid(const std::vector<std::string
   std::map<int, std::vector<std::string>> lines_by_pid;
 
   for (const auto& line : lines) {
-    int pid = atoi(line.substr(0, line.find(" ")).c_str());
+    int pid = strtoll(line.substr(0, line.find(' ')).c_str(), nullptr, 10);
     lines_by_pid[pid].push_back(line);
   }
 
@@ -89,7 +89,7 @@ std::map<int, std::vector<Syscall>> ProcessLines(
   std::map<int, std::vector<Syscall>> processed_syscalls_by_pid;
 
   for (const auto& [pid, lines] : lines_by_pid) {
-    for (int i = 0; i < lines.size(); ++i) {
+    for (unsigned int i = 0; i < lines.size(); ++i) {
       auto line = lines[i];
 
       // If only the resumed part of the syscall was found, ignore it
@@ -131,6 +131,11 @@ std::map<int, std::vector<Syscall>> ProcessLines(
 }
 
 int main(int argc, char** argv) {
+  if (argc != 3) {
+    std::cerr << "Invalid number of arguments." << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
   auto raw_lines = ReadLines(argv[1]);
   auto raw_lines_by_pid = SplitByPid(raw_lines);
   auto processed_syscalls_by_pid = ProcessLines(raw_lines_by_pid);
@@ -157,7 +162,7 @@ int main(int argc, char** argv) {
         // If the return value is -1, ignore it
         if (syscall.return_value.find("-1") != std::string::npos) continue;
 
-        int fd = atoi(syscall.return_value.c_str());
+        int fd = strtoll(syscall.return_value.c_str(), nullptr, 10);
 
         // Create .ditto instruction set for this fd with open file instruction
         instruction_set_by_fd[fd] = std::make_unique<dittosuiteproto::InstructionSet>();
