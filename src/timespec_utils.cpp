@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include <ditto/logger.h>
-#include <ditto/time_sampler.h>
+#include <ditto/sampler.h>
 
 int64_t TimespecToNs(const timespec& t) {
   return t.tv_sec * 1e9 + t.tv_nsec;

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include <ditto/logger.h>
-#include <ditto/time_sampler.h>
+#include <ditto/sampler.h>
 #include <gtest/gtest.h>
 
 #include <unistd.h>
