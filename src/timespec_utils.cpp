@@ -37,10 +37,10 @@ std::vector<double> TimespecToDouble(const std::vector<timespec>& tv) {
   return nsv;
 }
 
-timespec NsToTimespec(const int64_t& t) {
+timespec NsToTimespec(const int64_t t_ns) {
   timespec result;
-  result.tv_sec = t / 1e9;
-  result.tv_nsec = t % static_cast<int64_t>(1e9);
+  result.tv_sec = t_ns / 1e9;
+  result.tv_nsec = t_ns % static_cast<int64_t>(1e9);
   return result;
 }
 

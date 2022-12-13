@@ -28,13 +28,13 @@ enum ResultsOutput { kReport, kCsv };
 
 class Result {
  public:
-  explicit Result(const std::string& name, const int& repeat);
+  explicit Result(const std::string& name, int repeat);
 
   void AddMeasurement(const std::string& type, const std::vector<double>& samples);
   void AddSubResult(std::unique_ptr<Result> result);
   std::vector<double> GetSamples(const std::string& measurement_name) const;
   int GetRepeat() const;
-  void Print(const ResultsOutput& results_output, const std::string& instruction_path);
+  void Print(ResultsOutput results_output, const std::string& instruction_path);
 
  private:
   struct TimeUnit {
@@ -72,9 +72,9 @@ class Result {
   void PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path,
                            const std::set<std::string>& measurements_names);
   void PrintHistogramHeader(const std::string& measurement_name);
-  void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value);
-  TimeUnit GetTimeUnit(const int64_t& min_value);
-  BandwidthUnit GetBandwidthUnit(const int64_t& min_value);
+  void MakeHistogramFromVector(const std::vector<int>& freq_vector, int min_value);
+  TimeUnit GetTimeUnit(int64_t min_value);
+  BandwidthUnit GetBandwidthUnit(int64_t min_value);
   void PrintMeasurementStatisticInCsv(std::ostream& csv_stream, const std::string& name);
 };
 }  // namespace dittosuite
