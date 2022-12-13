@@ -75,3 +75,13 @@ timespec operator+(const timespec& t1, const timespec& t2) {
   }
   return result;
 }
+
+timespec operator/(const timespec& t1, const timespec& t2) {
+  if (t2 == NsToTimespec(0)) LOGF("Division by 0 for timespec");
+
+  auto t1_ns = TimespecToNs(t1);
+  auto t2_ns = TimespecToNs(t2);
+
+  return NsToTimespec(t1_ns / t2_ns);
+}
+
