@@ -1,5 +1,17 @@
+cc_defaults {
+    name: "dittobench_defaults",
+    include_dirs: ["test/dittosuite/include"],
+    srcs: ["src/create_file.cpp"]
+}
+
 cc_binary {
     name: "dittobench",
-    srcs: ["dittobench.cpp"],
-    static_libs: ["libgoogle-benchmark"],
+    srcs: ["src/dittobench.cpp"],
+    defaults: ["dittobench_defaults"]
+}
+
+cc_test {
+    name: "dittobench_test",
+    srcs: ["test/create_file_test.cpp"],
+    defaults: ["dittobench_defaults"]
 }
