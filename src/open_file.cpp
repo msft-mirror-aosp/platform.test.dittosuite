@@ -36,7 +36,7 @@ OpenFile::OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool cr
 
 void OpenFile::SetUpSingle() {
   if (input_key_ != -1) {
-    path_name_ = GetAbsolutePath() + std::get<std::string>(SharedVariables::Get(input_key_));
+    path_name_ = std::get<std::string>(SharedVariables::Get(input_key_));
   }
   Instruction::SetUpSingle();
 }
