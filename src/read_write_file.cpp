@@ -42,6 +42,10 @@ void ReadWriteFile::SetUpSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
   int64_t file_size = GetFileSize(fd);
 
+  if (size_ == -1) {
+    size_ = file_size;
+  }
+
   if (block_size_ > file_size) {
     LOGW("Supplied block_size is greater than total file size");
     return;

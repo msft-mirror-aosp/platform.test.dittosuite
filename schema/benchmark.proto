@@ -28,7 +28,7 @@ message InstructionResizeFile {
 
 message InstructionWriteFile {
   required string input_fd = 1;
-  required int64 size = 2;
+  optional int64 size = 2 [default = -1];
   optional int64 block_size = 3 [default = 4096];
   optional ReadWriteType type = 4 [default = SEQUENTIAL];
   optional uint32 seed = 5;
@@ -43,7 +43,7 @@ message InstructionReadFile {
     RANDOM = 3;
   }
   required string input_fd = 1;
-  required int64 size = 2;
+  optional int64 size = 2 [default = -1];
   optional int64 block_size = 3 [default = 4096];
   optional ReadWriteType type = 4 [default = SEQUENTIAL];
   optional uint32 seed = 5;
