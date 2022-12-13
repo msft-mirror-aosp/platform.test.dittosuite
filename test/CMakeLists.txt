@@ -20,6 +20,7 @@ endfunction()
 file(GLOB ditto_test_srcs
         *.cpp
 )
+file(COPY ../example DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 foreach(test_src IN ITEMS ${ditto_test_srcs})
         add_gtest(${test_src})
