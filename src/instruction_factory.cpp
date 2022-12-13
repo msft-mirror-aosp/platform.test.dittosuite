@@ -120,12 +120,10 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       return std::make_unique<ReadDirectory>(repeat, options.directory_name(), output_key);
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
-      LOGE("Instruction was not set in .ditto file");
-      exit(EXIT_FAILURE);
+      LOGF("Instruction was not set in .ditto file");
     }
     default: {
-      LOGE("Invalid instruction was set in .ditto file");
-      exit(EXIT_FAILURE);
+      LOGF("Invalid instruction was set in .ditto file");
     }
   }
 }
@@ -143,8 +141,7 @@ ReadWriteFile::Reseeding InstructionFactory::ConvertReadWriteReseeding(
       return ReadWriteFile::Reseeding::kEachCycle;
     }
     default: {
-      LOGE("Invalid ReadWriteReseeding was provided");
-      exit(EXIT_FAILURE);
+      LOGF("Invalid ReadWriteReseeding was provided");
     }
   }
 }
@@ -159,8 +156,7 @@ ReadWriteFile::Type InstructionFactory::ConvertReadWriteType(
       return ReadWriteFile::Type::kRandom;
     }
     default: {
-      LOGE("Invalid ReadWriteType was provided");
-      exit(EXIT_FAILURE);
+      LOGF("Invalid ReadWriteType was provided");
     }
   }
 }
@@ -189,11 +185,9 @@ int InstructionFactory::ConvertReadFAdvise(
       return POSIX_FADV_RANDOM;
     }
     default: {
-      LOGE("Invalid ReadFAdvise was provided");
-      exit(EXIT_FAILURE);
+      LOGF("Invalid ReadFAdvise was provided");
     }
   }
 }
 
-} // namespace dittosuite
-
+}  // namespace dittosuite

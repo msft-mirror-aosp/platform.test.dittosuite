@@ -30,8 +30,7 @@ void CloseFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
 
   if (close(fd) != 0) {
-    LOGE("Error while closing the file");
-    exit(EXIT_FAILURE);
+    LOGF("Error while closing the file");
   }
 }
 

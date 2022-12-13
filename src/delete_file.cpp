@@ -30,8 +30,7 @@ DeleteFile::DeleteFile(int repeat, const std::string& file)
 
 void DeleteFile::RunSingle() {
   if (unlink(file_.c_str()) == -1) {
-    LOGE("Error while calling unlink()");
-    exit(EXIT_FAILURE);
+    LOGF("Error while calling unlink()");
   }
 }
 

@@ -35,8 +35,7 @@ void OpenFile::RunSingle() {
   int fd = open(file_.c_str(), (create_ ? O_CREAT : 0) | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR);
 
   if (fd == -1) {
-    LOGE("Error while trying to open the file");
-    exit(EXIT_FAILURE);
+    LOGF("Error while trying to open the file");
   }
 
   if (output_fd_key_ != -1) {

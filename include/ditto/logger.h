@@ -25,7 +25,8 @@ enum LOG_LEVEL {
   LOG_LEVEL_DEBUG,
   LOG_LEVEL_INFO,
   LOG_LEVEL_WARNING,
-  LOG_LEVEL_ERROR
+  LOG_LEVEL_ERROR,
+  LOG_LEVEL_FATAL
 };
 
 enum LOG_STREAM { LOG_STREAM_STDOUT, LOG_STREAM_LOGCAT };
@@ -48,6 +49,14 @@ class Logger {
   LOG_LEVEL log_level_;
   LOG_STREAM log_stream_;
 };
+
+#define LOGF(X)                                                   \
+  do {                                                            \
+    if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_FATAL) { \
+      Logger::GetInstance().WriteLogMessage(X, LOG_LEVEL_FATAL);  \
+    }                                                             \
+    exit(EXIT_FAILURE);                                           \
+  } while (false)
 
 #define LOGE(X)                                                 \
   if (Logger::GetInstance().GetLogLevel() <= LOG_LEVEL_ERROR) { \

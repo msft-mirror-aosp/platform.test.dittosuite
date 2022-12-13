@@ -45,14 +45,12 @@ std::unique_ptr<Instruction> Parser::Parse() {
 
   int fd = open(file_path_.c_str(), O_CLOEXEC);
   if (fd == -1) {
-    LOGE("Provided .ditto file was not found");
-    exit(EXIT_FAILURE);
+    LOGF("Provided .ditto file was not found");
   }
 
   google::protobuf::io::FileInputStream file_input(fd);
   if (!google::protobuf::TextFormat::Parse(&file_input, benchmark.get())) {
-    LOGE("Error while parsing .ditto file");
-    exit(EXIT_FAILURE);
+    LOGF("Error while parsing .ditto file");
   }
 
   auto absolute_path_key = SharedVariables::GetKey("absolute_path");
@@ -69,5 +67,4 @@ void Parser::SetFilePath(const std::string& file_path) {
   file_path_ = file_path;
 }
 
-} // namespace dittosuite
-
+}  // namespace dittosuite
