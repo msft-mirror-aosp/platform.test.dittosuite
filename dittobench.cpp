@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
   main->Run();
   main->TearDown();
 
-  auto result = main->CollectResults();
+  auto result = main->CollectResults("");
   result->Print("");
   result->PrintHistograms("");
   result->PrintStatisticsTable();
