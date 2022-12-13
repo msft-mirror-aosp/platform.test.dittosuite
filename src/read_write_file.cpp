@@ -94,4 +94,59 @@ void WriteFile::RunSingle() {
   }
 }
 
+ReadFile::ReadFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type, u_int32_t seed,
+                   ReadFAdvise fadvise, int input_fd_key)
+    : ReadWriteFile(repeat, size, block_size, type, seed, input_fd_key), fadvise_(fadvise) {}
+
+void ReadFile::SetUp() {
+  int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
+  int64_t file_size = GetFileSize(fd);
+
+  int advise;
+  switch (fadvise_) {
+    case ReadFAdvise::kAutomatic: {
+      switch (type_) {
+        case ReadWriteType::kSequential: {
+          advise = POSIX_FADV_SEQUENTIAL;
+          break;
+        }
+        case ReadWriteType::kRandom: {
+          advise = POSIX_FADV_RANDOM;
+          break;
+        }
+      }
+      break;
+    }
+    case ReadFAdvise::kNormal: {
+      advise = POSIX_FADV_NORMAL;
+      break;
+    }
+    case ReadFAdvise::kSequential: {
+      advise = POSIX_FADV_SEQUENTIAL;
+      break;
+    }
+    case ReadFAdvise::kRandom: {
+      advise = POSIX_FADV_RANDOM;
+      break;
+    }
+  }
+
+  if (posix_fadvise64(fd, 0, file_size, advise) != 0) {
+    LOGE("Error while calling fadvise()");
+    exit(EXIT_FAILURE);
+  }
+  ReadWriteFile::SetUp();
+}
+
+void ReadFile::RunSingle() {
+  int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
+
+  for (const auto& unit : units_) {
+    if (pread64(fd, buffer_.get(), unit.count, unit.offset) == -1) {
+      LOGE("Error while calling read()");
+      exit(EXIT_FAILURE);
+    }
+  }
+}
+
 }  // namespace dittosuite
