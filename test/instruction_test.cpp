@@ -34,6 +34,7 @@ class InstructionTest : public ::testing::Test {
 
   // Set absolute_path
   virtual void SetUp() override {
+    dittosuite::SharedVariables::ClearKeys();
     thread_ids.push_back(0);
     auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
     dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
