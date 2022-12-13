@@ -72,8 +72,8 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       return InstructionFactory::CreateFromProtoInstructionSet(thread_ids, repeat,
                                                                proto_instruction.instruction_set());
     }
-    case InstructionType::kInstructionOpenFile: {
-      const auto& options = proto_instruction.instruction_open_file();
+    case InstructionType::kOpenFile: {
+      const auto& options = proto_instruction.open_file();
 
       int fd_key = -1;
       if (options.has_output_fd()) {
@@ -91,8 +91,8 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.create(), fd_key);
       }
     }
-    case InstructionType::kInstructionDeleteFile: {
-      const auto& options = proto_instruction.instruction_delete_file();
+    case InstructionType::kDeleteFile: {
+      const auto& options = proto_instruction.delete_file();
 
       if (options.has_input()) {
         int input_key = SharedVariables::GetKey(thread_ids, options.input());
@@ -101,22 +101,22 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         return std::make_unique<DeleteFile>(Syscall::GetSyscall(), repeat, options.path_name());
       }
     }
-    case InstructionType::kInstructionCloseFile: {
-      const auto& options = proto_instruction.instruction_close_file();
+    case InstructionType::kCloseFile: {
+      const auto& options = proto_instruction.close_file();
 
       int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
       return std::make_unique<CloseFile>(Syscall::GetSyscall(), repeat, fd_key);
     }
-    case InstructionType::kInstructionResizeFile: {
-      const auto& options = proto_instruction.instruction_resize_file();
+    case InstructionType::kResizeFile: {
+      const auto& options = proto_instruction.resize_file();
 
       int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
       return std::make_unique<ResizeFile>(Syscall::GetSyscall(), repeat, options.size(), fd_key);
     }
-    case InstructionType::kInstructionWriteFile: {
-      const auto& options = proto_instruction.instruction_write_file();
+    case InstructionType::kWriteFile: {
+      const auto& options = proto_instruction.write_file();
 
       auto type = ConvertAccessType(options.type());
 
@@ -132,8 +132,8 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
                                          options.block_size(), options.starting_offset(), type,
                                          seed, reseeding, options.fsync(), fd_key);
     }
-    case InstructionType::kInstructionReadFile: {
-      const auto& options = proto_instruction.instruction_read_file();
+    case InstructionType::kReadFile: {
+      const auto& options = proto_instruction.read_file();
 
       auto type = ConvertAccessType(options.type());
 
@@ -150,16 +150,16 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
                                         options.block_size(), options.starting_offset(), type, seed,
                                         reseeding, fadvise, fd_key);
     }
-    case InstructionType::kInstructionReadDirectory: {
-      const auto& options = proto_instruction.instruction_read_directory();
+    case InstructionType::kReadDirectory: {
+      const auto& options = proto_instruction.read_directory();
 
       int output_key = SharedVariables::GetKey(thread_ids, options.output());
 
       return std::make_unique<ReadDirectory>(Syscall::GetSyscall(), repeat,
                                              options.directory_name(), output_key);
     }
-    case InstructionType::kInstructionResizeFileRandom: {
-      const auto& options = proto_instruction.instruction_resize_file_random();
+    case InstructionType::kResizeFileRandom: {
+      const auto& options = proto_instruction.resize_file_random();
 
       uint32_t seed = options.seed();
       if (!options.has_seed()) {
@@ -235,9 +235,9 @@ AccessType InstructionFactory::ConvertAccessType(const dittosuiteproto::AccessTy
 }
 
 int InstructionFactory::ConvertReadFAdvise(
-    const AccessType& type, const dittosuiteproto::InstructionReadFile_ReadFAdvise& proto_fadvise) {
+    const AccessType& type, const dittosuiteproto::ReadFile_ReadFAdvise& proto_fadvise) {
   switch (proto_fadvise) {
-    case dittosuiteproto::InstructionReadFile_ReadFAdvise_AUTOMATIC: {
+    case dittosuiteproto::ReadFile_ReadFAdvise_AUTOMATIC: {
       switch (type) {
         case kSequential: {
           return POSIX_FADV_SEQUENTIAL;
@@ -247,13 +247,13 @@ int InstructionFactory::ConvertReadFAdvise(
         }
       }
     }
-    case dittosuiteproto::InstructionReadFile_ReadFAdvise_NORMAL: {
+    case dittosuiteproto::ReadFile_ReadFAdvise_NORMAL: {
       return POSIX_FADV_NORMAL;
     }
-    case dittosuiteproto::InstructionReadFile_ReadFAdvise_SEQUENTIAL: {
+    case dittosuiteproto::ReadFile_ReadFAdvise_SEQUENTIAL: {
       return POSIX_FADV_SEQUENTIAL;
     }
-    case dittosuiteproto::InstructionReadFile_ReadFAdvise_RANDOM: {
+    case dittosuiteproto::ReadFile_ReadFAdvise_RANDOM: {
       return POSIX_FADV_RANDOM;
     }
     default: {

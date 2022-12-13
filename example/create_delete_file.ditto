@@ -2,12 +2,12 @@ main: {
   instruction_set: {
     instructions: [
       {
-        instruction_open_file: {
+        open_file: {
           path_name: "newfile2.txt"
         }
       },
       {
-        instruction_delete_file: {
+        delete_file: {
           path_name: "newfile2.txt"
         }
       }

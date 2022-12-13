@@ -45,7 +45,7 @@ class InstructionFactory {
   static AccessType ConvertAccessType(const dittosuiteproto::AccessType& proto_type);
   static int ConvertReadFAdvise(
       const AccessType& type,
-      const dittosuiteproto::InstructionReadFile_ReadFAdvise& proto_fadvise);
+      const dittosuiteproto::ReadFile_ReadFAdvise& proto_fadvise);
 
   static int current_thread_id_;
 };
