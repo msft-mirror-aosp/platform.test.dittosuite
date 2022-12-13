@@ -12,26 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
+#include <ditto/utils.h>
 
-#include <cstdint>
-
-#include <ditto/instruction.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace dittosuite {
 
-class ResizeFile : public Instruction {
- public:
-  explicit ResizeFile(int repeat, int64_t size, int input_fd_key);
-
-  void SetUp() override;
-  void TearDown() override;
-
- private:
-  void RunSingle() override;
-
-  int64_t size_;
-  int input_fd_key_;
-};
+int64_t GetFileSize(int fd) {
+  struct stat64 sb;
+  fstat64(fd, &sb);
+  return sb.st_size;
+}
 
 }  // namespace dittosuite
