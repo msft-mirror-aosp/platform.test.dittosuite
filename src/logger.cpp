@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <android-base/logging.h>
+#include <ditto/logger.h>
+#include <log/log.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
 #include <iostream>
 #include <vector>
-
-#include <ditto/logger.h>
 
 namespace dittosuite {
 
@@ -32,8 +34,16 @@ void Logger::SetLogLevel(LOG_LEVEL log_level) {
   log_level_ = log_level;
 }
 
+void Logger::SetLogStream(LOG_STREAM log_stream) {
+  log_stream_ = log_stream;
+}
+
 LOG_LEVEL Logger::GetLogLevel() const {
   return log_level_;
+}
+
+LOG_STREAM Logger::GetLogStream() const {
+  return log_stream_;
 }
 
 std::string LogLevelToString(LOG_LEVEL log_level) {
@@ -42,7 +52,27 @@ std::string LogLevelToString(LOG_LEVEL log_level) {
 }
 
 void Logger::WriteLogMessage(const std::string message, LOG_LEVEL log_level) {
-  std::cout << LogLevelToString(log_level) << ": " << message << '\n';
+  std::string message_to_print = LogLevelToString(log_level) + ": " + message;
+  switch (log_stream_) {
+    case LOG_STREAM_STDOUT:
+      std::cout << message_to_print << '\n';
+      break;
+    case LOG_STREAM_LOGCAT:
+      switch (log_level) {
+        case LOG_LEVEL_ERROR:
+          LOG(ERROR) << message_to_print;
+          break;
+        case LOG_LEVEL_WARNING:
+          LOG(WARNING) << message_to_print;
+          break;
+        default:
+          LOG(INFO) << message_to_print;
+          break;
+      }
+      break;
+    default:
+      break;
+  }
 }
 
 }  // namespace dittosuite

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright (C) 2021 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <unistd.h>
-
-#include <iostream>
-#include <vector>
-
 #include <ditto/logger.h>
 #include <gtest/gtest.h>
+
+#include <vector>
 
 namespace dittosuite {
 
@@ -26,6 +23,11 @@ TEST(DittoLogger, SimpleLog) {
   for (int i = 10; i <= 11; i++) {
     Logger::GetInstance().SetLogLevel(LOG_LEVEL_ERROR);
     std::cout << "My log level:  " << Logger::GetInstance().log_level_ << '\n';
+    LOGW("This is a warning");
+    LOGE("This is an error");
+    LOGI("This is an info");
+    Logger::GetInstance().SetLogStream(LOG_STREAM_LOGCAT);
+    Logger::GetInstance().SetLogLevel(LOG_LEVEL_WARNING);
     LOGW("This is a warning");
     LOGE("This is an error");
     LOGI("This is an info");
@@ -37,6 +39,13 @@ TEST(DittoLogger, SetAndGetLevel) {
        {LOG_LEVEL_VERBOSE, LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR}) {
     Logger::GetInstance().SetLogLevel(l);
     ASSERT_EQ(Logger::GetInstance().log_level_, l);
+  }
+}
+
+TEST(DittoLogger, SetAndGetStream) {
+  for (const auto s : {LOG_STREAM_STDOUT, LOG_STREAM_LOGCAT}) {
+    Logger::GetInstance().SetLogStream(s);
+    ASSERT_EQ(Logger::GetInstance().GetLogStream(), s);
   }
 }
 
