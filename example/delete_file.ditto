@@ -1,8 +1,6 @@
 main: {
   instruction_delete_file: {
-    file: "newfile2.txt"
+    path_name: "newfile2.txt"
   }
 },
-global {
-  absolute_path: "/data/local/tmp/";
-}
+global {}

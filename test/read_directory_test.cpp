@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -30,7 +29,8 @@ const std::string absolute_path = "";
 class ReadDirectoryTest : public ::testing::Test {
  protected:
   std::string directory_name = "test_directory";
-  std::vector<std::string> file_names{"test1", "test2", "test3"};
+  std::string path = absolute_path + directory_name;
+  std::vector<std::string> files{path + "/test1", path + "/test2", path + "/test3"};
 
   // Create folder with several files for testing and set absolute_path
   void SetUp() override {
@@ -38,19 +38,17 @@ class ReadDirectoryTest : public ::testing::Test {
     dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
     dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
 
-    ASSERT_NE(mkdir(directory_name.c_str(), S_IRWXU), -1);
-    for (const auto& file_name : file_names) {
-      ASSERT_NE(
-          open((directory_name + "/" + file_name).c_str(), O_CREAT | O_CLOEXEC, S_IRUSR | S_IWUSR),
-          -1);
+    ASSERT_NE(mkdir(path.c_str(), S_IRWXU), -1);
+    for (const auto& file : files) {
+      ASSERT_NE(open(file.c_str(), O_CREAT | O_CLOEXEC, S_IRUSR | S_IWUSR), -1);
     }
   }
   // Remove the folder and files that were created in SetUp()
   void TearDown() override {
-    for (const auto& file_name : file_names) {
-      ASSERT_NE(unlink((directory_name + "/" + file_name).c_str()), -1);
+    for (const auto& file : files) {
+      ASSERT_NE(unlink(file.c_str()), -1);
     }
-    ASSERT_NE(rmdir(directory_name.c_str()), -1);
+    ASSERT_NE(rmdir(path.c_str()), -1);
   }
 };
 
@@ -63,5 +61,5 @@ TEST_F(ReadDirectoryTest, ReadDirectoryTestRun) {
   auto output = std::get<std::vector<std::string>>(dittosuite::SharedVariables::Get(output_key));
   sort(output.begin(), output.end());
 
-  ASSERT_EQ(output, file_names);
+  ASSERT_EQ(output, files);
 }

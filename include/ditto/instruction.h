@@ -34,12 +34,13 @@ class Instruction {
   virtual std::unique_ptr<Result> CollectResults();
 
   static void SetAbsolutePathKey(int absolute_path_key);
-  static int GetAbsolutePathKey();
 
  protected:
   virtual void SetUpSingle();
   virtual void RunSingle() = 0;
   virtual void TearDownSingle();
+
+  std::string GetAbsolutePath();
 
   static int absolute_path_key_;
   std::string name_;
