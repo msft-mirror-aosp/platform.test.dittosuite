@@ -36,11 +36,4 @@ void BandwidthSampler::Measure(const int64_t& file_size, const timespec& duratio
   samples_.push_back(bandwidth);
 }
 
-std::vector<int64_t> BandwidthSampler::GetLongIntSamples() const {
-  std::vector<int64_t> bandwidths;
-  bandwidths.reserve(samples_.size());
-  for (const auto& it : samples_) bandwidths.push_back(std::round(it));
-  return bandwidths;
-}
-
 }  // namespace dittosuite

@@ -43,7 +43,6 @@ class TimeSampler : public Sampler<timespec> {
 class BandwidthSampler : public Sampler<double> {
  public:
   void Measure(const int64_t& file_size, const timespec& duration);
-  std::vector<int64_t> GetLongIntSamples() const;
 };
 
 }  // namespace dittosuite
