@@ -43,6 +43,12 @@ ReadWriteFile::ReadWriteFile(SyscallInterface& syscall, const std::string& name,
   }
 }
 
+std::unique_ptr<Result> ReadWriteFile::CollectResults(const std::string& prefix) {
+  auto result = Instruction::CollectResults(prefix);
+  result->AddMeasurement("bandwidth", bandwidth_sampler_.GetLongIntSamples());
+  return result;
+}
+
 void ReadWriteFile::SetUp() {
   if (reseeding_ == kEachRoundOfCycles) {
     gen_.seed(seed_);
@@ -146,6 +152,11 @@ void ReadFile::RunSingle() {
       LOGF("Error while calling read()");
     }
   }
+}
+
+void ReadWriteFile::TearDownSingle() {
+  Instruction::TearDownSingle();
+  bandwidth_sampler_.Measure(size_, time_sampler_.GetSamples().back());
 }
 
 }  // namespace dittosuite

@@ -16,7 +16,9 @@
 
 #include <time.h>
 
+#include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -24,13 +26,13 @@ namespace dittosuite {
 
 class Result {
  public:
-  explicit Result(const std::string& name, const std::vector<timespec>& time_samples);
+  explicit Result(const std::string& name);
 
+  void AddMeasurement(const std::string& type, const std::vector<int64_t>& samples);
   void AddSubResult(std::unique_ptr<Result> result);
-  void Analyse();
   void Print(const std::string& instruction_path);
   void PrintHistograms(const std::string& instruction_path);
-  void PrintStatisticsTable();
+  void PrintStatisticsTables();
   void MakeStatisticsCsv();
 
  private:
@@ -39,17 +41,36 @@ class Result {
                           // unit (ns) in another one (ex 1000 for microseconds)
     std::string name;
   };
+  struct BandwidthUnit {
+    int dividing_factor;  // dividing factor used for transforming the bandwidth
+                          // unit (KB/s) in another one (ex GB/s)
+    std::string name;
+  };
+  struct Statistics {
+    int64_t min, max, mean, median;
+    double sd;
+  };
   TimeUnit time_unit_;
+  BandwidthUnit bandwidth_unit_;
   std::string name_;
-  std::vector<timespec> time_samples_;
+  std::map<std::string, std::vector<int64_t>> samples_;
+  std::map<std::string, Statistics> statistics_;
   std::vector<std::unique_ptr<Result>> sub_results_;
-  timespec min_, max_, mean_, median_;
-  double sd_;
-  std::vector<int> ComputeNormalizedFrequencyVector();
-  void PrintStatisticsTableContent(const std::string& instruction_path);
+
+  void AnalyseMeasurement(const std::string& name);
+  void PrintMeasurement(const std::string& name);
+  std::vector<int> ComputeNormalizedFrequencyVector(const std::string& measurement_name);
+  std::set<std::string> GetMeasurementsNames();
+  void PrintStatisticsTableContent(const std::string& instruction_path,
+                                   const std::string& measurement_name);
+
   std::string ComputeNextInstructionPath(const std::string& instruction_path);
-  void PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path);
+  void PrintStatisticInCsv(std::ostream& csv_stream, const std::string& instruction_path,
+                           const std::set<std::string>& measurements_names);
+  void PrintHistogramHeader(const std::string& measurement_name);
   void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value);
-  TimeUnit GetTimeUnit(const timespec& min_value);
+  TimeUnit GetTimeUnit(const int64_t& min_value);
+  BandwidthUnit GetBandwidthUnit(const int64_t& min_value);
+  void PrintMeasurementStatisticInCsv(std::ostream& csv_stream, const std::string& name);
 };
 }  // namespace dittosuite
