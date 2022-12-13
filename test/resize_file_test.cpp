@@ -23,7 +23,7 @@
 #include <ditto/resize_file.h>
 #include <ditto/syscall.h>
 
-class ResizeFileTest : public InstructionTest {
+class ResizeFileTest : public InstructionTestWithParam<dittosuite::OpenFile::AccessMode> {
  protected:
   std::string file_name = "test";
   std::string path = absolute_path + file_name;
@@ -32,24 +32,32 @@ class ResizeFileTest : public InstructionTest {
   void TearDown() override { unlink(path.c_str()); }
 };
 
-TEST_F(ResizeFileTest, ResizeFileTestRun) {
+TEST_P(ResizeFileTest, ResizeFileTestRun) {
   int repeat = 1;
   int64_t size = 2048;
-
+  dittosuite::OpenFile::AccessMode access_mode = GetParam();
   int fd_key = dittosuite::SharedVariables::GetKey(thread_ids, "test_file");
 
   dittosuite::OpenFile open_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, file_name,
-                                             true, false, fd_key,
-                                             dittosuite::OpenFile::AccessMode::WRITE_ONLY);
+                                             true, false, fd_key, access_mode);
   open_file_instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);
 
   dittosuite::ResizeFile resize_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, size,
                                                  fd_key);
-  resize_file_instruction.Run();
+  if (access_mode == dittosuite::OpenFile::AccessMode::READ_ONLY) {
+    ASSERT_DEATH(resize_file_instruction.Run(), ".*");
+  } else {
+    resize_file_instruction.Run();
 
-  struct stat sb;
-  stat(path.c_str(), &sb);
-  ASSERT_EQ(sb.st_size, size);
+    struct stat sb;
+    stat(path.c_str(), &sb);
+    ASSERT_EQ(sb.st_size, size);
+  }
 }
+
+INSTANTIATE_TEST_CASE_P(ResizeFileTestParametric, ResizeFileTest,
+                        ::testing::Values(dittosuite::OpenFile::AccessMode::READ_ONLY,
+                                          dittosuite::OpenFile::AccessMode::WRITE_ONLY,
+                                          dittosuite::OpenFile::AccessMode::READ_WRITE));

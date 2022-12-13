@@ -43,3 +43,6 @@ class InstructionTest : public ::testing::Test {
     dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
   }
 };
+
+template <class T>
+class InstructionTestWithParam : public InstructionTest, public ::testing::WithParamInterface<T> {};
