@@ -25,21 +25,20 @@
 
 namespace dittosuite {
 
-class WriteFile : public Instruction {
+class ReadWriteFile : public Instruction {
  public:
-  explicit WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                     u_int32_t seed, bool fsync, int input_fd_key);
+  explicit ReadWriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
+                         u_int32_t seed, int input_fd_key);
 
-  void SetUp() override;
+  virtual void SetUp() override;
 
- private:
-  void RunSingle() override;
+ protected:
+  virtual void RunSingle() override;
 
   int64_t size_;
   int64_t block_size_;
   ReadWriteType type_;
   std::mt19937_64 gen_;
-  bool fsync_;
   int input_fd_key_;
 
   struct Unit {
@@ -49,6 +48,17 @@ class WriteFile : public Instruction {
 
   std::vector<Unit> units_;
   std::unique_ptr<char[]> buffer_;
+};
+
+class WriteFile : public ReadWriteFile {
+ public:
+  explicit WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
+                     u_int32_t seed, bool fsync, int input_fd_key);
+
+ private:
+  void RunSingle() override;
+
+  bool fsync_;
 };
 
 }  // namespace dittosuite

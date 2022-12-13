@@ -21,9 +21,9 @@
 #include <ditto/instruction_set.h>
 #include <ditto/logger.h>
 #include <ditto/open_file.h>
+#include <ditto/read_write_file.h>
 #include <ditto/resize_file.h>
 #include <ditto/shared_variables.h>
-#include <ditto/write_file.h>
 
 namespace dittosuite {
 typedef dittosuiteproto::Instruction::InstructionOneofCase InstructionType;
