@@ -24,7 +24,7 @@
 
 namespace dittosuite {
 
-enum class ResultsOutput { kReport, kCsv };
+enum class ResultsOutput { kNull = -1, kReport = 0, kCsv = 1 };
 
 class Result {
  public:
