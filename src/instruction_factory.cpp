@@ -16,7 +16,7 @@
 #include <ditto/create_file.h>
 
 namespace dittosuite {
-  std::unique_ptr<Instruction> InstructionFactory::createFromProtoInstruction(
+  std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       const dittosuiteproto::Instruction& proto_instruction) {
     switch (proto_instruction.instruction_oneof_case()) {
         case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionCreateFile:

@@ -24,7 +24,7 @@
 
 namespace dittosuite {
 
-  std::queue<std::unique_ptr<Instruction> > Parser::parse(std::string& file_name) {
+  std::queue<std::unique_ptr<Instruction> > Parser::Parse(std::string& file_name) {
     std::queue<std::unique_ptr<Instruction> > instruction_queue;
 
     dittosuiteproto::Benchmark* benchmark = new dittosuiteproto::Benchmark;
@@ -34,7 +34,7 @@ namespace dittosuite {
     // TODO(robertasn): handle Global directive
 
     for (const auto& instruction : benchmark->main().instructions()) {
-      instruction_queue.push(InstructionFactory::createFromProtoInstruction(instruction));
+      instruction_queue.push(InstructionFactory::CreateFromProtoInstruction(instruction));
     }
 
     return instruction_queue;

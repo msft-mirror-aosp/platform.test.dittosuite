@@ -20,9 +20,9 @@ class Instruction {
  public:
   virtual ~Instruction() = default;
 
-  virtual void setup() = 0;
-  virtual void run() = 0;
-  virtual void teardown() = 0;
+  virtual void SetUp() = 0;
+  virtual void Run() = 0;
+  virtual void TearDown() = 0;
 };
 
 } // namespace dittosuite
