@@ -35,7 +35,7 @@ static int bin_size;                 // bin size corresponding to the normalizat
 
 namespace dittosuite {
 
-Result::Result(const std::string& name, std::vector<timespec> time_samples)
+Result::Result(const std::string& name, const std::vector<timespec>& time_samples)
     : name_(name), time_samples_(time_samples) {}
 
 void Result::AddSubResult(std::unique_ptr<Result> result) {
