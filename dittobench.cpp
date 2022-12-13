@@ -25,10 +25,12 @@ auto BM_test = [](benchmark::State& st, auto Inputs) {
 };
 
 int main(int argc, char** argv) {
-  for (const auto& test_input :
-       {"asdf", "asdfasdfasdfasdfasdf", "asdfasdfasdfasdfasdfasdfasdf",
-        "asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf", "asda"})
+  for (const auto& test_input : {"asdf", "asdfasdfasdfasdfasdf", "asdfasdfasdfasdfasdfasdfasdf",
+                                 "asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf", "asda"}) {
     benchmark::RegisterBenchmark(test_input, BM_test, test_input);
+  }
   benchmark::Initialize(&argc, argv);
   benchmark::RunSpecifiedBenchmarks();
+
+  return 0;
 }
