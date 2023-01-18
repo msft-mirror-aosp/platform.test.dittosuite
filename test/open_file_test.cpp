@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
+#include "instruction_test.cpp"
 
 #include <ditto/open_file.h>
-#include <ditto/shared_variables.h>
 #include <ditto/syscall.h>
 
-#ifdef __ANDROID__
-const std::string absolute_path = "/data/local/tmp/";
-#else
-const std::string absolute_path = "";
-#endif
-
-class OpenFileTest : public ::testing::Test {
+class OpenFileTest : public InstructionTest {
  protected:
   std::string file_name = "test";
   std::string path = absolute_path + file_name;
-  std::list<int> thread_ids;
 
-  // Set absolute_path
-  void SetUp() override {
-    thread_ids.push_back(0);
-    auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
-    dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
-    dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
-  }
   // Make sure that the files, which have been created in the tests, are deleted
   void TearDown() override { unlink(path.c_str()); }
 };
