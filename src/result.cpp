@@ -21,8 +21,6 @@
 #include <iostream>
 #include <string>
 
-const int kTimeDividingFactor = 1;       // dividing factor used for transforming the current time
-                                         // unit (ns) in another one (ex 1000 for microseconds)
 const int kTimeSampleDisplayWidth = 11;  // this width is used displaying a time sample value
 const int kTableWidth = 158;  // table width; can be adjusted in case of longer instruction paths
 const char* kTableDivider = " | ";   // table character divider
@@ -152,9 +150,9 @@ void Result::PrintStatisticsTable() {
 }
 
 // makes (normalized) histogram from vector
-void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value) {
-  std::cout.width(kTimeSampleDisplayWidth + 2);
-  std::cout << "Time(ns) |";
+void Result::MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value) {
+  std::cout.width(kTimeSampleDisplayWidth - 3);
+  std::cout << "Time(" << time_unit_.name << ") |";
   std::cout << " Normalized number of time samples";
   std::cout << std::endl;
   for (int i = 0; i <= kMaxHistogramWidth + 15; i++) std::cout << "-";
@@ -177,12 +175,34 @@ void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min
 
 // makes and returns the normalized frequency vector
 std::vector<int> Result::ComputeNormalizedFrequencyVector() {
-  int64_t min_value = TimespecToNs(min_) / kTimeDividingFactor;
+  int64_t min_value = TimespecToNs(min_) / time_unit_.dividing_factor;
   std::vector<int> freq_vector(kMaxHistogramHeight, 0);
   for (auto time_sample : time_samples_) {
-    freq_vector[(TimespecToNs(time_sample) / kTimeDividingFactor - min_value) / bin_size]++;
+    freq_vector[(TimespecToNs(time_sample) / time_unit_.dividing_factor - min_value) / bin_size]++;
   }
   return freq_vector;
+}
+
+Result::TimeUnit Result::GetTimeUnit(const timespec& min_value) {
+  TimeUnit result;
+  if (TimespecToNs(min_value) <= 1e7) {
+    // time unit in nanoseconds
+    result.dividing_factor = 1;
+    result.name = "ns";
+  } else if (TimespecToNs(min_value) <= 1e10) {
+    // time unit in microseconds
+    result.dividing_factor = 1e3;
+    result.name = "us";
+  } else if (TimespecToNs(min_value) <= 1e13) {
+    // time unit in milliseconds
+    result.dividing_factor = 1e6;
+    result.name = "ms";
+  } else {
+    // time unit in seconds
+    result.dividing_factor = 1e9;
+    result.name = "s";
+  }
+  return result;
 }
 
 void Result::PrintHistograms(const std::string& instruction_path) {
@@ -193,8 +213,9 @@ void Result::PrintHistograms(const std::string& instruction_path) {
   std::cout << "\x1b[0m" << std::endl;  // ending of bold
   std::cout << std::endl;
 
-  int64_t min_value = TimespecToNs(min_) / kTimeDividingFactor;
-  int64_t max_value = TimespecToNs(max_) / kTimeDividingFactor;
+  time_unit_ = GetTimeUnit(min_);
+  int64_t min_value = TimespecToNs(min_) / time_unit_.dividing_factor;
+  int64_t max_value = TimespecToNs(max_) / time_unit_.dividing_factor;
   bin_size = (max_value - min_value) / kMaxHistogramHeight + 1;
   std::vector<int> freq_vector = ComputeNormalizedFrequencyVector();
   MakeHistogramFromVector(freq_vector, min_value);
