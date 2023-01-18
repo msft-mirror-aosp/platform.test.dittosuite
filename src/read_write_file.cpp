@@ -61,6 +61,9 @@ void ReadWriteFile::SetUpSingle() {
   if (size_ == -1) {
     size_ = file_size;
   }
+  if (block_size_ == -1) {
+    block_size_ = file_size;
+  }
 
   if (block_size_ > file_size) {
     LOGW("Supplied block_size (" + std::to_string(block_size_) +
