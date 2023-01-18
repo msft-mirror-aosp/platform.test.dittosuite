@@ -28,15 +28,15 @@ Logger& Logger::GetInstance() {
   return logger;
 }
 
-void Logger::setLevel(LOG_LEVEL newLogLevel) {
-  logLevel = newLogLevel;
+void Logger::SetLogLevel(LOG_LEVEL log_level) {
+  log_level_ = log_level;
 }
 
-LOG_LEVEL Logger::GetLevel() const {
-  return logLevel;
+LOG_LEVEL Logger::GetLogLevel() const {
+  return log_level_;
 }
 
-void Logger::writeLogMessage(std::string message, std::string prefix) {
+void Logger::WriteLogMessage(std::string message, std::string prefix) {
   std::cout << prefix << ": " << message << '\n';
 }
 
