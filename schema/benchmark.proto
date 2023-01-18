@@ -13,6 +13,12 @@ enum Reseeding {
   EACH_CYCLE = 2;
 }
 
+enum AccessMode {
+  READ_ONLY = 1;
+  WRITE_ONLY = 2;
+  READ_WRITE = 3;
+}
+
 message OpenFile {
   oneof file {
     string path_name = 1;
@@ -21,6 +27,7 @@ message OpenFile {
   optional string output_fd = 3;
   optional bool create = 4 [default = true];
   optional bool direct_io = 5 [default = false];
+  optional AccessMode access_mode = 6 [default = READ_WRITE];
 }
 
 message DeleteFile {

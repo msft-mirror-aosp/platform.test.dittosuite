@@ -81,16 +81,36 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         fd_key = SharedVariables::GetKey(thread_ids, options.output_fd());
       }
 
+      dittosuite::OpenFile::AccessMode access_mode;
+      {
+        switch (options.access_mode()) {
+          case dittosuiteproto::AccessMode::READ_ONLY:
+            access_mode = dittosuite::OpenFile::AccessMode::READ_ONLY;
+            break;
+          case dittosuiteproto::AccessMode::WRITE_ONLY:
+            access_mode = dittosuite::OpenFile::AccessMode::WRITE_ONLY;
+            break;
+          case dittosuiteproto::AccessMode::READ_WRITE:
+            access_mode = dittosuite::OpenFile::AccessMode::READ_WRITE;
+            break;
+          default:
+            LOGF("Invalid instruction OpenFile access mode: it should be at least read or write");
+            break;
+        }
+      }
+
       if (options.has_input()) {
         int input_key = SharedVariables::GetKey(thread_ids, options.input());
         return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, input_key,
-                                          options.create(), options.direct_io(), fd_key);
+                                          options.create(), options.direct_io(), fd_key,
+                                          access_mode);
       } else if (options.has_path_name()) {
         return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.path_name(),
-                                          options.create(), options.direct_io(), fd_key);
+                                          options.create(), options.direct_io(), fd_key,
+                                          access_mode);
       } else {
         return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.create(),
-                                          options.direct_io(), fd_key);
+                                          options.direct_io(), fd_key, access_mode);
       }
     }
     case InstructionType::kDeleteFile: {
