@@ -14,9 +14,10 @@
 
 #pragma once
 
-#include <ditto/instruction.h>
-
 #include <string>
+
+#include <ditto/instruction.h>
+#include <ditto/instruction_set.h>
 
 #include "test/dittosuite/schema/benchmark.pb.h"
 
@@ -24,6 +25,8 @@ namespace dittosuite {
 
 class InstructionFactory {
  public:
+  static std::unique_ptr<InstructionSet> CreateFromProtoInstructionSet(
+      const int& repeat, const dittosuiteproto::InstructionSet& proto_instruction_set);
   static std::unique_ptr<Instruction> CreateFromProtoInstruction(
       const dittosuiteproto::Instruction& proto_instruction);
 

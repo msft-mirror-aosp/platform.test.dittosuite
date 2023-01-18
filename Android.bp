@@ -6,8 +6,10 @@ cc_defaults {
     srcs: [
       "src/create_file.cpp",
       "src/instruction_factory.cpp",
+      "src/instruction_set.cpp",
+      "src/instruction.cpp",
       "src/logger.cpp",
-      "src/parser.cpp"
+      "src/parser.cpp",
     ],
     cflags: [
       "-Wall",

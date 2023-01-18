@@ -1,9 +1,11 @@
-main: {
+benchmark: {
   instructions: [
     {
       instruction_create_file: {
         file: "/data/local/tmp/newfile2.txt"
-      }
+      },
+      repeat: 1
     }
   ]
-}
+},
+repeat: 1
