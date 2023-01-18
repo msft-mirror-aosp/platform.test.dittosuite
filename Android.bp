@@ -5,6 +5,7 @@ cc_defaults {
     shared_libs: ["libprotobuf-cpp-full"],
     srcs: [
       "src/create_file.cpp",
+      "src/delete_file.cpp",
       "src/instruction_factory.cpp",
       "src/instruction_set.cpp",
       "src/instruction.cpp",
@@ -37,6 +38,7 @@ cc_test {
     name: "dittobench_test",
     srcs: [
       "test/create_file_test.cpp",
+      "test/delete_file_test.cpp",
       "test/logger_test.cpp",
     ],
     defaults: ["dittobench_defaults"],
