@@ -25,8 +25,13 @@ target_link_libraries(libdittosuite
 )
 
 add_executable(dittobench dittobench.cpp)
+add_executable(dittotrace dittotrace.cpp)
 
 target_link_libraries(dittobench
+	libdittosuite
+)
+
+target_link_libraries(dittotrace
 	libdittosuite
 )
 
