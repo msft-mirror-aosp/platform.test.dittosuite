@@ -83,21 +83,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionWriteFile: {
       const auto& options = proto_instruction.instruction_write_file();
 
-      ReadWriteFile::Type type;
-      switch (options.type()) {
-        case dittosuiteproto::ReadWriteType::SEQUENTIAL: {
-          type = ReadWriteFile::Type::kSequential;
-          break;
-        }
-        case dittosuiteproto::ReadWriteType::RANDOM: {
-          type = ReadWriteFile::Type::kRandom;
-          break;
-        }
-        default: {
-          LOGE("Invalid ReadWriteType was provided");
-          exit(EXIT_FAILURE);
-        }
-      }
+      auto type = ConvertReadWriteType(options.type());
 
       u_int32_t seed = options.seed();
       if (!options.has_seed()) {
@@ -116,21 +102,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionReadFile: {
       const auto& options = proto_instruction.instruction_read_file();
 
-      ReadWriteFile::Type type;
-      switch (options.type()) {
-        case dittosuiteproto::ReadWriteType::SEQUENTIAL: {
-          type = ReadWriteFile::Type::kSequential;
-          break;
-        }
-        case dittosuiteproto::ReadWriteType::RANDOM: {
-          type = ReadWriteFile::Type::kRandom;
-          break;
-        }
-        default: {
-          LOGE("Invalid ReadWriteType was provided");
-          exit(EXIT_FAILURE);
-        }
-      }
+      auto type = ConvertReadWriteType(options.type());
 
       u_int32_t seed = options.seed();
       if (!options.has_seed()) {
@@ -195,6 +167,22 @@ ReadWriteFile::Reseeding InstructionFactory::ConvertReadWriteReseeding(
     }
     default: {
       LOGE("Invalid ReadWriteReseeding was provided");
+      exit(EXIT_FAILURE);
+    }
+  }
+}
+
+ReadWriteFile::Type InstructionFactory::ConvertReadWriteType(
+    const dittosuiteproto::ReadWriteType& proto_type) {
+  switch (proto_type) {
+    case dittosuiteproto::ReadWriteType::SEQUENTIAL: {
+      return ReadWriteFile::Type::kSequential;
+    }
+    case dittosuiteproto::ReadWriteType::RANDOM: {
+      return ReadWriteFile::Type::kRandom;
+    }
+    default: {
+      LOGE("Invalid ReadWriteType was provided");
       exit(EXIT_FAILURE);
     }
   }
