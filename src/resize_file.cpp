@@ -33,11 +33,9 @@ void ResizeFile::RunSingle() {
   int64_t file_size = GetFileSize(fd);
 
   if (size_ > file_size && fallocate(fd, 0, 0, size_) != 0) {
-    LOGE("Error while calling fallocate()");
-    exit(EXIT_FAILURE);
+    LOGF("Error while calling fallocate()");
   } else if (ftruncate(fd, size_) != 0) {
-    LOGE("Error while calling ftruncate()");
-    exit(EXIT_FAILURE);
+    LOGF("Error while calling ftruncate()");
   }
 }
 

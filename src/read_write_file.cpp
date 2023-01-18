@@ -111,14 +111,12 @@ void WriteFile::RunSingle() {
 
   for (const auto& unit : units_) {
     if (pwrite64(fd, buffer_.get(), unit.count, unit.offset) == -1) {
-      LOGE("Error while calling write()");
-      exit(EXIT_FAILURE);
+      LOGF("Error while calling write()");
     }
   }
 
   if (fsync_ && fsync(fd) != 0) {
-    LOGE("Error while calling fsync()");
-    exit(EXIT_FAILURE);
+    LOGF("Error while calling fsync()");
   }
 }
 
@@ -133,8 +131,7 @@ void ReadFile::SetUpSingle() {
   int64_t file_size = GetFileSize(fd);
 
   if (posix_fadvise64(fd, 0, file_size, fadvise_) != 0) {
-    LOGE("Error while calling fadvise()");
-    exit(EXIT_FAILURE);
+    LOGF("Error while calling fadvise()");
   }
   ReadWriteFile::SetUpSingle();
 }
@@ -144,8 +141,7 @@ void ReadFile::RunSingle() {
 
   for (const auto& unit : units_) {
     if (pread64(fd, buffer_.get(), unit.count, unit.offset) == -1) {
-      LOGE("Error while calling read()");
-      exit(EXIT_FAILURE);
+      LOGF("Error while calling read()");
     }
   }
 }

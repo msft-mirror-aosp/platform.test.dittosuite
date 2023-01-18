@@ -50,7 +50,7 @@ LOG_STREAM Logger::GetLogStream() const {
 }
 
 std::string LogLevelToString(LOG_LEVEL log_level) {
-  static const std::string prefixes[] = {"VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR"};
+  static const std::string prefixes[] = {"VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL"};
   return prefixes[log_level];
 }
 
@@ -71,6 +71,9 @@ android::base::LogSeverity LogLevelToAndroidLogLevel(LOG_LEVEL log_level) {
       break;
     case LOG_LEVEL_ERROR:
       return android::base::ERROR;
+      break;
+    case LOG_LEVEL_FATAL:
+      return android::base::FATAL;
       break;
     default:
       break;
