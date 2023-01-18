@@ -22,8 +22,8 @@
 
 namespace dittosuite {
 
-int64_t TimespecToInt64(const timespec& t);
-timespec Int64ToTimespec(const int64_t& t);
+int64_t TimespecToNs(const timespec& t);
+timespec NsToTimespec(const int64_t& t);
 timespec StatisticsGetMin(const std::vector<timespec>& time_samples);
 timespec StatisticsGetMax(const std::vector<timespec>& time_samples);
 timespec StatisticsGetMean(const std::vector<timespec>& time_samples);
