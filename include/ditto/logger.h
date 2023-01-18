@@ -57,38 +57,38 @@ class Logger {
 
 #define DITTO_LOGGER dittosuite::Logger::GetInstance()
 
-#define LOG(VERBOSITY, X)                                                  \
+#define DITTO_LOG(VERBOSITY, X)                                            \
   do {                                                                     \
     if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) { \
       DITTO_LOGGER.WriteLogMessage(X, dittosuite::LOG_LEVEL_##VERBOSITY);  \
     }                                                                      \
   } while (false)
 
-#define LOGF(X)         \
-  do {                  \
-    LOG(FATAL, X);      \
-    exit(EXIT_FAILURE); \
+#define LOGF(X)          \
+  do {                   \
+    DITTO_LOG(FATAL, X); \
+    exit(EXIT_FAILURE);  \
   } while (false)
-#define LOGE(X) LOG(ERROR, X)
-#define LOGW(X) LOG(WARNING, X)
-#define LOGI(X) LOG(INFO, X)
-#define LOGD(X) LOG(DEBUG, X)
-#define LOGV(X) LOG(VERBOSE, X)
+#define LOGE(X) DITTO_LOG(ERROR, X)
+#define LOGW(X) DITTO_LOG(WARNING, X)
+#define LOGI(X) DITTO_LOG(INFO, X)
+#define LOGD(X) DITTO_LOG(DEBUG, X)
+#define LOGV(X) DITTO_LOG(VERBOSE, X)
 
-#define PLOG(VERBOSITY, X)                                                     \
+#define DITTO_PLOG(VERBOSITY, X)                                               \
   do {                                                                         \
     if (DITTO_LOGGER.GetLogLevel() <= dittosuite::LOG_LEVEL_##VERBOSITY) {     \
       DITTO_LOGGER.WriteLogErrorMessage(X, dittosuite::LOG_LEVEL_##VERBOSITY); \
     }                                                                          \
   } while (false)
 
-#define PLOGF(X)        \
-  do {                  \
-    PLOG(FATAL, X);     \
-    exit(EXIT_FAILURE); \
+#define PLOGF(X)          \
+  do {                    \
+    DITTO_PLOG(FATAL, X); \
+    exit(EXIT_FAILURE);   \
   } while (false)
-#define PLOGE(X) PLOG(ERROR, X)
-#define PLOGW(X) PLOG(WARNING, X)
-#define PLOGI(X) PLOG(INFO, X)
-#define PLOGD(X) PLOG(DEBUG, X)
-#define PLOGV(X) PLOG(VERBOSE, X)
+#define PLOGE(X) DITTO_PLOG(ERROR, X)
+#define PLOGW(X) DITTO_PLOG(WARNING, X)
+#define PLOGI(X) DITTO_PLOG(INFO, X)
+#define PLOGD(X) DITTO_PLOG(DEBUG, X)
+#define PLOGV(X) DITTO_PLOG(VERBOSE, X)
