@@ -30,7 +30,7 @@ main: {
           iterate_options: {
             list_name: "file_list",
             item_name: "file_name",
-            type: RANDOM
+            access_order: RANDOM
           }
         }
       }

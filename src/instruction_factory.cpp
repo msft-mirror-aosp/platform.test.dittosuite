@@ -49,7 +49,7 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
 
     int list_key = SharedVariables::GetKey(thread_ids, options.list_name());
     int item_key = SharedVariables::GetKey(thread_ids, options.item_name());
-    auto type = ConvertAccessType(options.type());
+    auto access_order = ConvertOrder(options.access_order());
     auto reseeding = ConvertReseeding(options.reseeding());
 
     uint32_t seed = options.seed();
@@ -58,7 +58,7 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
     }
 
     return std::make_unique<InstructionSet>(Syscall::GetSyscall(), repeat, std::move(instructions),
-                                            list_key, item_key, type, reseeding, seed);
+                                            list_key, item_key, access_order, reseeding, seed);
   } else {
     return std::make_unique<InstructionSet>(Syscall::GetSyscall(), repeat, std::move(instructions));
   }
@@ -120,7 +120,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kWriteFile: {
       const auto& options = proto_instruction.write_file();
 
-      auto type = ConvertAccessType(options.type());
+      auto access_order = ConvertOrder(options.access_order());
 
       uint32_t seed = options.seed();
       if (!options.has_seed()) {
@@ -131,26 +131,26 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
       return std::make_unique<WriteFile>(Syscall::GetSyscall(), repeat, options.size(),
-                                         options.block_size(), options.starting_offset(), type,
-                                         seed, reseeding, options.fsync(), fd_key);
+                                         options.block_size(), options.starting_offset(),
+                                         access_order, seed, reseeding, options.fsync(), fd_key);
     }
     case InstructionType::kReadFile: {
       const auto& options = proto_instruction.read_file();
 
-      auto type = ConvertAccessType(options.type());
+      auto access_order = ConvertOrder(options.access_order());
 
       uint32_t seed = options.seed();
       if (!options.has_seed()) {
         seed = time(nullptr);
       }
 
-      auto fadvise = ConvertReadFAdvise(type, options.fadvise());
+      auto fadvise = ConvertReadFAdvise(access_order, options.fadvise());
       auto reseeding = ConvertReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
       return std::make_unique<ReadFile>(Syscall::GetSyscall(), repeat, options.size(),
-                                        options.block_size(), options.starting_offset(), type, seed,
-                                        reseeding, fadvise, fd_key);
+                                        options.block_size(), options.starting_offset(),
+                                        access_order, seed, reseeding, fadvise, fd_key);
     }
     case InstructionType::kReadDirectory: {
       const auto& options = proto_instruction.read_directory();
@@ -225,25 +225,26 @@ Reseeding InstructionFactory::ConvertReseeding(const dittosuiteproto::Reseeding&
   }
 }
 
-AccessType InstructionFactory::ConvertAccessType(const dittosuiteproto::AccessType& proto_type) {
-  switch (proto_type) {
-    case dittosuiteproto::AccessType::SEQUENTIAL: {
+Order InstructionFactory::ConvertOrder(
+    const dittosuiteproto::Order& proto_order) {
+  switch (proto_order) {
+    case dittosuiteproto::Order::SEQUENTIAL: {
       return kSequential;
     }
-    case dittosuiteproto::AccessType::RANDOM: {
+    case dittosuiteproto::Order::RANDOM: {
       return kRandom;
     }
     default: {
-      LOGF("Invalid AccessType was provided");
+      LOGF("Invalid Order was provided");
     }
   }
 }
 
 int InstructionFactory::ConvertReadFAdvise(
-    const AccessType& type, const dittosuiteproto::ReadFile_ReadFAdvise& proto_fadvise) {
+    const Order& access_order, const dittosuiteproto::ReadFile_ReadFAdvise& proto_fadvise) {
   switch (proto_fadvise) {
     case dittosuiteproto::ReadFile_ReadFAdvise_AUTOMATIC: {
-      switch (type) {
+      switch (access_order) {
         case kSequential: {
           return POSIX_FADV_SEQUENTIAL;
         }

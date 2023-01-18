@@ -23,21 +23,23 @@ namespace dittosuite {
 
 ReadWriteFile::ReadWriteFile(SyscallInterface& syscall, const std::string& name, int repeat,
                              int64_t size, int64_t block_size, int64_t starting_offset,
-                             AccessType type, uint32_t seed, Reseeding reseeding, int input_fd_key)
+                             Order access_order, uint32_t seed, Reseeding reseeding,
+                             int input_fd_key)
     : Instruction(syscall, name, repeat),
       size_(size),
       block_size_(block_size),
       starting_offset_(starting_offset),
-      type_(type),
+      access_order_(access_order),
       gen_(seed),
       seed_(seed),
       reseeding_(reseeding),
       input_fd_key_(input_fd_key),
       update_size_(size == -1),
       update_block_size_(block_size == -1) {
-  if (type == kRandom && starting_offset != 0) {
+  if (access_order == kRandom && starting_offset != 0) {
     LOGE(
-        "Starting offset is not 0, although the chosen type is RANDOM. Starting offset will be "
+        "Starting offset is not 0, although the chosen access_order is RANDOM. Starting offset "
+        "will be "
         "ignored");
   }
 }
@@ -83,7 +85,7 @@ void ReadWriteFile::SetUpSingle() {
 
   units_.clear();
 
-  switch (type_) {
+  switch (access_order_) {
     case kSequential: {
       int64_t offset = starting_offset_;
       for (int64_t i = 0; i < (size_ / block_size_); i++) {
@@ -111,9 +113,9 @@ void ReadWriteFile::SetUpSingle() {
 void ReadWriteFile::RunSingle() {}
 
 WriteFile::WriteFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
-                     int64_t starting_offset, AccessType type, uint32_t seed, Reseeding reseeding,
-                     bool fsync, int input_fd_key)
-    : ReadWriteFile(syscall, kName, repeat, size, block_size, starting_offset, type, seed,
+                     int64_t starting_offset, Order access_order, uint32_t seed,
+                     Reseeding reseeding, bool fsync, int input_fd_key)
+    : ReadWriteFile(syscall, kName, repeat, size, block_size, starting_offset, access_order, seed,
                     reseeding, input_fd_key),
       fsync_(fsync) {}
 
@@ -132,9 +134,9 @@ void WriteFile::RunSingle() {
 }
 
 ReadFile::ReadFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
-                   int64_t starting_offset, AccessType type, uint32_t seed, Reseeding reseeding,
+                   int64_t starting_offset, Order access_order, uint32_t seed, Reseeding reseeding,
                    int fadvise, int input_fd_key)
-    : ReadWriteFile(syscall, kName, repeat, size, block_size, starting_offset, type, seed,
+    : ReadWriteFile(syscall, kName, repeat, size, block_size, starting_offset, access_order, seed,
                     reseeding, input_fd_key),
       fadvise_(fadvise) {}
 

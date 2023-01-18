@@ -29,7 +29,7 @@ class InstructionSet : public Instruction {
 
   explicit InstructionSet(SyscallInterface& syscall, int repeat,
                           std::vector<std::unique_ptr<Instruction>> instructions, int list_key,
-                          int item_key, AccessType type, Reseeding reseeding, uint32_t seed);
+                          int item_key, Order order, Reseeding reseeding, uint32_t seed);
   explicit InstructionSet(SyscallInterface& syscall, int repeat,
                           std::vector<std::unique_ptr<Instruction>> instructions);
 
@@ -44,7 +44,7 @@ class InstructionSet : public Instruction {
   std::vector<std::unique_ptr<Instruction>> instructions_;
   int list_key_;
   int item_key_;
-  AccessType type_;
+  Order access_order_;
   Reseeding reseeding_;
   uint32_t seed_;
   std::mt19937_64 gen_;

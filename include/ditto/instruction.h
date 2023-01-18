@@ -26,7 +26,7 @@
 
 namespace dittosuite {
 
-enum AccessType { kSequential, kRandom };
+enum Order { kSequential, kRandom };
 enum Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
 
 class Instruction {
