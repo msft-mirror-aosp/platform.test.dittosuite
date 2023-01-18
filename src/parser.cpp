@@ -28,7 +28,7 @@ namespace dittosuite {
     std::queue<std::unique_ptr<Instruction> > instruction_queue;
 
     dittosuiteproto::Benchmark* benchmark = new dittosuiteproto::Benchmark;
-    google::protobuf::io::FileInputStream file_input(open(file_name.c_str(), O_RDONLY));
+    google::protobuf::io::FileInputStream file_input(open(file_name.c_str(), O_CLOEXEC));
     google::protobuf::TextFormat::Parse(&file_input, benchmark);
 
     // TODO(robertasn): handle Global directive
