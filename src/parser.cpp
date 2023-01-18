@@ -38,7 +38,7 @@ std::unique_ptr<Instruction> Parser::Parse() {
   google::protobuf::io::FileInputStream file_input(open(file_path_.c_str(), O_CLOEXEC));
   google::protobuf::TextFormat::Parse(&file_input, benchmark.get());
 
-  return InstructionFactory::CreateFromProtoInstruction(benchmark->benchmark());
+  return InstructionFactory::CreateFromProtoInstruction(benchmark->main());
 }
 
 void Parser::SetFilePath(const std::string& file_path) {

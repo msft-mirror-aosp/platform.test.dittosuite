@@ -11,7 +11,7 @@ message InstructionDeleteFile {
 }
 
 message Instruction {
-  required int32 repeat = 1;
+  optional int32 repeat = 1;
   oneof instruction_oneof {
     InstructionSet instruction_set = 2;
     InstructionCreateFile instruction_create_file = 3;
@@ -23,7 +23,11 @@ message InstructionSet {
   repeated Instruction instructions = 1;
 }
 
+message Global {
+  optional string absolute_path = 1 [default = ""];
+}
+
 message Benchmark {
-  required Instruction benchmark = 1;
-  required int32 repeat = 2;
+  required Instruction main = 1;
+  required Global global = 2;
 }

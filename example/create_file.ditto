@@ -1,7 +1,9 @@
-benchmark: {
+main: {
   instruction_create_file: {
-    file: "/data/local/tmp/newfile2.txt"
-  },
-  repeat: 1
+    file: "newfile2.txt"
+  }
 },
-repeat: 1
+global {
+  absolute_path: "/data/local/tmp/";
+}
+
