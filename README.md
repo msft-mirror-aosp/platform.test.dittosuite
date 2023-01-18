@@ -1,10 +1,14 @@
 # Dittosuite
 
-With Google benchmark it would be possible to create standalone benchmarks and
-register each of them (benchmark::RegisterBenchmark), so it would be fine to
-create a huge binary and filter out the desired benchmarks at launch time with
-the command line parameters.
+Dittosuite is a work in progress collection of tools that aims at providing
+a high-level language called Dittolang that defines operations.
 
+The defined Dittolang operations can be interpreted by Dittosim for simulation
+to provide a simulated performance measurement and quickly identify
+the goodness of a solution.
+
+Specularly, Dittobench interprets the Dittolang operations and executes them on
+a real device, tracking the behavior and measuring the performance.
 
 # Use cases
 
@@ -75,7 +79,7 @@ T2:   INIT :                 RCV [ RD WR ] SND             :   END
 
 critical path [ READ WRITE READ ] [ READ WRITE ]  [ WRITE READ ]
 -------------------->
-             >                  < 
+             >                  <
 Thread1   III-XXXXXX|X-SSSSSS-XX-TTTT
 Thread2               III-XXXX|XXX-TTTT
                      ^
@@ -93,7 +97,7 @@ vector<instr*> {read(), write(), read()};
 
 
 RECEIVE READ WRITE READ SEND
----> 
+--->
 vector<instr*> {receive(), read(), write(), read(), send()};
 start()
 
