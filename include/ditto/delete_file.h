@@ -22,6 +22,8 @@ namespace dittosuite {
 
 class DeleteFile : public Instruction {
  public:
+  inline static const std::string kName = "instruction_delete_file";
+
   explicit DeleteFile(int repeat, const std::string& file);
 
  private:
