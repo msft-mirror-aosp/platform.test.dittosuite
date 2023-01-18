@@ -49,4 +49,10 @@ TEST(DittoLogger, SetAndGetStream) {
   }
 }
 
+TEST(DittoLogger, LoggerPError) {
+  FILE* pFile;
+  pFile = fopen("nonexistent.txt", "re");
+  if (pFile == NULL) PLOGE("Error at opening file nonexistent.txt");
+}
+
 }  // namespace dittosuite
