@@ -14,22 +14,17 @@
 
 #include <ditto/read_write_file.h>
 
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <cstdint>
-#include <cstdlib>
-
 #include <ditto/logger.h>
 #include <ditto/shared_variables.h>
+
 #include <ditto/utils.h>
 
 namespace dittosuite {
 
-ReadWriteFile::ReadWriteFile(const std::string& name, int repeat, int64_t size, int64_t block_size,
-                             int64_t starting_offset, AccessType type, uint32_t seed,
-                             Reseeding reseeding, int input_fd_key)
-    : Instruction(name, repeat),
+ReadWriteFile::ReadWriteFile(SyscallInterface& syscall, const std::string& name, int repeat,
+                             int64_t size, int64_t block_size, int64_t starting_offset,
+                             AccessType type, uint32_t seed, Reseeding reseeding, int input_fd_key)
+    : Instruction(syscall, name, repeat),
       size_(size),
       block_size_(block_size),
       starting_offset_(starting_offset),
@@ -56,7 +51,7 @@ void ReadWriteFile::SetUp() {
 
 void ReadWriteFile::SetUpSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
-  int64_t file_size = GetFileSize(fd);
+  int64_t file_size = GetFileSize(syscall_, fd);
 
   if (size_ == -1) {
     size_ = file_size;
@@ -68,7 +63,7 @@ void ReadWriteFile::SetUpSingle() {
   if (block_size_ > file_size) {
     LOGW("Supplied block_size (" + std::to_string(block_size_) +
          ") is greater than total file size (" + std::to_string(file_size) +
-         "). File path:" + GetFilePath(fd));
+         "). File path:" + GetFilePath(syscall_, fd));
     return;
   }
 
@@ -105,39 +100,39 @@ void ReadWriteFile::SetUpSingle() {
 
 void ReadWriteFile::RunSingle() {}
 
-WriteFile::WriteFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
-                     AccessType type, uint32_t seed, Reseeding reseeding, bool fsync,
-                     int input_fd_key)
-    : ReadWriteFile(kName, repeat, size, block_size, starting_offset, type, seed, reseeding,
-                    input_fd_key),
+WriteFile::WriteFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
+                     int64_t starting_offset, AccessType type, uint32_t seed, Reseeding reseeding,
+                     bool fsync, int input_fd_key)
+    : ReadWriteFile(syscall, kName, repeat, size, block_size, starting_offset, type, seed,
+                    reseeding, input_fd_key),
       fsync_(fsync) {}
 
 void WriteFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
 
   for (const auto& unit : units_) {
-    if (pwrite64(fd, buffer_.get(), unit.count, unit.offset) == -1) {
+    if (syscall_.Write(fd, buffer_.get(), unit.count, unit.offset) == -1) {
       LOGF("Error while calling write()");
     }
   }
 
-  if (fsync_ && fsync(fd) != 0) {
+  if (fsync_ && syscall_.FSync(fd) != 0) {
     LOGF("Error while calling fsync()");
   }
 }
 
-ReadFile::ReadFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset,
-                   AccessType type, uint32_t seed, Reseeding reseeding, int fadvise,
-                   int input_fd_key)
-    : ReadWriteFile(kName, repeat, size, block_size, starting_offset, type, seed, reseeding,
-                    input_fd_key),
+ReadFile::ReadFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
+                   int64_t starting_offset, AccessType type, uint32_t seed, Reseeding reseeding,
+                   int fadvise, int input_fd_key)
+    : ReadWriteFile(syscall, kName, repeat, size, block_size, starting_offset, type, seed,
+                    reseeding, input_fd_key),
       fadvise_(fadvise) {}
 
 void ReadFile::SetUpSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
-  int64_t file_size = GetFileSize(fd);
+  int64_t file_size = GetFileSize(syscall_, fd);
 
-  if (posix_fadvise64(fd, 0, file_size, fadvise_) != 0) {
+  if (syscall_.FAdvise(fd, 0, file_size, fadvise_) != 0) {
     LOGF("Error while calling fadvise()");
   }
   ReadWriteFile::SetUpSingle();
@@ -147,7 +142,7 @@ void ReadFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
 
   for (const auto& unit : units_) {
-    if (pread64(fd, buffer_.get(), unit.count, unit.offset) == -1) {
+    if (syscall_.Read(fd, buffer_.get(), unit.count, unit.offset) == -1) {
       LOGF("Error while calling read()");
     }
   }

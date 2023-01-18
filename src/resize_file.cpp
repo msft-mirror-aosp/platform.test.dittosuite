@@ -14,27 +14,23 @@
 
 #include <ditto/resize_file.h>
 
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <cstdint>
-
 #include <ditto/logger.h>
 #include <ditto/shared_variables.h>
+
 #include <ditto/utils.h>
 
 namespace dittosuite {
 
-ResizeFile::ResizeFile(int repeat, int64_t size, int input_fd_key)
-    : Instruction(kName, repeat), size_(size), input_fd_key_(input_fd_key) {}
+ResizeFile::ResizeFile(SyscallInterface& syscall, int repeat, int64_t size, int input_fd_key)
+    : Instruction(syscall, kName, repeat), size_(size), input_fd_key_(input_fd_key) {}
 
 void ResizeFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
-  int64_t file_size = GetFileSize(fd);
+  int64_t file_size = GetFileSize(syscall_, fd);
 
-  if (size_ > file_size && fallocate(fd, 0, 0, size_) != 0) {
+  if (size_ > file_size && syscall_.FAllocate(fd, 0, 0, size_) != 0) {
     LOGF("Error while calling fallocate()");
-  } else if (ftruncate(fd, size_) != 0) {
+  } else if (syscall_.FTruncate(fd, size_) != 0) {
     LOGF("Error while calling ftruncate()");
   }
 }

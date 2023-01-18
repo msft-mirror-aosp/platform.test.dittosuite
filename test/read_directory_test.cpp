@@ -19,6 +19,7 @@
 
 #include <ditto/read_directory.h>
 #include <ditto/shared_variables.h>
+#include <ditto/syscall.h>
 
 #ifdef __ANDROID__
 const std::string absolute_path = "/data/local/tmp/";
@@ -55,7 +56,8 @@ class ReadDirectoryTest : public ::testing::Test {
 TEST_F(ReadDirectoryTest, ReadDirectoryTestRun) {
   auto output_key = dittosuite::SharedVariables::GetKey("file_list");
 
-  dittosuite::ReadDirectory instruction(1, directory_name, output_key);
+  dittosuite::ReadDirectory instruction(dittosuite::Syscall::GetSyscall(), 1, directory_name,
+                                        output_key);
   instruction.Run();
 
   auto output = std::get<std::vector<std::string>>(dittosuite::SharedVariables::Get(output_key));

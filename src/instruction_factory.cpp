@@ -26,6 +26,7 @@
 #include <ditto/read_write_file.h>
 #include <ditto/resize_file.h>
 #include <ditto/shared_variables.h>
+#include <ditto/syscall.h>
 
 namespace dittosuite {
 typedef dittosuiteproto::Instruction::InstructionOneofCase InstructionType;
@@ -50,10 +51,10 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
       seed = time(nullptr);
     }
 
-    return std::make_unique<InstructionSet>(repeat, std::move(instructions), list_key, item_key,
-                                            type, reseeding, seed);
+    return std::make_unique<InstructionSet>(Syscall::GetSyscall(), repeat, std::move(instructions),
+                                            list_key, item_key, type, reseeding, seed);
   } else {
-    return std::make_unique<InstructionSet>(repeat, std::move(instructions));
+    return std::make_unique<InstructionSet>(Syscall::GetSyscall(), repeat, std::move(instructions));
   }
 }
 
@@ -76,9 +77,11 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       if (options.has_input()) {
         int input_key = SharedVariables::GetKey(options.input());
-        return std::make_unique<OpenFile>(repeat, input_key, options.create(), fd_key);
+        return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, input_key,
+                                          options.create(), fd_key);
       } else {
-        return std::make_unique<OpenFile>(repeat, options.path_name(), options.create(), fd_key);
+        return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.path_name(),
+                                          options.create(), fd_key);
       }
     }
     case InstructionType::kInstructionDeleteFile: {
@@ -86,9 +89,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       if (options.has_input()) {
         int input_key = SharedVariables::GetKey(options.input());
-        return std::make_unique<DeleteFile>(repeat, input_key);
+        return std::make_unique<DeleteFile>(Syscall::GetSyscall(), repeat, input_key);
       } else {
-        return std::make_unique<DeleteFile>(repeat, options.path_name());
+        return std::make_unique<DeleteFile>(Syscall::GetSyscall(), repeat, options.path_name());
       }
     }
     case InstructionType::kInstructionCloseFile: {
@@ -96,14 +99,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
-      return std::make_unique<CloseFile>(repeat, fd_key);
+      return std::make_unique<CloseFile>(Syscall::GetSyscall(), repeat, fd_key);
     }
     case InstructionType::kInstructionResizeFile: {
       const auto& options = proto_instruction.instruction_resize_file();
 
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
-      return std::make_unique<ResizeFile>(repeat, options.size(), fd_key);
+      return std::make_unique<ResizeFile>(Syscall::GetSyscall(), repeat, options.size(), fd_key);
     }
     case InstructionType::kInstructionWriteFile: {
       const auto& options = proto_instruction.instruction_write_file();
@@ -118,9 +121,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       auto reseeding = ConvertReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
-      return std::make_unique<WriteFile>(repeat, options.size(), options.block_size(),
-                                         options.starting_offset(), type, seed, reseeding,
-                                         options.fsync(), fd_key);
+      return std::make_unique<WriteFile>(Syscall::GetSyscall(), repeat, options.size(),
+                                         options.block_size(), options.starting_offset(), type,
+                                         seed, reseeding, options.fsync(), fd_key);
     }
     case InstructionType::kInstructionReadFile: {
       const auto& options = proto_instruction.instruction_read_file();
@@ -136,16 +139,17 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       auto reseeding = ConvertReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(options.input_fd());
 
-      return std::make_unique<ReadFile>(repeat, options.size(), options.block_size(),
-                                        options.starting_offset(), type, seed, reseeding, fadvise,
-                                        fd_key);
+      return std::make_unique<ReadFile>(Syscall::GetSyscall(), repeat, options.size(),
+                                        options.block_size(), options.starting_offset(), type, seed,
+                                        reseeding, fadvise, fd_key);
     }
     case InstructionType::kInstructionReadDirectory: {
       const auto& options = proto_instruction.instruction_read_directory();
 
       int output_key = SharedVariables::GetKey(options.output());
 
-      return std::make_unique<ReadDirectory>(repeat, options.directory_name(), output_key);
+      return std::make_unique<ReadDirectory>(Syscall::GetSyscall(), repeat,
+                                             options.directory_name(), output_key);
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");

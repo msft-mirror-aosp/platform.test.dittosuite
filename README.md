@@ -22,7 +22,7 @@ Project (AOSP) and is supposed to run out-of-the-box.
 The following utilities are required to build the project on Linux:
 
 ```
-sudo apt install cmake libgtest-dev protobuf-compiler
+sudo apt install cmake protobuf-compiler
 
 ```
 
