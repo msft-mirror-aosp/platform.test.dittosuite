@@ -39,7 +39,7 @@ TEST_F(ResizeFileTest, ResizeFileTestRun) {
   int fd_key = dittosuite::SharedVariables::GetKey(thread_ids, "test_file");
 
   dittosuite::OpenFile open_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, file_name,
-                                             true, fd_key);
+                                             true, false, fd_key);
   open_file_instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);
