@@ -39,11 +39,11 @@ Parser& Parser::GetParser() {
   return parser;
 }
 
-void Parser::Parse() {
+void Parser::Parse(const std::string& file_path) {
   std::unique_ptr<dittosuiteproto::Benchmark> benchmark =
       std::make_unique<dittosuiteproto::Benchmark>();
 
-  int fd = open(file_path_.c_str(), O_CLOEXEC);
+  int fd = open(file_path.c_str(), O_CLOEXEC);
   if (fd == -1) {
     LOGF("Provided .ditto file was not found");
   }
@@ -79,10 +79,6 @@ std::unique_ptr<Instruction> Parser::GetMain() {
 
 std::unique_ptr<Instruction> Parser::GetCleanUp() {
   return std::move(clean_up_);
-}
-
-void Parser::SetFilePath(const std::string& file_path) {
-  file_path_ = file_path;
 }
 
 }  // namespace dittosuite
