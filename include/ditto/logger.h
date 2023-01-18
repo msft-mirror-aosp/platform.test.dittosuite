@@ -19,6 +19,7 @@
 #include <vector>
 
 namespace dittosuite {
+
 enum LOG_LEVEL {
   LOG_LEVEL_VERBOSE,
   LOG_LEVEL_DEBUG,
@@ -27,15 +28,20 @@ enum LOG_LEVEL {
   LOG_LEVEL_ERROR
 };
 
+enum LOG_STREAM { LOG_STREAM_STDOUT, LOG_STREAM_LOGCAT };
+
 class Logger {
  public:
   Logger(Logger const&) = delete;
   void operator=(Logger const&) = delete;
   static Logger& GetInstance();
   void SetLogLevel(LOG_LEVEL log_level);
+  void SetLogStream(LOG_STREAM log_stream);
   LOG_LEVEL GetLogLevel() const;
+  LOG_STREAM GetLogStream() const;
   void WriteLogMessage(const std::string message, LOG_LEVEL log_level);
   LOG_LEVEL log_level_;
+  LOG_STREAM log_stream_;
 
  protected:
   Logger() {}
