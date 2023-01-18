@@ -19,7 +19,7 @@
 #include <vector>
 
 namespace dittosuite{
-    enum LOG_LEVEL {LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR};
+    enum LOG_LEVEL {LOG_LEVEL_VERBOSE, LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR};
 
     class Logger {
         public:
@@ -34,7 +34,11 @@ using dittosuite::Logger;
 using dittosuite::LOG_LEVEL_ERROR;
 using dittosuite::LOG_LEVEL_WARNING;
 using dittosuite::LOG_LEVEL_INFO;
+using dittosuite::LOG_LEVEL_DEBUG;
+using dittosuite::LOG_LEVEL_VERBOSE;
 
 #define LOGE(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_ERROR) {Logger::getInstance().writeLogMessage(X, "ERROR");}
 #define LOGW(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_WARNING) {Logger::getInstance().writeLogMessage(X, "WARNING");}
 #define LOGI(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_INFO) {Logger::getInstance().writeLogMessage(X, "INFO");}
+#define LOGD(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_DEBUG) {Logger::getInstance().writeLogMessage(X, "DEBUG");}
+#define LOGV(X) if (Logger::getInstance().logLevel <= LOG_LEVEL_VERBOSE) {Logger::getInstance().writeLogMessage(X, "VERBOSE");}
