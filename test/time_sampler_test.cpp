@@ -34,4 +34,14 @@ TEST(DittoTimer, SimpleTimer) {
   LOGI(outp);
 }
 
+TEST(TimeSamplerTest, DivisionTest) {
+  timespec t1 = {2, 6};
+  ASSERT_EQ(t1 / NsToTimespec(2), timespec({1, 3}));
+}
+
+TEST(TimeSamplerTest, DivisionByZeroTest) {
+  timespec t1 = {2, 6};
+  EXPECT_DEATH(t1 / NsToTimespec(0), "");
+}
+
 }  // namespace dittosuite
