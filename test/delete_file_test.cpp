@@ -31,10 +31,12 @@ class DeleteFileTest : public ::testing::Test {
  protected:
   std::string file_name = "test";
   std::string path = absolute_path + file_name;
+  std::list<int> thread_ids;
 
   // Create a file for testing and set absolute_path
   void SetUp() override {
-    auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
+    thread_ids.push_back(0);
+    auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
     dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
     dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
 
@@ -52,9 +54,9 @@ TEST_F(DeleteFileTest, FileDeletedWithPathName) {
 }
 
 TEST_F(DeleteFileTest, FileDeletedWithVariable) {
-  dittosuite::SharedVariables::Set("input", file_name);
+  dittosuite::SharedVariables::Set(thread_ids, "input", file_name);
   dittosuite::DeleteFile instruction(dittosuite::Syscall::GetSyscall(), 1,
-                                     dittosuite::SharedVariables::GetKey("input"));
+                                     dittosuite::SharedVariables::GetKey(thread_ids, "input"));
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), -1);

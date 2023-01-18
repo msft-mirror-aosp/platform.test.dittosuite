@@ -53,16 +53,17 @@ void Parser::Parse() {
     LOGF("Error while parsing .ditto file");
   }
 
-  auto absolute_path_key = SharedVariables::GetKey("absolute_path");
+  std::list<int> thread_ids({InstructionFactory::GenerateThreadId()});
+  auto absolute_path_key = SharedVariables::GetKey(thread_ids, "absolute_path");
   SharedVariables::Set(absolute_path_key, benchmark->global().absolute_path());
   Instruction::SetAbsolutePathKey(absolute_path_key);
 
   if (benchmark->has_init()) {
-    init_ = InstructionFactory::CreateFromProtoInstruction(benchmark->init());
+    init_ = InstructionFactory::CreateFromProtoInstruction(thread_ids, benchmark->init());
   }
-  main_ = InstructionFactory::CreateFromProtoInstruction(benchmark->main());
+  main_ = InstructionFactory::CreateFromProtoInstruction(thread_ids, benchmark->main());
   if (benchmark->has_clean_up()) {
-    clean_up_ = InstructionFactory::CreateFromProtoInstruction(benchmark->clean_up());
+    clean_up_ = InstructionFactory::CreateFromProtoInstruction(thread_ids, benchmark->clean_up());
   }
 
   SharedVariables::ClearKeys();

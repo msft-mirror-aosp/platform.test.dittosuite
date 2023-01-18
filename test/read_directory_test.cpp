@@ -32,10 +32,12 @@ class ReadDirectoryTest : public ::testing::Test {
   std::string directory_name = "test_directory";
   std::string path = absolute_path + directory_name;
   std::vector<std::string> files{path + "/test1", path + "/test2", path + "/test3"};
+  std::list<int> thread_ids;
 
   // Create folder with several files for testing and set absolute_path
   void SetUp() override {
-    auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
+    thread_ids.push_back(0);
+    auto absolute_path_key = dittosuite::SharedVariables::GetKey(thread_ids, "absolute_path");
     dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
     dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
 
@@ -54,7 +56,7 @@ class ReadDirectoryTest : public ::testing::Test {
 };
 
 TEST_F(ReadDirectoryTest, ReadDirectoryTestRun) {
-  auto output_key = dittosuite::SharedVariables::GetKey("file_list");
+  auto output_key = dittosuite::SharedVariables::GetKey(thread_ids, "file_list");
 
   dittosuite::ReadDirectory instruction(dittosuite::Syscall::GetSyscall(), 1, directory_name,
                                         output_key);

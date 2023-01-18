@@ -32,17 +32,19 @@ namespace dittosuite {
 typedef dittosuiteproto::Instruction::InstructionOneofCase InstructionType;
 
 std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSet(
-    const int& repeat, const dittosuiteproto::InstructionSet& proto_instruction_set) {
+    const std::list<int>& thread_ids, const int& repeat,
+    const dittosuiteproto::InstructionSet& proto_instruction_set) {
   std::vector<std::unique_ptr<Instruction>> instructions;
   for (const auto& instruction : proto_instruction_set.instructions()) {
-    instructions.push_back(std::move(InstructionFactory::CreateFromProtoInstruction(instruction)));
+    instructions.push_back(
+        std::move(InstructionFactory::CreateFromProtoInstruction(thread_ids, instruction)));
   }
 
   if (proto_instruction_set.has_iterate_options()) {
     const auto& options = proto_instruction_set.iterate_options();
 
-    int list_key = SharedVariables::GetKey(options.list_name());
-    int item_key = SharedVariables::GetKey(options.item_name());
+    int list_key = SharedVariables::GetKey(thread_ids, options.list_name());
+    int item_key = SharedVariables::GetKey(thread_ids, options.item_name());
     auto type = ConvertAccessType(options.type());
     auto reseeding = ConvertReseeding(options.reseeding());
 
@@ -59,12 +61,12 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
 }
 
 std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
-    const dittosuiteproto::Instruction& proto_instruction) {
+    const std::list<int>& thread_ids, const dittosuiteproto::Instruction& proto_instruction) {
   int repeat = proto_instruction.repeat();
 
   switch (proto_instruction.instruction_oneof_case()) {
     case InstructionType::kInstructionSet: {
-      return InstructionFactory::CreateFromProtoInstructionSet(repeat,
+      return InstructionFactory::CreateFromProtoInstructionSet(thread_ids, repeat,
                                                                proto_instruction.instruction_set());
     }
     case InstructionType::kInstructionOpenFile: {
@@ -72,11 +74,11 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       int fd_key = -1;
       if (options.has_output_fd()) {
-        fd_key = SharedVariables::GetKey(options.output_fd());
+        fd_key = SharedVariables::GetKey(thread_ids, options.output_fd());
       }
 
       if (options.has_input()) {
-        int input_key = SharedVariables::GetKey(options.input());
+        int input_key = SharedVariables::GetKey(thread_ids, options.input());
         return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, input_key,
                                           options.create(), fd_key);
       } else {
@@ -88,7 +90,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       const auto& options = proto_instruction.instruction_delete_file();
 
       if (options.has_input()) {
-        int input_key = SharedVariables::GetKey(options.input());
+        int input_key = SharedVariables::GetKey(thread_ids, options.input());
         return std::make_unique<DeleteFile>(Syscall::GetSyscall(), repeat, input_key);
       } else {
         return std::make_unique<DeleteFile>(Syscall::GetSyscall(), repeat, options.path_name());
@@ -97,14 +99,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionCloseFile: {
       const auto& options = proto_instruction.instruction_close_file();
 
-      int fd_key = SharedVariables::GetKey(options.input_fd());
+      int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
       return std::make_unique<CloseFile>(Syscall::GetSyscall(), repeat, fd_key);
     }
     case InstructionType::kInstructionResizeFile: {
       const auto& options = proto_instruction.instruction_resize_file();
 
-      int fd_key = SharedVariables::GetKey(options.input_fd());
+      int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
       return std::make_unique<ResizeFile>(Syscall::GetSyscall(), repeat, options.size(), fd_key);
     }
@@ -119,7 +121,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       }
 
       auto reseeding = ConvertReseeding(options.reseeding());
-      int fd_key = SharedVariables::GetKey(options.input_fd());
+      int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
       return std::make_unique<WriteFile>(Syscall::GetSyscall(), repeat, options.size(),
                                          options.block_size(), options.starting_offset(), type,
@@ -137,7 +139,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       auto fadvise = ConvertReadFAdvise(type, options.fadvise());
       auto reseeding = ConvertReseeding(options.reseeding());
-      int fd_key = SharedVariables::GetKey(options.input_fd());
+      int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
       return std::make_unique<ReadFile>(Syscall::GetSyscall(), repeat, options.size(),
                                         options.block_size(), options.starting_offset(), type, seed,
@@ -146,7 +148,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionReadDirectory: {
       const auto& options = proto_instruction.instruction_read_directory();
 
-      int output_key = SharedVariables::GetKey(options.output());
+      int output_key = SharedVariables::GetKey(thread_ids, options.output());
 
       return std::make_unique<ReadDirectory>(Syscall::GetSyscall(), repeat,
                                              options.directory_name(), output_key);
@@ -160,7 +162,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       }
 
       auto reseeding = ConvertReseeding(options.reseeding());
-      int fd_key = SharedVariables::GetKey(options.input_fd());
+      int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
       return std::make_unique<ResizeFileRandom>(Syscall::GetSyscall(), repeat, options.min(),
                                                 options.max(), seed, reseeding, fd_key);
@@ -173,6 +175,12 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     }
   }
 }
+
+int InstructionFactory::GenerateThreadId() {
+  return current_thread_id_++;
+}
+
+int InstructionFactory::current_thread_id_ = 0;
 
 Reseeding InstructionFactory::ConvertReseeding(const dittosuiteproto::Reseeding& proto_reseeding) {
   switch (proto_reseeding) {
