@@ -20,13 +20,13 @@ namespace dittosuite {
 
   CreateFile::CreateFile(const std::string& file) : file_(file) {}
 
-  void CreateFile::setup() {}
+  void CreateFile::SetUp() {}
 
-  void CreateFile::run() {
+  void CreateFile::Run() {
     std::ofstream output(file_);
   }
 
-  void CreateFile::teardown() {}
+  void CreateFile::TearDown() {}
 
 } // namespace dittosuite
 

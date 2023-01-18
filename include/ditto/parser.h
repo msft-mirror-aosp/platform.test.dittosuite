@@ -23,7 +23,7 @@ namespace dittosuite {
 
 class Parser {
  public:
-  static std::queue<std::unique_ptr<Instruction> > parse(std::string& file_name);
+  static std::queue<std::unique_ptr<Instruction> > Parse(std::string& file_name);
 
  private:
   Parser();

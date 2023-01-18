@@ -24,9 +24,9 @@ class CreateFile : public Instruction {
  public:
   explicit CreateFile(const std::string& file);
 
-  void setup() override;
-  void run() override;
-  void teardown() override;
+  void SetUp() override;
+  void Run() override;
+  void TearDown() override;
 
  private:
   std::string file_;
