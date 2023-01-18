@@ -39,7 +39,7 @@ class OpenFileTest : public ::testing::Test {
 };
 
 TEST_F(OpenFileTest, FileCreatedWithPathName) {
-  dittosuite::OpenFile instruction(1, file_name, true, -1, -1);
+  dittosuite::OpenFile instruction(1, file_name, true, -1);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);
@@ -47,7 +47,7 @@ TEST_F(OpenFileTest, FileCreatedWithPathName) {
 
 TEST_F(OpenFileTest, FileCreatedWithVariable) {
   dittosuite::SharedVariables::Set("input", file_name);
-  dittosuite::OpenFile instruction(1, "", true, dittosuite::SharedVariables::GetKey("input"), -1);
+  dittosuite::OpenFile instruction(1, dittosuite::SharedVariables::GetKey("input"), true, -1);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);
