@@ -31,7 +31,6 @@ class WriteFile : public Instruction {
                      u_int32_t seed, bool fsync, int input_fd_key);
 
   void SetUp() override;
-  void TearDown() override;
 
  private:
   void RunSingle() override;

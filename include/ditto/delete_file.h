@@ -24,9 +24,6 @@ class DeleteFile : public Instruction {
  public:
   explicit DeleteFile(int repeat, const std::string& file);
 
-  void SetUp() override;
-  void TearDown() override;
-
  private:
   void RunSingle() override;
 

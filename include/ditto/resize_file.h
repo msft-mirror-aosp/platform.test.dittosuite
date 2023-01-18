@@ -24,9 +24,6 @@ class ResizeFile : public Instruction {
  public:
   explicit ResizeFile(int repeat, int64_t size, int input_fd_key);
 
-  void SetUp() override;
-  void TearDown() override;
-
  private:
   void RunSingle() override;
 

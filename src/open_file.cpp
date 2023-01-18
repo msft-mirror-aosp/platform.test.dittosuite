@@ -31,10 +31,6 @@ OpenFile::OpenFile(int repeat, const std::string& file, bool create, int output_
       create_(create),
       output_fd_key_(output_fd_key) {}
 
-void OpenFile::SetUp() {
-  Instruction::SetUp();
-}
-
 void OpenFile::RunSingle() {
   int fd = open(file_.c_str(), (create_ ? O_CREAT : 0) | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR);
 
@@ -46,10 +42,6 @@ void OpenFile::RunSingle() {
   if (output_fd_key_ != -1) {
     SharedVariables::Set(output_fd_key_, fd);
   }
-}
-
-void OpenFile::TearDown() {
-  Instruction::TearDown();
 }
 
 }  // namespace dittosuite

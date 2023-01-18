@@ -88,8 +88,4 @@ void WriteFile::RunSingle() {
   }
 }
 
-void WriteFile::TearDown() {
-  Instruction::TearDown();
-}
-
 }  // namespace dittosuite
