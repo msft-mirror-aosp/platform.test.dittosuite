@@ -51,6 +51,28 @@ std::string LogLevelToString(LOG_LEVEL log_level) {
   return prefixes[log_level];
 }
 
+android::base::LogSeverity LogLevelToAndroidLogLevel(LOG_LEVEL log_level) {
+  switch (log_level) {
+    case LOG_LEVEL_VERBOSE:
+      return android::base::VERBOSE;
+      break;
+    case LOG_LEVEL_DEBUG:
+      return android::base::DEBUG;
+      break;
+    case LOG_LEVEL_INFO:
+      return android::base::INFO;
+      break;
+    case LOG_LEVEL_WARNING:
+      return android::base::WARNING;
+      break;
+    case LOG_LEVEL_ERROR:
+      return android::base::ERROR;
+      break;
+    default:
+      break;
+  }
+}
+
 void Logger::WriteLogMessage(const std::string message, LOG_LEVEL log_level) {
   std::string message_to_print = LogLevelToString(log_level) + ": " + message;
   switch (log_stream_) {
@@ -58,17 +80,7 @@ void Logger::WriteLogMessage(const std::string message, LOG_LEVEL log_level) {
       std::cout << message_to_print << '\n';
       break;
     case LOG_STREAM_LOGCAT:
-      switch (log_level) {
-        case LOG_LEVEL_ERROR:
-          LOG(ERROR) << message_to_print;
-          break;
-        case LOG_LEVEL_WARNING:
-          LOG(WARNING) << message_to_print;
-          break;
-        default:
-          LOG(INFO) << message_to_print;
-          break;
-      }
+      LOG(LogLevelToAndroidLogLevel(log_level)) << message_to_print;
       break;
     default:
       break;
