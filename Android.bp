@@ -6,18 +6,32 @@ cc_defaults {
     srcs: [
       "src/create_file.cpp",
       "src/instruction_factory.cpp",
-      "src/parser.cpp"
-    ]
+      "src/parser.cpp",
+    ],
+    cflags: [
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+    ],
+    tidy: true,
+    /*
+      Silencing the tidy check warnings caused by
+      schema/benchmark.pb.h.
+    */
+    tidy_checks: [
+      "-bugprone-unhandled-self-assignment",
+      "-cert-oop54-cpp",
+    ],
 }
 
 cc_binary {
     name: "dittobench",
     srcs: ["src/dittobench.cpp"],
-    defaults: ["dittobench_defaults"]
+    defaults: ["dittobench_defaults"],
 }
 
 cc_test {
     name: "dittobench_test",
     srcs: ["test/create_file_test.cpp"],
-    defaults: ["dittobench_defaults"]
+    defaults: ["dittobench_defaults"],
 }
