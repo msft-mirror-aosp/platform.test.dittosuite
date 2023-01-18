@@ -58,7 +58,7 @@ class ReadWriteFile : public Instruction {
 
 class WriteFile : public ReadWriteFile {
  public:
-  inline static const std::string kName = "instruction_write_file";
+  inline static const std::string kName = "write_file";
 
   explicit WriteFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
                      int64_t starting_offset, AccessType type, uint32_t seed, Reseeding reseeding,
@@ -72,7 +72,7 @@ class WriteFile : public ReadWriteFile {
 
 class ReadFile : public ReadWriteFile {
  public:
-  inline static const std::string kName = "instruction_read_file";
+  inline static const std::string kName = "read_file";
 
   explicit ReadFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
                     int64_t starting_offset, AccessType type, uint32_t seed, Reseeding reseeding,

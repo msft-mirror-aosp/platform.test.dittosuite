@@ -1,5 +1,5 @@
 init: {
-  instruction_open_file: {
+  open_file: {
     path_name: "newfile3.txt",
     create: true
   }
@@ -8,25 +8,25 @@ main: {
   instruction_set: {
     instructions: [
       {
-        instruction_open_file: {
-          path_name: "newfile3.txt",
+        open_file: {
+          path_name "newfile3.txt",
           output_fd: "test_file"
         }
       },
       {
-        instruction_resize_file: {
+        resize_file: {
           input_fd: "test_file",
           size: 134217728
         }
       },
       {
-        instruction_write_file: {
+        write_file: {
           input_fd: "test_file",
           fsync: true
         }
       },
       {
-        instruction_close_file: {
+        close_file: {
           input_fd: "test_file"
         }
       }
@@ -34,7 +34,7 @@ main: {
   }
 },
 clean_up: {
-  instruction_delete_file: {
+  delete_file: {
     path_name: "newfile3.txt"
   }
 },

@@ -2,25 +2,25 @@ main: {
   instruction_set: {
     instructions: [
       {
-        instruction_open_file: {
+        open_file: {
           path_name: "newfile2.txt",
           output_fd: "test_file"
         }
       },
       {
-        instruction_resize_file: {
+        resize_file: {
           input_fd: "test_file",
           size: 134217728
         }
       },
       {
-        instruction_read_file: {
+        read_file: {
           input_fd: "test_file",
           type: RANDOM
         }
       },
       {
-        instruction_close_file: {
+        close_file: {
           input_fd: "test_file"
         }
       }

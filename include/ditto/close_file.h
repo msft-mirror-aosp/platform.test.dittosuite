@@ -20,7 +20,7 @@ namespace dittosuite {
 
 class CloseFile : public Instruction {
  public:
-  inline static const std::string kName = "instruction_close_file";
+  inline static const std::string kName = "close_file";
 
   explicit CloseFile(SyscallInterface& syscall, int repeat, int input_fd_key);
 
