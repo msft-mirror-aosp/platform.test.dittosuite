@@ -28,4 +28,5 @@ bool operator>(const timespec& t1, const timespec& t2);
 bool operator>=(const timespec& t1, const timespec& t2);
 timespec operator-(const timespec& t1, const timespec& t2);
 timespec operator+(const timespec& t1, const timespec& t2);
+timespec operator/(const timespec& t1, uint64_t n);
 timespec operator/(const timespec& t1, const timespec& t2);
