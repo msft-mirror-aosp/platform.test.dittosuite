@@ -44,7 +44,7 @@ ReadWriteFile::ReadWriteFile(SyscallInterface& syscall, const std::string& name,
 
 std::unique_ptr<Result> ReadWriteFile::CollectResults(const std::string& prefix) {
   auto result = Instruction::CollectResults(prefix);
-  result->AddMeasurement("bandwidth", bandwidth_sampler_.GetLongIntSamples());
+  result->AddMeasurement("bandwidth", bandwidth_sampler_.GetSamples());
   return result;
 }
 
