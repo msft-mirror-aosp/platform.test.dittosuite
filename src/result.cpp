@@ -20,8 +20,17 @@
 #include <iostream>
 #include <string>
 
+const int kTimeDividingFactor = 1;       // dividing factor used for transforming the current time
+                                         // unit (ns) in another one (ex 1000 for microseconds)
+const int kTimeSampleDisplayWidth = 11;  // this width is used displaying a time sample value
 const int kTableWidth = 137;  // table width; can be adjusted in case of longer instruction paths
-const char* kTableDivider = " | ";  // table character divider
+const char* kTableDivider = " | ";   // table character divider
+const int kMaxHistogramHeight = 20;  // used for normalizing the histogram (represents the
+                                     //  maximum height of the histogram)
+const int kMaxHistogramWidth = 50;   // used for normalizing the histogram (represents the
+                                     // maximum width of the histogram)
+static int bin_size;                 // bin size corresponding to the normalization
+                                     // of the Oy axis of the histograms
 
 namespace dittosuite {
 
@@ -59,9 +68,12 @@ void Result::Analyse() {
   sd_ = StatisticsGetSd(time_samples_);
 }
 
+std::string Result::ComputeNextInstructionPath(const std::string& instruction_path) {
+  return instruction_path + (instruction_path != "" ? "/" : "") + name_;
+}
+
 void Result::Print(const std::string& instruction_path) {
-  std::string next_instruction_path =
-      instruction_path + (instruction_path != "" ? "/" : "") + name_;
+  std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
   std::cout << next_instruction_path << std::endl;
   std::cout << "Min: " << min_.tv_sec << "s, " << min_.tv_nsec << "ns" << std::endl;
   std::cout << "Max: " << max_.tv_sec << "s, " << max_.tv_nsec << "ns" << std::endl;
@@ -104,14 +116,13 @@ void PrintTimespecInTable(const timespec& t) {
 // of statistics table content (the instruction path, min, max and mean).
 void Result::PrintStatisticsTableContent(const std::string& instruction_path) {
   std::cout << "| ";  // started new row
-  std::string next_instruction_path =
-      instruction_path + (instruction_path != "" ? "/" : "") + name_;
+  std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
   int subinstruction_level =
       std::count(next_instruction_path.begin(), next_instruction_path.end(), '/');
   // If the instruction path name contains too many subinstrions,
   // print only the last 2 preceded by "../".
   if (subinstruction_level > 2) {
-    std::size_t first_truncate_pos = next_instruction_path.find("/");
+    std::size_t first_truncate_pos = next_instruction_path.find('/');
     next_instruction_path = ".." + next_instruction_path.substr(first_truncate_pos);
   }
 
@@ -132,5 +143,59 @@ void Result::PrintStatisticsTableContent(const std::string& instruction_path) {
 void Result::PrintStatisticsTable() {
   PrintStatisticsTableHeader();
   PrintStatisticsTableContent("");
+}
+
+// makes (normalized) histogram from vector
+void MakeHistogramFromVector(const std::vector<int>& freq_vector, const int& min_value) {
+  std::cout.width(kTimeSampleDisplayWidth + 2);
+  std::cout << "Time(ns) |";
+  std::cout << " Normalized number of time samples";
+  std::cout << std::endl;
+  for (int i = 0; i <= kMaxHistogramWidth + 15; i++) std::cout << "-";
+  std::cout << std::endl;
+
+  int sum = 0;
+  int max_frequency = *std::max_element(freq_vector.begin(), freq_vector.end());
+  for (unsigned int i = 0; i < freq_vector.size(); i++) {
+    std::cout.width(kTimeSampleDisplayWidth);
+    std::cout << min_value + bin_size * i << kTableDivider;
+    for (int j = 0; j < freq_vector[i] * kMaxHistogramWidth / max_frequency; j++) std::cout << "x";
+    std::cout << " {" << freq_vector[i] << "}";
+    sum += freq_vector[i];
+    std::cout << std::endl;
+  }
+
+  std::cout << "Total samples: { " << sum << " }" << std::endl;
+  std::cout << std::endl;
+}
+
+// makes and returns the normalized frequency vector
+std::vector<int> Result::ComputeNormalizedFrequencyVector() {
+  int64_t min_value = TimespecToNs(min_) / kTimeDividingFactor;
+  std::vector<int> freq_vector(kMaxHistogramHeight, 0);
+  for (auto time_sample : time_samples_) {
+    freq_vector[(TimespecToNs(time_sample) / kTimeDividingFactor - min_value) / bin_size]++;
+  }
+  return freq_vector;
+}
+
+void Result::PrintHistograms(const std::string& instruction_path) {
+  std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
+  std::cout << std::endl;
+  std::cout << "\x1b[1m";  // beginning of bold
+  std::cout << "Instruction path: " << next_instruction_path;
+  std::cout << "\x1b[0m" << std::endl;  // ending of bold
+  std::cout << std::endl;
+
+  int64_t min_value = TimespecToNs(min_) / kTimeDividingFactor;
+  int64_t max_value = TimespecToNs(max_) / kTimeDividingFactor;
+  bin_size = (max_value - min_value) / kMaxHistogramHeight + 1;
+  std::vector<int> freq_vector = ComputeNormalizedFrequencyVector();
+  MakeHistogramFromVector(freq_vector, min_value);
+  std::cout << std::endl << std::endl;
+
+  for (const auto& sub_result : sub_results_) {
+    sub_result->PrintHistograms(next_instruction_path);
+  }
 }
 }  // namespace dittosuite
