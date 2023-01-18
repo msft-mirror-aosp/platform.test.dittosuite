@@ -21,6 +21,7 @@ add_executable(dittobench
 	src/logger.cpp
 	src/open_file.cpp
 	src/parser.cpp
+	src/resize_file.cpp
 	src/shared_variables.cpp
 )
 
