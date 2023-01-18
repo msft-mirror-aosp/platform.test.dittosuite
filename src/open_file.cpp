@@ -58,7 +58,8 @@ void OpenFile::SetUpSingle() {
 }
 
 void OpenFile::RunSingle() {
-  int fd = syscall_.Open(path_name_, create_);
+  int fd =
+      syscall_.Open(path_name_, (create_ ? O_CREAT : 0) | O_CLOEXEC | O_RDWR, S_IRUSR | S_IWUSR);
 
   if (fd == -1) {
     LOGF("Error while trying to open the file");

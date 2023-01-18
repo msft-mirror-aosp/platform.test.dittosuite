@@ -37,11 +37,12 @@ class SyscallInterface {
   virtual int FTruncate(int fd, int64_t length) = 0;
   virtual int FStat(int filedes, struct stat64* buf) = 0;
   virtual int FSync(int fd) = 0;
-  virtual int Open(const std::string& path_name, bool create) = 0;
+  virtual int Open(const std::string& path_name, int flags, int mode) = 0;
   virtual DIR* OpenDir(const std::string& name) = 0;
   virtual int64_t Read(int fd, char* buf, int64_t count, int64_t offset) = 0;
   virtual struct dirent* ReadDir(DIR* dirp) = 0;
   virtual int64_t ReadLink(const std::string& path_name, char* buf, int64_t bufsiz) = 0;
+  virtual void Sync() = 0;
   virtual int Unlink(const std::string& path_name) = 0;
   virtual int64_t Write(int fd, char* buf, int64_t count, int64_t offset) = 0;
 };
@@ -61,11 +62,12 @@ class Syscall : public SyscallInterface {
   int FTruncate(int fd, int64_t length) override;
   int FStat(int filedes, struct stat64* buf) override;
   int FSync(int fd) override;
-  int Open(const std::string& path_name, bool create) override;
+  int Open(const std::string& path_name, int flags, int mode) override;
   DIR* OpenDir(const std::string& name) override;
   int64_t Read(int fd, char* buf, int64_t count, int64_t offset) override;
   struct dirent* ReadDir(DIR* dirp) override;
   int64_t ReadLink(const std::string& path_name, char* buf, int64_t bufsiz) override;
+  void Sync() override;
   int Unlink(const std::string& path_name) override;
   int64_t Write(int fd, char* buf, int64_t count, int64_t offset) override;
 
