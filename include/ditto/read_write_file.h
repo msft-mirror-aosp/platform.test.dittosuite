@@ -30,11 +30,14 @@ class ReadWriteFile : public Instruction {
   explicit ReadWriteFile(SyscallInterface& syscall, const std::string& name, int repeat,
                          int64_t size, int64_t block_size, int64_t starting_offset, AccessType type,
                          uint32_t seed, Reseeding reseeding, int input_fd_key);
+  std::unique_ptr<Result> CollectResults(const std::string& prefix) override;
 
  protected:
   virtual void SetUpSingle() override;
   virtual void RunSingle() override;
+  void TearDownSingle() override;
 
+  BandwidthSampler bandwidth_sampler_;
   int64_t size_;
   int64_t block_size_;
   int64_t starting_offset_;

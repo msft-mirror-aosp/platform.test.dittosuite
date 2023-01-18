@@ -19,6 +19,13 @@ int64_t TimespecToNs(const timespec& t) {
   return t.tv_sec * 1e9 + t.tv_nsec;
 }
 
+std::vector<int64_t> TimespecToNs(const std::vector<timespec>& tv) {
+  std::vector<int64_t> nsv;
+  nsv.reserve(tv.size());
+  for (const auto& it : tv) nsv.push_back(TimespecToNs(it));
+  return nsv;
+}
+
 timespec NsToTimespec(const int64_t& t) {
   timespec result;
   result.tv_sec = t / 1e9;
@@ -90,4 +97,3 @@ timespec operator/(const timespec& t1, uint64_t t2_ns) {
 timespec operator/(const timespec& t1, const timespec& t2) {
   return t1 / TimespecToNs(t2);
 }
-
