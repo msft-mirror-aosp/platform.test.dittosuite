@@ -2,12 +2,12 @@ syntax = "proto2";
 
 package dittosuiteproto;
 
-enum ReadWriteType {
+enum AccessType {
   SEQUENTIAL = 0;
   RANDOM = 1;
 }
 
-enum ReadWriteReseeding {
+enum Reseeding {
   ONCE = 0;
   EACH_ROUND_OF_CYCLES = 1;
   EACH_CYCLE = 2;
@@ -43,10 +43,10 @@ message InstructionWriteFile {
   optional int64 size = 2 [default = -1];
   optional int64 block_size = 3 [default = 4096];
   optional int64 starting_offset = 4 [default = 0];
-  optional ReadWriteType type = 5 [default = SEQUENTIAL];
+  optional AccessType type = 5 [default = SEQUENTIAL];
   optional uint32 seed = 6;
   optional bool fsync = 7 [default = false];
-  optional ReadWriteReseeding reseeding = 8 [default = ONCE];
+  optional Reseeding reseeding = 8 [default = ONCE];
 }
 
 message InstructionReadFile {
@@ -60,10 +60,10 @@ message InstructionReadFile {
   optional int64 size = 2 [default = -1];
   optional int64 block_size = 3 [default = 4096];
   optional int64 starting_offset = 4 [default = 0];
-  optional ReadWriteType type = 5 [default = SEQUENTIAL];
+  optional AccessType type = 5 [default = SEQUENTIAL];
   optional uint32 seed = 6;
   optional ReadFAdvise fadvise = 7 [default = AUTOMATIC];
-  optional ReadWriteReseeding reseeding = 8 [default = ONCE];
+  optional Reseeding reseeding = 8 [default = ONCE];
 }
 
 message InstructionReadDirectory {

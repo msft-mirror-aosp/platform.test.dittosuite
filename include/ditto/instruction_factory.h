@@ -38,11 +38,10 @@ class InstructionFactory {
  private:
   InstructionFactory();
 
-  static ReadWriteFile::Reseeding ConvertReadWriteReseeding(
-      const dittosuiteproto::ReadWriteReseeding& proto_reseeding);
-  static ReadWriteFile::Type ConvertReadWriteType(const dittosuiteproto::ReadWriteType& proto_type);
+  static Reseeding ConvertReseeding(const dittosuiteproto::Reseeding& proto_reseeding);
+  static AccessType ConvertAccessType(const dittosuiteproto::AccessType& proto_type);
   static int ConvertReadFAdvise(
-      const ReadWriteFile::Type& type,
+      const AccessType& type,
       const dittosuiteproto::InstructionReadFile_ReadFAdvise& proto_fadvise);
 };
 
