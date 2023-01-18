@@ -15,6 +15,7 @@
 #pragma once
 
 #include <cstdint>
+#include <random>
 
 #include <ditto/instruction.h>
 
@@ -26,11 +27,27 @@ class ResizeFile : public Instruction {
 
   explicit ResizeFile(SyscallInterface& syscall, int repeat, int64_t size, int input_fd_key);
 
- private:
+ protected:
   void RunSingle() override;
 
   int64_t size_;
   int input_fd_key_;
+};
+
+class ResizeFileRandom : public ResizeFile {
+ public:
+  explicit ResizeFileRandom(int repeat, int64_t min, int64_t max, uint64_t seed,
+                            Reseeding reseeding, int input_fd_key);
+
+ private:
+  void SetUp() override;
+  void SetUpSingle() override;
+
+  int64_t min_;
+  int64_t max_;
+  std::mt19937_64 gen_;
+  uint64_t seed_;
+  Reseeding reseeding_;
 };
 
 }  // namespace dittosuite
