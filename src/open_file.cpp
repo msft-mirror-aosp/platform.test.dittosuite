@@ -33,7 +33,7 @@ OpenFile::OpenFile(int repeat, const std::string& file)
 void OpenFile::SetUp() {}
 
 void OpenFile::RunSingle() {
-  int fd = open(file_.c_str(), O_CREAT | O_CLOEXEC, O_RDWR);
+  int fd = open(file_.c_str(), O_CREAT | O_CLOEXEC, S_IRUSR | S_IWUSR);
 
   if (fd == -1) {
     LOGE("Error while trying to open the file");
