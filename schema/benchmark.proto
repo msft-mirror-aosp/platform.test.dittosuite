@@ -24,6 +24,6 @@ message InstructionSet {
 }
 
 message Benchmark {
-  required InstructionSet benchmark = 1;
+  required Instruction benchmark = 1;
   required int32 repeat = 2;
 }
