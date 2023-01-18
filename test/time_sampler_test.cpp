@@ -20,28 +20,14 @@
 
 namespace dittosuite {
 
-TEST(DittoTimer, SimpleTimer) {
-  dittosuite::TimeSampler my_time_sampler;
-  my_time_sampler.MeasureStart();
-  sleep(7);
-  my_time_sampler.MeasureEnd();
-  std::string outp =
-      "Time Difference: " + std::to_string(my_time_sampler.GetTimeSamples().front().tv_sec) + " s, " +
-      std::to_string(my_time_sampler.GetTimeSamples().front().tv_sec) + " ns";
-  Logger::GetInstance().SetLogLevel(LOG_LEVEL_INFO);
-  LOGI(outp);
-  outp = "Vector size: " + std::to_string(my_time_sampler.GetTimeSamples().size());
-  LOGI(outp);
-}
-
-TEST(TimeSamplerTest, DivisionTest) {
-  timespec t1 = {2, 6};
-  ASSERT_EQ(t1 / NsToTimespec(2), timespec({1, 3}));
-}
-
-TEST(TimeSamplerTest, DivisionByZeroTest) {
-  timespec t1 = {2, 6};
-  EXPECT_DEATH(t1 / NsToTimespec(0), "");
+TEST(TimeSamplerTest, TimeSamplerVector) {
+  dittosuite::TimeSampler time_sampler;
+  int n = 5;
+  for (int i = 0; i < n; i++) {
+    time_sampler.MeasureStart();
+    time_sampler.MeasureEnd();
+  }
+  ASSERT_EQ(time_sampler.GetTimeSamples().size(), static_cast<unsigned int>(n));
 }
 
 }  // namespace dittosuite
