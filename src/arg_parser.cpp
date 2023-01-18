@@ -1,0 +1,74 @@
+// Copyright (C) 2021 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <ditto/arg_parser.h>
+
+namespace dittosuite {
+
+LOG_LEVEL ArgToLogLevel(char* optarg) {
+  if (strcmp(optarg, "VERBOSE") == 0 || strcmp(optarg, "0") == 0)
+    return LOG_LEVEL_VERBOSE;
+  else if (strcmp(optarg, "DEBUG") == 0 || strcmp(optarg, "1") == 0)
+    return LOG_LEVEL_DEBUG;
+  else if (strcmp(optarg, "INFO") == 0 || strcmp(optarg, "2") == 0)
+    return LOG_LEVEL_INFO;
+  else if (strcmp(optarg, "WARNING") == 0 || strcmp(optarg, "3") == 0)
+    return LOG_LEVEL_WARNING;
+  return LOG_LEVEL_ERROR;
+}
+
+void ParseArguments(int argc, char** argv) {
+  while (true) {
+    int option_index = 0;
+    static struct option long_options[] = {{"results-output", required_argument, 0, 1},
+                                           {"results-output-path", required_argument, 0, 2},
+                                           {"log-stream", required_argument, 0, 3},
+                                           {"log-delayed", no_argument, 0, 4},
+                                           {"log-level", required_argument, 0, 5},
+                                           {0, 0, 0, 0}};
+
+    int c = getopt_long(argc, argv, "", long_options, &option_index);
+    if (c == -1) break;
+
+    switch (c) {
+      case 1:
+        // TODO(robertasn): set results output in the output class
+        break;
+      case 2:
+        // TODO(robertasn): set results output path in the output class
+        break;
+      case 3:
+        // TODO(robertasn): set log stream in Logger
+        break;
+      case 4:
+        // TODO(robertasn): set log delayed in Logger
+        break;
+      case 5:
+        dittosuite::Logger::GetInstance().SetLogLevel(ArgToLogLevel(optarg));
+        break;
+      default:
+        // TODO(robertasn): print usage
+        break;
+    }
+  }
+
+  if (optind >= argc) {
+    LOGE("Expected .ditto file");
+    exit(EXIT_FAILURE);
+  }
+
+  dittosuite::Parser::GetParser().SetFilePath(argv[optind]);
+}
+
+}  // namespace dittosuite

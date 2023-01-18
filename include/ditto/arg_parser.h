@@ -12,28 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#pragma once
+
+#include <ditto/logger.h>
+#include <ditto/parser.h>
+
 #include <getopt.h>
 #include <unistd.h>
 
 #include <cstring>
-#include <string>
 
-#include <ditto/arg_parser.h>
-#include <ditto/logger.h>
-#include <ditto/parser.h>
+namespace dittosuite {
 
-int main(int argc, char** argv) {
-  dittosuite::ParseArguments(argc, argv);
+#ifdef __ANDROID__
+inline void ParseArguments(int, char**) {}
+#else
+void ParseArguments(int, char**) {}
+#endif
 
-  auto main = dittosuite::Parser::GetParser().Parse();
-
-  if (main == nullptr) {
-    return EXIT_FAILURE;
-  }
-
-  main->SetUp();
-  main->Run();
-  main->TearDown();
-
-  return 0;
-}
+}  // namespace dittosuite
