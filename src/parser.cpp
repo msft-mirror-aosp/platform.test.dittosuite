@@ -44,7 +44,7 @@ void Parser::Parse(const std::string& file_path, const std::vector<std::string>&
 
   std::ifstream file(file_path);
   if (!file.is_open()) {
-    LOGF("Provided .ditto file was not found");
+    LOGF("Provided .ditto file was not found: " + file_path);
   }
 
   std::string file_contents((std::istreambuf_iterator<char>(file)),
