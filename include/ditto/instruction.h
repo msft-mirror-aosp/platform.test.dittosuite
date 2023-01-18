@@ -18,6 +18,8 @@
 
 namespace dittosuite {
 
+enum ReadWriteType { kSequential, kRandom };
+
 class Instruction {
  public:
   explicit Instruction(int repeat);
