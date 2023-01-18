@@ -52,7 +52,7 @@ void Instruction::TearDownSingle() {
 
 std::unique_ptr<Result> Instruction::CollectResults(const std::string& prefix) {
   auto result = std::make_unique<Result>(prefix + name_, repeat_);
-  result->AddMeasurement("duration", TimespecToDouble(time_sampler_.GetSamples()));
+  result->AddMeasurement("duration", TimespecToDoubleNanos(time_sampler_.GetSamples()));
   return result;
 }
 
