@@ -15,26 +15,22 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
-#include <variant>
-#include <vector>
+
+#include <ditto/instruction.h>
 
 namespace dittosuite {
 
-class SharedVariables {
+class ReadDirectory : public Instruction {
  public:
-  typedef std::variant<int, std::string, std::vector<std::string>> Variant;
+  inline static const std::string kName = "instruction_read_directory";
 
-  static int GetKey(const std::string& variable_name);
-  static Variant Get(int key);
-  static Variant Get(const std::string& variable_name);
-  static void Set(int key, const Variant& value);
-  static void Set(const std::string& variable_name, const Variant& value);
-  static void ClearKeys();
+  explicit ReadDirectory(int repeat, const std::string& directory_name, int output_key);
 
  private:
-  static std::vector<Variant> variables_;
-  static std::unordered_map<std::string, int> keys_;
+  void RunSingle() override;
+
+  std::string directory_name_;
+  int output_key_;
 };
 
 }  // namespace dittosuite

@@ -22,6 +22,7 @@
 #include <ditto/instruction_set.h>
 #include <ditto/logger.h>
 #include <ditto/open_file.h>
+#include <ditto/read_directory.h>
 #include <ditto/read_write_file.h>
 #include <ditto/resize_file.h>
 #include <ditto/shared_variables.h>
@@ -110,6 +111,13 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       return std::make_unique<ReadFile>(repeat, options.size(), options.block_size(),
                                         options.starting_offset(), type, seed, reseeding, fadvise,
                                         fd_key);
+    }
+    case InstructionType::kInstructionReadDirectory: {
+      const auto& options = proto_instruction.instruction_read_directory();
+
+      int output_key = SharedVariables::GetKey(options.output());
+
+      return std::make_unique<ReadDirectory>(repeat, options.directory_name(), output_key);
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGE("Instruction was not set in .ditto file");
