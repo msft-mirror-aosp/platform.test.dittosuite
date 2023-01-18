@@ -1,7 +1,8 @@
 main: {
   instruction_open_file: {
     file: "newfile2.txt",
-    output_fd: "open_file_output"
+    output_fd: "open_file_output",
+    create: false
   }
 },
 global {
