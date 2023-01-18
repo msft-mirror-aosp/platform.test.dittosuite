@@ -103,6 +103,8 @@ message Global {
 }
 
 message Benchmark {
-  required Instruction main = 1;
-  required Global global = 2;
+  optional Instruction init = 1;
+  required Instruction main = 2;
+  optional Instruction clean_up = 3;
+  required Global global = 4;
 }
