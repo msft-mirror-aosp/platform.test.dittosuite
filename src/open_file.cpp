@@ -16,12 +16,14 @@
 
 #include <ditto/logger.h>
 #include <ditto/shared_variables.h>
+#include <ditto/utils.h>
 
 namespace dittosuite {
 
 OpenFile::OpenFile(SyscallInterface& syscall, int repeat, const std::string& path_name, bool create,
                    int output_fd_key)
     : Instruction(syscall, kName, repeat),
+      random_name_(false),
       path_name_(GetAbsolutePath() + path_name),
       create_(create),
       input_key_(-1),
@@ -30,13 +32,27 @@ OpenFile::OpenFile(SyscallInterface& syscall, int repeat, const std::string& pat
 OpenFile::OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool create,
                    int output_fd_key)
     : Instruction(syscall, kName, repeat),
+      random_name_(false),
       create_(create),
       input_key_(input_key),
       output_fd_key_(output_fd_key) {}
 
+OpenFile::OpenFile(SyscallInterface& syscall, int repeat, bool create, int output_fd_key)
+    : Instruction(syscall, kName, repeat),
+      random_name_(true),
+      create_(create),
+      input_key_(-1),
+      output_fd_key_(output_fd_key),
+      gen_(time(nullptr)) {}
+
 void OpenFile::SetUpSingle() {
   if (input_key_ != -1) {
     path_name_ = std::get<std::string>(SharedVariables::Get(input_key_));
+  } else if (random_name_) {
+    std::uniform_int_distribution<> uniform_distribution(1e8, 9e8);  // 9 digit number
+    do {
+      path_name_ = GetAbsolutePath() + std::to_string(uniform_distribution(gen_));
+    } while (FileExists(syscall_, path_name_));
   }
   Instruction::SetUpSingle();
 }

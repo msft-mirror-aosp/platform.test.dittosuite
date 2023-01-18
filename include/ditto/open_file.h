@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <random>
 #include <string>
 
 #include <ditto/instruction.h>
@@ -28,15 +29,18 @@ class OpenFile : public Instruction {
                     bool create, int output_fd_key);
   explicit OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool create,
                     int output_fd_key);
+  explicit OpenFile(SyscallInterface& syscall, int repeat, bool create, int output_fd_key);
 
  private:
   void SetUpSingle() override;
   void RunSingle() override;
 
+  bool random_name_;
   std::string path_name_;
   bool create_;
   int input_key_;
   int output_fd_key_;
+  std::mt19937_64 gen_;
 };
 
 }  // namespace dittosuite
