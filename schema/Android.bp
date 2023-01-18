@@ -1,3 +1,8 @@
+package {
+    // See: http://go/android-license-faq
+    default_applicable_licenses: ["test_dittosuite_license"],
+}
+
 cc_library_static {
     name: "dittosuite-proto",
 
