@@ -41,4 +41,5 @@ cc_test {
     ],
     static_libs: ["libdittosuite", "libgmock"],
     defaults: ["dittobench_defaults"],
+    data: ["example/*"],
 }
