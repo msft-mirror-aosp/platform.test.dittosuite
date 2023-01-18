@@ -15,13 +15,13 @@
 #include <ditto/resize_file.h>
 
 #include <fcntl.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 #include <cstdint>
 
 #include <ditto/logger.h>
 #include <ditto/shared_variables.h>
+#include <ditto/utils.h>
 
 namespace dittosuite {
 
@@ -44,11 +44,5 @@ void ResizeFile::RunSingle() {
 }
 
 void ResizeFile::TearDown() {}
-
-int64_t ResizeFile::GetFileSize(int fd) {
-  struct stat64 sb;
-  fstat64(fd, &sb);
-  return sb.st_size;
-}
 
 }  // namespace dittosuite

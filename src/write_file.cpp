@@ -14,7 +14,6 @@
 
 #include <ditto/write_file.h>
 
-#include <sys/stat.h>
 #include <unistd.h>
 
 #include <cstdint>
@@ -22,16 +21,18 @@
 
 #include <ditto/logger.h>
 #include <ditto/shared_variables.h>
+#include <ditto/utils.h>
 
 namespace dittosuite {
 
 WriteFile::WriteFile(int repeat, int64_t size, int64_t block_size, ReadWriteType type,
-                     u_int32_t seed, int input_fd_key)
+                     u_int32_t seed, bool fsync, int input_fd_key)
     : Instruction(repeat),
       size_(size),
       block_size_(block_size),
       type_(type),
       gen_(seed),
+      fsync_(fsync),
       input_fd_key_(input_fd_key) {
   buffer_ = std::make_unique<char[]>(block_size_);
   std::fill(buffer_.get(), buffer_.get() + block_size_, 170);  // 170 = 10101010
@@ -75,14 +76,13 @@ void WriteFile::RunSingle() {
   for (const auto& unit : units_) {
     pwrite(fd, buffer_.get(), unit.count, unit.offset);
   }
+
+  if (fsync_ && fsync(fd) != 0) {
+    LOGE("Error while calling fsync()");
+    exit(EXIT_FAILURE);
+  }
 }
 
 void WriteFile::TearDown() {}
-
-int64_t WriteFile::GetFileSize(int fd) {
-  struct stat64 sb;
-  fstat64(fd, &sb);
-  return sb.st_size;
-}
 
 }  // namespace dittosuite

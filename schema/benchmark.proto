@@ -32,6 +32,7 @@ message InstructionWriteFile {
   optional int64 block_size = 3 [default = 4096];
   optional ReadWriteType type = 4 [default = sequential];
   optional uint32 seed = 5;
+  optional bool fsync = 6 [default = false];
 }
 
 message Instruction {
