@@ -69,13 +69,13 @@ void OpenFile::RunSingle() {
 
   int open_flags = 0;
   switch (access_mode_) {
-    case AccessMode::READ_ONLY:
+    case AccessMode::kReadOnly:
       open_flags |= O_RDONLY;
       break;
-    case AccessMode::WRITE_ONLY:
+    case AccessMode::kWriteOnly:
       open_flags |= O_WRONLY;
       break;
-    case AccessMode::READ_WRITE:
+    case AccessMode::kReadWrite:
       open_flags |= O_RDWR;
       break;
   }

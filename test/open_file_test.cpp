@@ -47,6 +47,6 @@ TEST_P(OpenFileTest, FileCreatedWithVariable) {
 }
 
 INSTANTIATE_TEST_CASE_P(OpenFileTestParametric, OpenFileTest,
-                        ::testing::Values(dittosuite::OpenFile::READ_ONLY,
-                                          dittosuite::OpenFile::WRITE_ONLY,
-                                          dittosuite::OpenFile::READ_WRITE));
+                        ::testing::Values(dittosuite::OpenFile::AccessMode::kReadOnly,
+                                          dittosuite::OpenFile::AccessMode::kWriteOnly,
+                                          dittosuite::OpenFile::AccessMode::kReadWrite));

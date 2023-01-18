@@ -46,7 +46,7 @@ TEST_P(ResizeFileTest, ResizeFileTestRun) {
 
   dittosuite::ResizeFile resize_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, size,
                                                  fd_key);
-  if (access_mode == dittosuite::OpenFile::AccessMode::READ_ONLY) {
+  if (access_mode == dittosuite::OpenFile::AccessMode::kReadOnly) {
     ASSERT_DEATH(resize_file_instruction.Run(), ".*");
   } else {
     resize_file_instruction.Run();
@@ -58,6 +58,6 @@ TEST_P(ResizeFileTest, ResizeFileTestRun) {
 }
 
 INSTANTIATE_TEST_CASE_P(ResizeFileTestParametric, ResizeFileTest,
-                        ::testing::Values(dittosuite::OpenFile::AccessMode::READ_ONLY,
-                                          dittosuite::OpenFile::AccessMode::WRITE_ONLY,
-                                          dittosuite::OpenFile::AccessMode::READ_WRITE));
+                        ::testing::Values(dittosuite::OpenFile::AccessMode::kReadOnly,
+                                          dittosuite::OpenFile::AccessMode::kWriteOnly,
+                                          dittosuite::OpenFile::AccessMode::kReadWrite));

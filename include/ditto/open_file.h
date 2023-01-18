@@ -24,7 +24,7 @@ namespace dittosuite {
 class OpenFile : public Instruction {
  public:
   inline static const std::string kName = "open_file";
-  enum AccessMode { READ_ONLY, WRITE_ONLY, READ_WRITE };
+  enum class AccessMode { kReadOnly, kWriteOnly, kReadWrite };
 
   explicit OpenFile(SyscallInterface& syscall, int repeat, const std::string& path_name,
                     bool create, bool direct_io, int output_fd_key, AccessMode access_mode);
@@ -44,7 +44,7 @@ class OpenFile : public Instruction {
   int input_key_;
   int output_fd_key_;
   std::mt19937_64 gen_;
-  int access_mode_;
+  AccessMode access_mode_;
 };
 
 }  // namespace dittosuite

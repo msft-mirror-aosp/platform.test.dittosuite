@@ -48,14 +48,14 @@ InstructionSet::InstructionSet(SyscallInterface& syscall, int repeat,
       item_key_(-1) {}
 
 void InstructionSet::SetUp() {
-  if (reseeding_ == kEachRoundOfCycles) {
+  if (reseeding_ == Reseeding::kEachRoundOfCycles) {
     gen_.seed(seed_);
   }
   Instruction::SetUp();
 }
 
 void InstructionSet::SetUpSingle() {
-  if (reseeding_ == kEachCycle) {
+  if (reseeding_ == Reseeding::kEachCycle) {
     gen_.seed(seed_);
   }
   Instruction::SetUpSingle();
@@ -68,11 +68,11 @@ void InstructionSet::RunSingle() {
                                                                                  list.size() - 1);
                             for (unsigned int i = 0; i < list.size(); ++i) {
                               switch (access_order_) {
-                                case kSequential: {
+                                case Order::kSequential: {
                                   SharedVariables::Set(item_key_, list[i]);
                                   break;
                                 }
-                                case kRandom: {
+                                case Order::kRandom: {
                                   SharedVariables::Set(item_key_, list[uniform_distribution(gen_)]);
                                   break;
                                 }

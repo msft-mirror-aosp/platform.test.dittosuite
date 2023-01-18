@@ -71,14 +71,12 @@ std::string Result::ComputeNextInstructionPath(const std::string& instruction_pa
 
 void Result::Print(const ResultsOutput results_output, const std::string& instruction_path) {
   switch (results_output) {
-    case kReport:
+    case ResultsOutput::kReport:
       PrintHistograms(instruction_path);
       PrintStatisticsTables();
       break;
-    case kCsv:
+    case ResultsOutput::kCsv:
       MakeStatisticsCsv();
-      break;
-    default:
       break;
   }
 }

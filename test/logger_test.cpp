@@ -21,13 +21,13 @@ namespace dittosuite {
 
 TEST(DittoLogger, SimpleLog) {
   for (int i = 10; i <= 11; i++) {
-    Logger::GetInstance().SetLogLevel(LOG_LEVEL_ERROR);
-    std::cout << "My log level:  " << Logger::GetInstance().GetLogLevel() << '\n';
+    Logger::GetInstance().SetLogLevel(LogLevel::kError);
+    std::cout << "My log level:  " << static_cast<int>(Logger::GetInstance().GetLogLevel()) << '\n';
     LOGW("This is a warning");
     LOGE("This is an error");
     LOGI("This is an info");
-    Logger::GetInstance().SetLogStream(LOG_STREAM_LOGCAT);
-    Logger::GetInstance().SetLogLevel(LOG_LEVEL_WARNING);
+    Logger::GetInstance().SetLogStream(LogStream::kLogcat);
+    Logger::GetInstance().SetLogLevel(LogLevel::kWarning);
     LOGW("This is a warning");
     LOGE("This is an error");
     LOGI("This is an info");
@@ -35,15 +35,15 @@ TEST(DittoLogger, SimpleLog) {
 }
 
 TEST(DittoLogger, SetAndGetLevel) {
-  for (const auto l :
-       {LOG_LEVEL_VERBOSE, LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR}) {
+  for (const auto l : {LogLevel::kVerbose, LogLevel::kDebug, LogLevel::kInfo, LogLevel::kWarning,
+                       LogLevel::kError}) {
     Logger::GetInstance().SetLogLevel(l);
     ASSERT_EQ(Logger::GetInstance().GetLogLevel(), l);
   }
 }
 
 TEST(DittoLogger, SetAndGetStream) {
-  for (const auto s : {LOG_STREAM_STDOUT, LOG_STREAM_LOGCAT}) {
+  for (const auto s : {LogStream::kStdout, LogStream::kLogcat}) {
     Logger::GetInstance().SetLogStream(s);
     ASSERT_EQ(Logger::GetInstance().GetLogStream(), s);
   }

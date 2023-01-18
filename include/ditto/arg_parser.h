@@ -25,7 +25,7 @@
 
 namespace dittosuite {
 struct CmdArguments {
-  ResultsOutput results_output = kReport;
+  ResultsOutput results_output = ResultsOutput::kReport;
   std::string file_path;
   std::vector<std::string> parameters;
 };
