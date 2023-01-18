@@ -38,7 +38,7 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
   }
 
   if (proto_instruction_set.has_iterate_options()) {
-    auto options = proto_instruction_set.iterate_options();
+    const auto& options = proto_instruction_set.iterate_options();
 
     int list_key = SharedVariables::GetKey(options.list_name());
     int item_key = SharedVariables::GetKey(options.item_name());
