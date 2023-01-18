@@ -17,14 +17,9 @@
 #include <ctime>
 #include <vector>
 
-namespace dittosuite {
+#include <ditto/timespec_utils.h>
 
-bool operator<(const timespec& t1, const timespec& t2);
-bool operator<=(const timespec& t1, const timespec& t2);
-bool operator>(const timespec& t1, const timespec& t2);
-bool operator>=(const timespec& t1, const timespec& t2);
-timespec operator-(const timespec& t1, const timespec& t2);
-timespec operator+(const timespec& t1, const timespec& t2);
+namespace dittosuite {
 
 class TimeSampler {
  public:
@@ -38,4 +33,5 @@ class TimeSampler {
   timespec end_;
   std::vector<timespec> time_samples_;
 };
+
 }  // namespace dittosuite
