@@ -28,13 +28,17 @@ class Result {
 
   std::string GetName();
   std::vector<timespec> GetTimeSamples();
+  timespec GetMin() const;
+  timespec GetMax() const;
+  timespec GetMean() const;
   void AddSubResult(std::unique_ptr<Result> result);
+  void Analyse();
 
  private:
   std::string name_;
   std::vector<timespec> time_samples_;
-
   std::vector<std::unique_ptr<Result>> sub_results_;
+  timespec min_, max_, mean_;
 };
 
 }  // namespace dittosuite

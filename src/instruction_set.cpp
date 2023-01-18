@@ -40,6 +40,7 @@ std::unique_ptr<Result> InstructionSet::CollectResults() {
   for (const auto& instruction : instructions_) {
     result->AddSubResult(instruction->CollectResults());
   }
+  result->Analyse();
   return result;
 }
 

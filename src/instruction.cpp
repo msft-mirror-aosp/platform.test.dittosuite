@@ -33,7 +33,9 @@ void Instruction::TearDown() {
 }
 
 std::unique_ptr<Result> Instruction::CollectResults() {
-  return std::make_unique<Result>(name_, time_sampler_.GetTimeSamples());
+  auto result = std::make_unique<Result>(name_, time_sampler_.GetTimeSamples());
+  result->Analyse();
+  return result;
 }
 
 void Instruction::SetAbsolutePathKey(int absolute_path_key) {
