@@ -35,5 +35,7 @@ int main(int argc, char** argv) {
   main->Run();
   main->TearDown();
 
+  auto result = main->CollectResults();
+
   return 0;
 }
