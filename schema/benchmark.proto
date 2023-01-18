@@ -3,7 +3,7 @@ syntax = "proto2";
 package dittosuiteproto;
 
 message InstructionCreateFile {
-  required string file = 8;
+  required string file = 1;
 }
 
 message InstructionDeleteFile {
@@ -11,16 +11,16 @@ message InstructionDeleteFile {
 }
 
 message Instruction {
+  required int32 repeat = 1;
   oneof instruction_oneof {
-    InstructionSet instruction_set = 4;
-    InstructionCreateFile instruction_create_file = 5;
-    InstructionDeleteFile instruction_delete_file = 6;
+    InstructionSet instruction_set = 2;
+    InstructionCreateFile instruction_create_file = 3;
+    InstructionDeleteFile instruction_delete_file = 4;
   }
-  required int32 repeat = 7;
 }
 
 message InstructionSet {
-  repeated Instruction instructions = 3;
+  repeated Instruction instructions = 1;
 }
 
 message Benchmark {
