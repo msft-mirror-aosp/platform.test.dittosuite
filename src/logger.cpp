@@ -34,6 +34,10 @@ namespace dittosuite{
          logLevel = newLogLevel;
     }
 
+    LOG_LEVEL Logger::GetLevel() const {
+      return logLevel;
+    }
+
     void Logger::writeLogMessage(std::string message, std::string prefix)
     {
         std::cout << prefix << ": " << message << '\n';

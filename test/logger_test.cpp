@@ -20,8 +20,7 @@
 #include <ditto/logger.h>
 #include <gtest/gtest.h>
 
-using dittosuite::Logger;
-using dittosuite::LOG_LEVEL_ERROR;
+namespace dittosuite {
 
 TEST(DittoLogger, SimpleLog) {
     for(int i=10; i<=11; i++)
@@ -36,3 +35,15 @@ TEST(DittoLogger, SimpleLog) {
         LOGI("This is an info");
     }
 }
+
+TEST(DittoLogger, SetAndGetLevel) {
+  Logger log = Logger::getInstance();
+
+  for (const auto l :
+       {LOG_LEVEL_VERBOSE, LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR}) {
+    log.setLevel(l);
+    ASSERT_EQ(log.GetLevel(), l);
+  }
+}
+
+}  // namespace dittosuite
