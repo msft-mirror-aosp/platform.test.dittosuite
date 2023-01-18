@@ -16,10 +16,13 @@
 #include <gtest/gtest.h>
 
 #include <ditto/create_file.h>
+#include <ditto/shared_variables.h>
 
 TEST(CreateFileTest, CreateFileTestRun) {
   int repeat = 1;
   std::string file = "/data/local/tmp/newfile.txt";
+
+  dittosuite::SharedVariables::Set("absolute_path", "");
 
   dittosuite::CreateFile create_file_instruction(repeat, file);
   create_file_instruction.Run();

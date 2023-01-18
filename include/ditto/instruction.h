@@ -27,13 +27,13 @@ class Instruction {
   void Run();
   virtual void TearDown() = 0;
 
-  static void SetAbsolutePath(const std::string& absolute_path);
-  static std::string GetAbsolutePath();
+  static void SetAbsolutePathKey(int absolute_path_key);
+  static int GetAbsolutePathKey();
 
  private:
   virtual void RunSingle() = 0;
 
-  static std::string absolute_path_;
+  static int absolute_path_key_;
   int repeat_;
 };
 

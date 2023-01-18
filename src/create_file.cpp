@@ -24,7 +24,9 @@
 namespace dittosuite {
 
 CreateFile::CreateFile(int repeat, const std::string& file)
-    : Instruction(repeat), file_(Instruction::GetAbsolutePath() + file), output_fd_key_(-1) {}
+    : Instruction(repeat),
+      file_(std::get<std::string>(SharedVariables::Get(Instruction::GetAbsolutePathKey())) + file),
+      output_fd_key_(-1) {}
 
 void CreateFile::SetUp() {}
 
