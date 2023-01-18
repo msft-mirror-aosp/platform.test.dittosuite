@@ -22,8 +22,6 @@
 
 namespace dittosuite {
 
-enum ReadWriteType { kSequential, kRandom };
-
 class Instruction {
  public:
   explicit Instruction(const std::string& name, int repeat);

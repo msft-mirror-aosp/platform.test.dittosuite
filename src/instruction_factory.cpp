@@ -83,14 +83,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionWriteFile: {
       const auto& options = proto_instruction.instruction_write_file();
 
-      ReadWriteType type;
+      ReadWriteFile::Type type;
       switch (options.type()) {
         case dittosuiteproto::ReadWriteType::SEQUENTIAL: {
-          type = ReadWriteType::kSequential;
+          type = ReadWriteFile::Type::kSequential;
           break;
         }
         case dittosuiteproto::ReadWriteType::RANDOM: {
-          type = ReadWriteType::kRandom;
+          type = ReadWriteFile::Type::kRandom;
           break;
         }
         default: {
@@ -116,14 +116,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInstructionReadFile: {
       const auto& options = proto_instruction.instruction_read_file();
 
-      ReadWriteType type;
+      ReadWriteFile::Type type;
       switch (options.type()) {
         case dittosuiteproto::ReadWriteType::SEQUENTIAL: {
-          type = ReadWriteType::kSequential;
+          type = ReadWriteFile::Type::kSequential;
           break;
         }
         case dittosuiteproto::ReadWriteType::RANDOM: {
-          type = ReadWriteType::kRandom;
+          type = ReadWriteFile::Type::kRandom;
           break;
         }
         default: {
