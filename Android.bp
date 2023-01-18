@@ -1,0 +1,5 @@
+cc_binary {
+    name: "dittobench",
+    srcs: ["dittobench.cpp"],
+    static_libs: ["libgoogle-benchmark"],
+}
