@@ -22,10 +22,17 @@ namespace dittosuite {
 
 class Parser {
  public:
-  static std::unique_ptr<InstructionSet> Parse(std::string& file_name);
+  Parser(Parser& other) = delete;
+  void operator=(const Parser&) = delete;
+
+  static Parser& GetParser();
+  std::unique_ptr<InstructionSet> Parse();
+  void SetFilePath(const std::string& file_path);
 
  private:
-  Parser();
+  Parser(){};
+
+  std::string file_path_;
 };
 
 } // namespace dittosuite

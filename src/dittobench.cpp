@@ -17,8 +17,11 @@
 #include <ditto/parser.h>
 
 int main() {
-  std::string file = "create_file.ditto";
-  auto instruction_set = dittosuite::Parser::Parse(file);
+  auto instruction_set = dittosuite::Parser::GetParser().Parse();
+
+  if (instruction_set == nullptr) {
+    return 0;
+  }
 
   instruction_set->SetUp();
   instruction_set->Run();
