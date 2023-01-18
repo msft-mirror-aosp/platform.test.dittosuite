@@ -33,5 +33,6 @@ int main(int argc, char** argv) {
 
   auto result = main->CollectResults();
   result->Print("");
+  result->PrintStatisticsTable();
   return 0;
 }

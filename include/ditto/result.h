@@ -34,12 +34,13 @@ class Result {
   void AddSubResult(std::unique_ptr<Result> result);
   void Analyse();
   void Print(const std::string& instruction_path);
+  void PrintStatisticsTable();
 
  private:
   std::string name_;
   std::vector<timespec> time_samples_;
   std::vector<std::unique_ptr<Result>> sub_results_;
   timespec min_, max_, mean_, sd_;
+  void PrintStatisticsTableContent(const std::string& instruction_path);
 };
-
 }  // namespace dittosuite
