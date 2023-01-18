@@ -59,22 +59,23 @@ timespec StatisticsGetMedian(const std::vector<timespec>& time_samples) {
   }
 }
 
-// TODO(lucialup): improve readability
-// the standard deviation is computed as the square root of the
-// variance given by the deviation of each point relative to the mean
-// SD = sqrt( variance ),
-// where variance = Sum( (point_i - mean)^2 ) / total_number_of_points
-timespec StatisticsGetSd(const std::vector<timespec>& time_samples) {
-  int64_t mean = TimespecToNs(StatisticsGetMean(time_samples));
-  int64_t result(0), deviation_pow;
-  int64_t deviation;
-  for (const auto& time_sample : time_samples) {
-    deviation = TimespecToNs(time_sample) - mean;
-    deviation_pow = std::pow(deviation, 2);
-    result += deviation_pow;  // TODO(lucialup): add overflow error handling
+// The standard deviation sd of a population of N samples, where x_i is the
+// i-th sample and x is the average among all the samples is computed as:
+//
+// sd = sqrt( sum( (x_i - x)^2 ) / N )
+double StatisticsGetSd(const std::vector<timespec>& samples) {
+  double mean = TimespecToNs(StatisticsGetMean(samples));
+  double variance;
+
+  variance = 0.0;
+  for (const auto& s : samples) {
+    double deviation = TimespecToNs(s) - mean;
+    double deviation_square = std::pow(deviation, 2);
+    variance += deviation_square;  // TODO(lucialup): add overflow error handling
   }
-  int time_samples_size = time_samples.size();
-  return NsToTimespec(std::sqrt(result / time_samples_size));
+  variance /= samples.size();
+
+  return std::sqrt(variance);
 }
 
 }  // namespace dittosuite
