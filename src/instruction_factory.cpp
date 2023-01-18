@@ -110,6 +110,60 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       return instruction;
     }
+    case InstructionType::kInstructionReadFile: {
+      const auto& options = proto_instruction.instruction_read_file();
+
+      ReadWriteType type;
+      switch (options.type()) {
+        case dittosuiteproto::ReadWriteType::SEQUENTIAL: {
+          type = ReadWriteType::kSequential;
+          break;
+        }
+        case dittosuiteproto::ReadWriteType::RANDOM: {
+          type = ReadWriteType::kRandom;
+          break;
+        }
+        default: {
+          LOGE("Invalid ReadWriteType was provided");
+          return nullptr;
+        }
+      }
+
+      u_int32_t seed = options.seed();
+      if (!options.has_seed()) {
+        seed = time(0);
+      }
+
+      ReadFile::ReadFAdvise fadvise;
+      switch (options.fadvise()) {
+        case dittosuiteproto::InstructionReadFile_ReadFAdvise_AUTOMATIC: {
+          fadvise = ReadFile::ReadFAdvise::kAutomatic;
+          break;
+        }
+        case dittosuiteproto::InstructionReadFile_ReadFAdvise_NORMAL: {
+          fadvise = ReadFile::ReadFAdvise::kNormal;
+          break;
+        }
+        case dittosuiteproto::InstructionReadFile_ReadFAdvise_SEQUENTIAL: {
+          fadvise = ReadFile::ReadFAdvise::kSequential;
+          break;
+        }
+        case dittosuiteproto::InstructionReadFile_ReadFAdvise_RANDOM: {
+          fadvise = ReadFile::ReadFAdvise::kRandom;
+          break;
+        }
+        default: {
+          LOGE("Invalid ReadFAdvise was provided");
+          return nullptr;
+        }
+      }
+
+      int fd_key = SharedVariables::GetKey(options.input_fd());
+      auto instruction = std::make_unique<ReadFile>(repeat, options.size(), options.block_size(),
+                                                    type, seed, fadvise, fd_key);
+
+      return instruction;
+    }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGE("Instruction was not set in .ditto file");
       return nullptr;
