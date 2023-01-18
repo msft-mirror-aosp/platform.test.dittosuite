@@ -14,13 +14,19 @@ enum ReadWriteReseeding {
 }
 
 message InstructionOpenFile {
-  required string file = 1;
-  optional string output_fd = 2;
-  optional bool create = 3 [default = true];
+  oneof file {
+    string path_name = 1;
+    string input = 2;
+  }
+  optional string output_fd = 3;
+  optional bool create = 4 [default = true];
 }
 
 message InstructionDeleteFile {
-  required string file = 1;
+  oneof file {
+    string path_name = 1;
+    string input = 2;
+  }
 }
 
 message InstructionCloseFile {

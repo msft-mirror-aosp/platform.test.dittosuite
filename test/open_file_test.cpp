@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <unistd.h>
-
 #include <gtest/gtest.h>
 
 #include <ditto/open_file.h>
@@ -25,16 +23,32 @@ const std::string absolute_path = "/data/local/tmp/";
 const std::string absolute_path = "";
 #endif
 
-TEST(OpenFileTest, OpenFileTestRun) {
-  int repeat = 1;
-  std::string file = "newfile.txt";
+class OpenFileTest : public ::testing::Test {
+ protected:
+  std::string file_name = "test";
+  std::string path = absolute_path + file_name;
 
-  auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
-  dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
-  dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
+  // Set absolute_path
+  void SetUp() override {
+    auto absolute_path_key = dittosuite::SharedVariables::GetKey("absolute_path");
+    dittosuite::SharedVariables::Set(absolute_path_key, absolute_path);
+    dittosuite::Instruction::SetAbsolutePathKey(absolute_path_key);
+  }
+  // Make sure that the files, which have been created in the tests, are deleted
+  void TearDown() override { unlink(path.c_str()); }
+};
 
-  dittosuite::OpenFile open_file_instruction(repeat, file, true, -1);
-  open_file_instruction.Run();
+TEST_F(OpenFileTest, FileCreatedWithPathName) {
+  dittosuite::OpenFile instruction(1, file_name, true, -1, -1);
+  instruction.Run();
 
-  ASSERT_EQ(access((absolute_path + file).c_str(), F_OK), 0);
+  ASSERT_EQ(access(path.c_str(), F_OK), 0);
+}
+
+TEST_F(OpenFileTest, FileCreatedWithVariable) {
+  dittosuite::SharedVariables::Set("input", file_name);
+  dittosuite::OpenFile instruction(1, "", true, dittosuite::SharedVariables::GetKey("input"), -1);
+  instruction.Run();
+
+  ASSERT_EQ(access(path.c_str(), F_OK), 0);
 }

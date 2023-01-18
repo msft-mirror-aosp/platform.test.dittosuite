@@ -24,13 +24,16 @@ class OpenFile : public Instruction {
  public:
   inline static const std::string kName = "instruction_open_file";
 
-  explicit OpenFile(int repeat, const std::string& file, bool create, int output_fd_key);
+  explicit OpenFile(int repeat, const std::string& path_name, bool create, int input_key,
+                    int output_fd_key);
 
  private:
+  void SetUpSingle() override;
   void RunSingle() override;
 
-  std::string file_;
+  std::string path_name_;
   bool create_;
+  int input_key_;
   int output_fd_key_;
 };
 

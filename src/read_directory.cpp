@@ -23,7 +23,9 @@
 namespace dittosuite {
 
 ReadDirectory::ReadDirectory(int repeat, const std::string& directory_name, int output_key)
-    : Instruction(kName, repeat), directory_name_(directory_name), output_key_(output_key) {}
+    : Instruction(kName, repeat),
+      directory_name_(GetAbsolutePath() + directory_name),
+      output_key_(output_key) {}
 
 void ReadDirectory::RunSingle() {
   std::vector<std::string> output;
@@ -39,7 +41,7 @@ void ReadDirectory::RunSingle() {
   while ((entry = readdir(directory)) != nullptr) {
     // Only collect regular files
     if (entry->d_type == DT_REG) {
-      output.push_back(entry->d_name);
+      output.push_back(directory_name_ + "/" + entry->d_name);
     }
   }
   SharedVariables::Set(output_key_, output);
