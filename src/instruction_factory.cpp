@@ -36,7 +36,7 @@ namespace dittosuite {
 typedef dittosuiteproto::Instruction::InstructionOneofCase InstructionType;
 
 std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSet(
-    const std::list<int>& thread_ids, const int& repeat,
+    const std::list<int>& thread_ids, const int repeat,
     const dittosuiteproto::InstructionSet& proto_instruction_set) {
   std::vector<std::unique_ptr<Instruction>> instructions;
   for (const auto& instruction : proto_instruction_set.instructions()) {
@@ -228,7 +228,7 @@ int InstructionFactory::GenerateThreadId() {
 
 int InstructionFactory::current_thread_id_ = 0;
 
-Reseeding InstructionFactory::ConvertReseeding(const dittosuiteproto::Reseeding& proto_reseeding) {
+Reseeding InstructionFactory::ConvertReseeding(const dittosuiteproto::Reseeding proto_reseeding) {
   switch (proto_reseeding) {
     case dittosuiteproto::Reseeding::ONCE: {
       return kOnce;
@@ -245,8 +245,7 @@ Reseeding InstructionFactory::ConvertReseeding(const dittosuiteproto::Reseeding&
   }
 }
 
-Order InstructionFactory::ConvertOrder(
-    const dittosuiteproto::Order& proto_order) {
+Order InstructionFactory::ConvertOrder(const dittosuiteproto::Order proto_order) {
   switch (proto_order) {
     case dittosuiteproto::Order::SEQUENTIAL: {
       return kSequential;
@@ -261,7 +260,7 @@ Order InstructionFactory::ConvertOrder(
 }
 
 int InstructionFactory::ConvertReadFAdvise(
-    const Order& access_order, const dittosuiteproto::ReadFile_ReadFAdvise& proto_fadvise) {
+    const Order access_order, const dittosuiteproto::ReadFile_ReadFAdvise proto_fadvise) {
   switch (proto_fadvise) {
     case dittosuiteproto::ReadFile_ReadFAdvise_AUTOMATIC: {
       switch (access_order) {

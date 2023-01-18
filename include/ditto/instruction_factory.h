@@ -32,7 +32,7 @@ namespace dittosuite {
 class InstructionFactory {
  public:
   static std::unique_ptr<InstructionSet> CreateFromProtoInstructionSet(
-      const std::list<int>& thread_ids, const int& repeat,
+      const std::list<int>& thread_ids, int repeat,
       const dittosuiteproto::InstructionSet& proto_instruction_set);
   static std::unique_ptr<Instruction> CreateFromProtoInstruction(
       const std::list<int>& thread_ids, const dittosuiteproto::Instruction& proto_instruction);
@@ -41,10 +41,10 @@ class InstructionFactory {
  private:
   InstructionFactory();
 
-  static Reseeding ConvertReseeding(const dittosuiteproto::Reseeding& proto_reseeding);
-  static Order ConvertOrder(const dittosuiteproto::Order& proto_order);
-  static int ConvertReadFAdvise(const Order& access_order,
-                                const dittosuiteproto::ReadFile_ReadFAdvise& proto_fadvise);
+  static Reseeding ConvertReseeding(dittosuiteproto::Reseeding proto_reseeding);
+  static Order ConvertOrder(dittosuiteproto::Order proto_order);
+  static int ConvertReadFAdvise(Order access_order,
+                                dittosuiteproto::ReadFile_ReadFAdvise proto_fadvise);
 
   static int current_thread_id_;
 };

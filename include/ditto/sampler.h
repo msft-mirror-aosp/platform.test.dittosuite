@@ -42,7 +42,7 @@ class TimeSampler : public Sampler<timespec> {
 
 class BandwidthSampler : public Sampler<double> {
  public:
-  void Measure(const int64_t& file_size, const timespec& duration);
+  void Measure(size_t file_size, const timespec& duration);
 };
 
 }  // namespace dittosuite
