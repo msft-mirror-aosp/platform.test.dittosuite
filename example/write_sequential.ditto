@@ -17,7 +17,8 @@ main: {
         instruction_write_file: {
           input_fd: "test_file",
           size: 134217728,
-          block_size: 1024
+          block_size: 1024,
+          fsync: true
         }
       },
       {
