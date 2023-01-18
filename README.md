@@ -22,8 +22,25 @@ Project (AOSP) and is supposed to run out-of-the-box.
 The following utilities are required to build the project on Linux:
 
 ```
-sudo apt install cmake protobuf-compiler
+sudo apt install cmake libgtest-dev protobuf-compiler
+
 ```
+
+# Testing
+
+## Linux
+
+A suite of unit tests is provided in the test/ directory.
+In Linux these tests can be run with the following commands:
+
+```
+mkdir build
+cd build
+make
+cd test
+ctest
+```
+
 
 # Use cases
 

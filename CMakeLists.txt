@@ -25,3 +25,5 @@ target_link_libraries(dittobench
 	${Protobuf_LIBRARIES}
 	${Protobuf_PROTOC_LIBRARIES}
 )
+
+add_subdirectory(test)
