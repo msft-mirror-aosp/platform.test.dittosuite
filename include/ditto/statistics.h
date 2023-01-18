@@ -15,7 +15,7 @@
 #pragma once
 
 #include <ditto/logger.h>
-#include <ditto/time_sampler.h>
+#include <ditto/sampler.h>
 
 #include <cmath>
 #include <ctime>
