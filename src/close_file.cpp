@@ -23,7 +23,8 @@
 
 namespace dittosuite {
 
-CloseFile::CloseFile(int repeat) : Instruction(repeat), input_fd_key_(-1) {}
+CloseFile::CloseFile(int repeat, int input_fd_key)
+    : Instruction(repeat), input_fd_key_(input_fd_key) {}
 
 void CloseFile::SetUp() {}
 
@@ -37,13 +38,5 @@ void CloseFile::RunSingle() {
 }
 
 void CloseFile::TearDown() {}
-
-int CloseFile::GetInputFdKey() {
-  return input_fd_key_;
-}
-
-void CloseFile::SetInputFdKey(int input_fd_key) {
-  input_fd_key_ = input_fd_key;
-}
 
 }  // namespace dittosuite

@@ -20,13 +20,10 @@ namespace dittosuite {
 
 class CloseFile : public Instruction {
  public:
-  explicit CloseFile(int repeat);
+  explicit CloseFile(int repeat, int input_fd_key);
 
   void SetUp() override;
   void TearDown() override;
-
-  int GetInputFdKey();
-  void SetInputFdKey(int input_fd_key);
 
  private:
   void RunSingle() override;

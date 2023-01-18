@@ -22,13 +22,10 @@ namespace dittosuite {
 
 class ResizeFile : public Instruction {
  public:
-  explicit ResizeFile(int repeat, int64_t size);
+  explicit ResizeFile(int repeat, int64_t size, int input_fd_key);
 
   void SetUp() override;
   void TearDown() override;
-
-  int GetInputFdKey();
-  void SetInputFdKey(int input_fd_key);
 
  private:
   void RunSingle() override;

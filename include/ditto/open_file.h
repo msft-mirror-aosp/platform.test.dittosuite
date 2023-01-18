@@ -22,13 +22,10 @@ namespace dittosuite {
 
 class OpenFile : public Instruction {
  public:
-  explicit OpenFile(int repeat, const std::string& file, bool create);
+  explicit OpenFile(int repeat, const std::string& file, bool create, int output_fd_key);
 
   void SetUp() override;
   void TearDown() override;
-
-  int GetOutputFdKey();
-  void SetOutputFdKey(int output_fd_key);
 
  private:
   void RunSingle() override;
