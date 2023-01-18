@@ -1,6 +1,7 @@
 main: {
   instruction_create_file: {
-    file: "newfile2.txt"
+    file: "newfile2.txt",
+    output_fd: "create_file_output"
   }
 },
 global {
