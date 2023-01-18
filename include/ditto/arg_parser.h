@@ -24,10 +24,6 @@
 
 namespace dittosuite {
 
-#ifdef __ANDROID__
-inline void ParseArguments(int, char**) {}
-#else
-void ParseArguments(int, char**) {}
-#endif
+void ParseArguments(int argc, char** argv);
 
 }  // namespace dittosuite

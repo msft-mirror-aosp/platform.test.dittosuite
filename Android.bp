@@ -4,6 +4,7 @@ cc_defaults {
     static_libs: ["dittosuite-proto", "libbase_ndk"],
     shared_libs: ["libprotobuf-cpp-full", "liblog"],
     srcs: [
+      "src/arg_parser.cpp",
       "src/close_file.cpp",
       "src/delete_file.cpp",
       "src/instruction_factory.cpp",
