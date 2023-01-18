@@ -15,6 +15,8 @@
 #include <ditto/result.h>
 #include <ditto/statistics.h>
 
+#include <iostream>
+
 namespace dittosuite {
 
 Result::Result(const std::string& name, std::vector<timespec> time_samples)
@@ -47,6 +49,17 @@ void Result::Analyse() {
   min_ = StatisticsGetMin(time_samples_);
   max_ = StatisticsGetMax(time_samples_);
   mean_ = StatisticsGetMean(time_samples_);
+}
+
+void Result::Print() {
+  std::cout << name_ << std::endl;
+  std::cout << "Min: " << min_.tv_sec << "s, " << min_.tv_nsec << "ns" << std::endl;
+  std::cout << "Max: " << max_.tv_sec << "s, " << max_.tv_nsec << "ns" << std::endl;
+  std::cout << "Mean: " << mean_.tv_sec << "s, " << mean_.tv_nsec << "ns" << std::endl << std::endl;
+
+  for (const auto& sub_result : sub_results_) {
+    sub_result->Print();
+  }
 }
 
 }  // namespace dittosuite
