@@ -1,6 +1,10 @@
 cc_defaults {
     name: "dittobench_defaults",
-    include_dirs: ["test/dittosuite/include"],
+    local_include_dirs: [
+        "test/include",
+        "include",
+    ],
+    generated_headers: ["dittosuite-proto"],
     static_libs: ["dittosuite-proto", "libbase_ndk"],
     shared_libs: ["libprotobuf-cpp-full", "liblog"],
     cflags: [
