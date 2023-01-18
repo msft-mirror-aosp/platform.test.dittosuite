@@ -44,7 +44,7 @@ TEST_F(ExampleTest, ExampleDittoFilesAreCorrect) {
 
       EXPECT_EXIT(
           {
-            dittosuite::Parser::GetParser().Parse(file);
+            dittosuite::Parser::GetParser().Parse(file, {});
             exit(0);
           },
           testing::ExitedWithCode(0), "");
