@@ -16,8 +16,8 @@
 
 #include <gtest/gtest.h>
 
-#include <ditto/create_file.h>
 #include <ditto/delete_file.h>
+#include <ditto/open_file.h>
 #include <ditto/shared_variables.h>
 
 TEST(DeleteFileTest, DeleteFileTestRun) {
@@ -26,8 +26,8 @@ TEST(DeleteFileTest, DeleteFileTestRun) {
 
   dittosuite::SharedVariables::Set("absolute_path", "");
 
-  dittosuite::CreateFile create_file_instruction(repeat, file);
-  create_file_instruction.Run();
+  dittosuite::OpenFile open_file_instruction(repeat, file);
+  open_file_instruction.Run();
   ASSERT_EQ(access(file.c_str(), F_OK), 0);
 
   dittosuite::DeleteFile delete_file_instruction(repeat, file);
