@@ -18,7 +18,7 @@ main: {
           input_fd: "test_file",
           size: 134217728,
           block_size: 1024,
-          type: random
+          type: RANDOM
         }
       },
       {

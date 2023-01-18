@@ -85,11 +85,11 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       ReadWriteType type;
       switch (options.type()) {
-        case dittosuiteproto::ReadWriteType::sequential: {
+        case dittosuiteproto::ReadWriteType::SEQUENTIAL: {
           type = ReadWriteType::kSequential;
           break;
         }
-        case dittosuiteproto::ReadWriteType::random: {
+        case dittosuiteproto::ReadWriteType::RANDOM: {
           type = ReadWriteType::kRandom;
           break;
         }
