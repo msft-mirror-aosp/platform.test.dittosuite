@@ -16,6 +16,8 @@
 
 #include <string>
 
+#include <ditto/time_sampler.h>
+
 namespace dittosuite {
 
 enum ReadWriteType { kSequential, kRandom };
@@ -32,12 +34,14 @@ class Instruction {
   static void SetAbsolutePathKey(int absolute_path_key);
   static int GetAbsolutePathKey();
 
- private:
-  virtual void RunSingle() = 0;
-
+ protected:
   static int absolute_path_key_;
   std::string name_;
   int repeat_;
+  TimeSampler time_sampler_;
+
+ private:
+  virtual void RunSingle() = 0;
 };
 
 } // namespace dittosuite
