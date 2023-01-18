@@ -24,7 +24,7 @@
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-#include "test/dittosuite/schema/benchmark.pb.h"
+#include "schema/benchmark.pb.h"
 
 namespace dittosuite {
 

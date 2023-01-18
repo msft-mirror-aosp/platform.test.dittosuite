@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifdef __ANDROID__
 #include <android-base/logging.h>
-#include <ditto/logger.h>
 #include <log/log.h>
+#endif
+
+#include <ditto/logger.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -51,6 +54,7 @@ std::string LogLevelToString(LOG_LEVEL log_level) {
   return prefixes[log_level];
 }
 
+#ifdef __ANDROID__
 android::base::LogSeverity LogLevelToAndroidLogLevel(LOG_LEVEL log_level) {
   switch (log_level) {
     case LOG_LEVEL_VERBOSE:
@@ -72,6 +76,7 @@ android::base::LogSeverity LogLevelToAndroidLogLevel(LOG_LEVEL log_level) {
       break;
   }
 }
+#endif
 
 void Logger::WriteLogMessage(const std::string message, LOG_LEVEL log_level) {
   std::string message_to_print = LogLevelToString(log_level) + ": " + message;
@@ -79,9 +84,11 @@ void Logger::WriteLogMessage(const std::string message, LOG_LEVEL log_level) {
     case LOG_STREAM_STDOUT:
       std::cout << message_to_print << '\n';
       break;
+#ifdef __ANDROID__
     case LOG_STREAM_LOGCAT:
       LOG(LogLevelToAndroidLogLevel(log_level)) << message_to_print;
       break;
+#endif
     default:
       break;
   }
