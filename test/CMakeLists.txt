@@ -12,7 +12,11 @@ function(add_gtest test_src)
         get_filename_component(test_name ${test_src} NAME_WE)
 
         add_executable(${test_name} ${test_src})
-        target_link_libraries(${test_name} libdittosuite gtest gtest_main gmock gmock_main pthread)
+        target_link_libraries(${test_name} libdittosuite gtest gtest_main gmock gmock_main pthread
+          benchmark_proto
+          ${Protobuf_LIBRARIES}
+          ${Protobuf_PROTOC_LIBRARIES}
+        )
 
         gtest_discover_tests(${test_name})
 endfunction()
