@@ -23,14 +23,13 @@
 namespace dittosuite {
 
 TEST(DittoLogger, SimpleLog) {
-    for(int i=10; i<=11; i++)
-    {
-        Logger::GetInstance().setLevel(LOG_LEVEL_ERROR);
-        std::cout<<"My log level:  "<<Logger::GetInstance().logLevel<<'\n';
-        LOGW("This is a warning");
-        LOGE("This is an error");
-        LOGI("This is an info");
-    }
+  for (int i = 10; i <= 11; i++) {
+    Logger::GetInstance().setLevel(LOG_LEVEL_ERROR);
+    std::cout << "My log level:  " << Logger::GetInstance().logLevel << '\n';
+    LOGW("This is a warning");
+    LOGE("This is an error");
+    LOGI("This is an info");
+  }
 }
 
 TEST(DittoLogger, SetAndGetLevel) {
