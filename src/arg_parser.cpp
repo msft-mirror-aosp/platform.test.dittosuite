@@ -20,6 +20,9 @@ ResultsOutput ArgToResultsOutput(const std::string_view optarg) {
   if (optarg == "csv" || optarg == "1") {
     return ResultsOutput::kCsv;
   }
+  if (optarg == "null" || optarg == "-1") {
+    return ResultsOutput::kCsv;
+  }
   return ResultsOutput::kReport;  // by default, the results output is the report (= 0)
 }
 
@@ -61,8 +64,10 @@ void PrintHelpAndExit(std::string_view program_name) {
             << "Benchmarking tool for generic workloads.\n\n"
 
             << "  -f, --format[=FMT]"
-            << "\tresults output format.\n"
-            << "\t\t\tFMT can be: report (or 0, default), csv (or 1)\n"
+            << "\tresults output format, where FMT can be one of:\n"
+            << "\t\t\t  - report (or 0, default): human readable summary;\n"
+            << "\t\t\t  - csv (or 1): for comma-separated detailed stats;\n"
+            << "\t\t\t  - null (-1): do not print.\n"
 
             << "  -p, --param[=PAR]..."
             << "\tif the benchmark is parametric, all the parameters can be passed\n"
