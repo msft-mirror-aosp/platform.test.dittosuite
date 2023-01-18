@@ -14,12 +14,86 @@
 
 #include <ditto/instruction_set.h>
 
+#include <variant>
+
+#include <ditto/logger.h>
+#include <ditto/shared_variables.h>
+
 namespace dittosuite {
 
+template <class... Ts>
+struct overloaded : Ts... {
+  using Ts::operator()...;
+};
+template <class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
+InstructionSet::InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions,
+                               int list_key, int item_key, AccessType type, Reseeding reseeding,
+                               uint32_t seed)
+    : Instruction(kName, repeat),
+      instructions_(std::move(instructions)),
+      list_key_(list_key),
+      item_key_(item_key),
+      type_(type),
+      reseeding_(reseeding),
+      seed_(seed),
+      gen_(seed) {}
+
 InstructionSet::InstructionSet(int repeat, std::vector<std::unique_ptr<Instruction>> instructions)
-    : Instruction(kName, repeat), instructions_(std::move(instructions)) {}
+    : Instruction(kName, repeat),
+      instructions_(std::move(instructions)),
+      list_key_(-1),
+      item_key_(-1) {}
+
+void InstructionSet::SetUp() {
+  if (reseeding_ == kEachRoundOfCycles) {
+    gen_.seed(seed_);
+  }
+  Instruction::SetUp();
+}
+
+void InstructionSet::SetUpSingle() {
+  if (reseeding_ == kEachCycle) {
+    gen_.seed(seed_);
+  }
+  Instruction::SetUpSingle();
+}
 
 void InstructionSet::RunSingle() {
+  if (list_key_ != -1 && item_key_ != -1) {
+    std::visit(overloaded{[&](const std::vector<std::string>& list) {
+                            std::uniform_int_distribution<> uniform_distribution(0,
+                                                                                 list.size() - 1);
+                            for (unsigned int i = 0; i < list.size(); ++i) {
+                              switch (type_) {
+                                case kSequential: {
+                                  SharedVariables::Set(item_key_, list[i]);
+                                  break;
+                                }
+                                case kRandom: {
+                                  SharedVariables::Set(item_key_, list[uniform_distribution(gen_)]);
+                                  break;
+                                }
+                              }
+                              RunInstructions();
+                            }
+                          },
+                          [](int) {
+                            LOGE("Input for InstructionSet is not iterable.");
+                            exit(EXIT_FAILURE);
+                          },
+                          [](const std::string&) {
+                            LOGE("Input for InstructionSet is not iterable.");
+                            exit(EXIT_FAILURE);
+                          }},
+               SharedVariables::Get(list_key_));
+  } else {
+    RunInstructions();
+  }
+}
+
+void InstructionSet::RunInstructions() {
   for (const auto& instruction : instructions_) {
     instruction->SetUp();
     instruction->Run();
