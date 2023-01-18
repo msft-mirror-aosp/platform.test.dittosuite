@@ -16,13 +16,15 @@
 
 namespace dittosuite {
 
-ResultsOutput ArgToResultsOutput(char* optarg) {
-  if (strcmp(optarg, "csv") == 0 || strcmp(optarg, "1") == 0) return kCsv;
+ResultsOutput ArgToResultsOutput(const std::string_view optarg) {
+  if (optarg == "csv" || optarg == "1") {
+    return kCsv;
+  }
   return kReport;  // by default, the results output is the report (= 0)
 }
 
-LOG_STREAM ArgToLogStream(char* optarg) {
-  if (strcmp(optarg, "logcat") == 0 || strcmp(optarg, "1") == 0) {
+LOG_STREAM ArgToLogStream(const std::string_view optarg) {
+  if (optarg == "logcat" || optarg == "1") {
 #ifdef __ANDROID__
     return LOG_STREAM_LOGCAT;
 #endif
@@ -31,19 +33,25 @@ LOG_STREAM ArgToLogStream(char* optarg) {
   return LOG_STREAM_STDOUT;  // by default, the log stream is stdout
 }
 
-LOG_LEVEL ArgToLogLevel(char* optarg) {
-  if (strcmp(optarg, "VERBOSE") == 0 || strcmp(optarg, "0") == 0)
+LOG_LEVEL ArgToLogLevel(const std::string_view optarg) {
+  if (optarg == "VERBOSE" || optarg == "0") {
     return LOG_LEVEL_VERBOSE;
-  else if (strcmp(optarg, "DEBUG") == 0 || strcmp(optarg, "1") == 0)
+  }
+  if (optarg == "DEBUG" || optarg == "1") {
     return LOG_LEVEL_DEBUG;
-  else if (strcmp(optarg, "INFO") == 0 || strcmp(optarg, "2") == 0)
+  }
+  if (optarg == "INFO" || optarg == "2") {
     return LOG_LEVEL_INFO;
-  else if (strcmp(optarg, "WARNING") == 0 || strcmp(optarg, "3") == 0)
+  }
+  if (optarg == "WARNING" || optarg == "3") {
     return LOG_LEVEL_WARNING;
-  else if (strcmp(optarg, "ERROR") == 0 || strcmp(optarg, "4") == 0)
+  }
+  if (optarg == "ERROR" || optarg == "4") {
     return LOG_LEVEL_ERROR;
-  else if (strcmp(optarg, "FATAL") == 0 || strcmp(optarg, "5") == 0)
+  }
+  if (optarg == "FATAL" || optarg == "5") {
     return LOG_LEVEL_FATAL;
+  }
   return LOG_LEVEL_INFO;  // by default, the log level is info
 }
 
