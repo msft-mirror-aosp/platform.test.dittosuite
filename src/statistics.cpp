@@ -39,24 +39,20 @@ timespec StatisticsGetMean(const std::vector<timespec>& time_samples) {
   return NsToTimespec(result / time_samples.size());
 }
 
-bool CompareTimespec(timespec t1, timespec t2) {
-  return ((t1.tv_sec < t2.tv_sec) || (t1.tv_sec == t2.tv_sec && t1.tv_nsec <= t2.tv_nsec));
-}
-
 timespec StatisticsGetMedian(const std::vector<timespec>& time_samples) {
   std::vector<timespec> time_samples_copy = time_samples;
   int n = time_samples.size();
   if (n % 2) {
     // odd number of elements, the median is the element in the middle
     std::nth_element(time_samples_copy.begin(), time_samples_copy.begin() + n / 2,
-                     time_samples_copy.end(), CompareTimespec);
+                     time_samples_copy.end());
     return time_samples_copy[n / 2];
   } else {
     // even number of elements, the median is the average between the two middle elements
     std::nth_element(time_samples_copy.begin(), time_samples_copy.begin() + n / 2,
-                     time_samples_copy.end(), CompareTimespec);
+                     time_samples_copy.end());
     std::nth_element(time_samples_copy.begin(), time_samples_copy.begin() + (n - 1) / 2,
-                     time_samples_copy.end(), CompareTimespec);
+                     time_samples_copy.end());
     int64_t result =
         (TimespecToNs(time_samples_copy[n / 2]) + TimespecToNs(time_samples_copy[(n - 1) / 2])) / 2;
     return NsToTimespec(result);

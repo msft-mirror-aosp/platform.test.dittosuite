@@ -22,7 +22,6 @@
 
 namespace dittosuite {
 
-bool CompareTimespec(timespec t1, timespec t2);
 timespec StatisticsGetMin(const std::vector<timespec>& time_samples);
 timespec StatisticsGetMax(const std::vector<timespec>& time_samples);
 timespec StatisticsGetMean(const std::vector<timespec>& time_samples);
