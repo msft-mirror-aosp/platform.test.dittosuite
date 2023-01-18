@@ -14,6 +14,9 @@
 
 #include <ditto/create_file.h>
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <fstream>
 
 namespace dittosuite {
@@ -23,7 +26,8 @@ CreateFile::CreateFile(int repeat, const std::string& file) : Instruction(repeat
 void CreateFile::SetUp() {}
 
 void CreateFile::RunSingle() {
-  std::ofstream output(file_);
+  int fd = open(file_.c_str(), O_CREAT | O_CLOEXEC, O_RDWR);
+  close(fd);
 }
 
 void CreateFile::TearDown() {}
