@@ -25,9 +25,9 @@ class Instruction {
   explicit Instruction(int repeat);
   virtual ~Instruction() = default;
 
-  virtual void SetUp() = 0;
+  virtual void SetUp();
   void Run();
-  virtual void TearDown() = 0;
+  virtual void TearDown();
 
   static void SetAbsolutePathKey(int absolute_path_key);
   static int GetAbsolutePathKey();

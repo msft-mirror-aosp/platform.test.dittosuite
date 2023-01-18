@@ -18,11 +18,15 @@ namespace dittosuite {
 
 Instruction::Instruction(int repeat) : repeat_(repeat) {}
 
+void Instruction::SetUp() {}
+
 void Instruction::Run() {
   for (int i = 0; i < repeat_; i++) {
     RunSingle();
   }
 }
+
+void Instruction::TearDown() {}
 
 void Instruction::SetAbsolutePathKey(int absolute_path_key) {
   absolute_path_key_ = absolute_path_key;
