@@ -82,13 +82,13 @@ void Result::Print(const ResultsOutput results_output, const std::string& instru
 }
 
 void PrintTableBorder() {
-  std::cout << std::endl;
   for (int i = 0; i < kTableWidth; i++) std::cout << "-";
-  std::cout << std::endl;
+  std::cout << '\n';
 }
 
 void PrintStatisticsTableHeader() {
   std::cout << "\x1b[1m";  // beginning of bold
+  std::cout << '\n';
   PrintTableBorder();
   std::cout << "| ";  // beginning of table row
   std::cout << std::setw(70) << std::left << "Instruction name";
@@ -103,6 +103,7 @@ void PrintStatisticsTableHeader() {
   std::cout << kTableDivider;
   std::cout << std::setw(15) << std::left << " SD";
   std::cout << kTableDivider;
+  std::cout << '\n';
   PrintTableBorder();
   std::cout << "\x1b[0m";  // ending of bold
 }
@@ -145,6 +146,7 @@ void Result::PrintStatisticsTableContent(const std::string& instruction_path,
     std::cout << std::setw(15)
               << statistics_[measurement_name].sd;  // SD is always printed without measurement unit
     std::cout << kTableDivider;                     // ended current row
+    std::cout << '\n';
     PrintTableBorder();
   }
 
@@ -165,10 +167,10 @@ std::set<std::string> Result::GetMeasurementsNames() {
 void Result::PrintStatisticsTables() {
   std::set<std::string> measurement_names = GetMeasurementsNames();
   for (const auto& s : measurement_names) {
-    std::cout << std::endl << s << " statistics:";
+    std::cout << s << " statistics:";
     PrintStatisticsTableHeader();
     PrintStatisticsTableContent("", s);
-    std::cout << std::endl;
+    std::cout << '\n';
   }
 }
 
@@ -176,16 +178,14 @@ void Result::PrintHistogramHeader(const std::string& measurement_name) {
   if (measurement_name == "duration") {
     std::cout.width(kSampleDisplayWidth - 3);
     std::cout << "Time(" << time_unit_.name << ") |";
-    std::cout << " Normalized number of time samples";
-    std::cout << std::endl;
+    std::cout << " Normalized number of time samples\n";
   } else if (measurement_name == "bandwidth") {
     std::cout.width(kSampleDisplayWidth - 6);
     std::cout << "Bandwidth(" << bandwidth_unit_.name << ") |";
-    std::cout << " Normalized number of bandwidth samples";
-    std::cout << std::endl;
+    std::cout << " Normalized number of bandwidth samples\n";
   }
   for (int i = 0; i <= kMaxHistogramWidth + 15; i++) std::cout << "-";
-  std::cout << std::endl;
+  std::cout << '\n';
 }
 
 // makes (normalized) histogram from vector
@@ -198,11 +198,11 @@ void Result::MakeHistogramFromVector(const std::vector<int>& freq_vector, const 
     for (int j = 0; j < freq_vector[i] * kMaxHistogramWidth / max_frequency; j++) std::cout << "x";
     std::cout << " {" << freq_vector[i] << "}";
     sum += freq_vector[i];
-    std::cout << std::endl;
+    std::cout << '\n';
   }
 
-  std::cout << "Total samples: { " << sum << " }" << std::endl;
-  std::cout << std::endl;
+  std::cout << '\n';
+  std::cout << "Total samples: { " << sum << " }\n";
 }
 
 // makes and returns the normalized frequency vector
@@ -271,11 +271,10 @@ Result::BandwidthUnit Result::GetBandwidthUnit(const int64_t min_value) {
 
 void Result::PrintHistograms(const std::string& instruction_path) {
   std::string next_instruction_path = ComputeNextInstructionPath(instruction_path);
-  std::cout << std::endl;
   std::cout << "\x1b[1m";  // beginning of bold
   std::cout << "Instruction path: " << next_instruction_path;
-  std::cout << "\x1b[0m" << std::endl;  // ending of bold
-  std::cout << std::endl;
+  std::cout << "\x1b[0m";  // ending of bold
+  std::cout << "\n\n";
 
   for (const auto& sample : samples_) {
     int64_t min_value = statistics_[sample.first].min;
@@ -294,7 +293,7 @@ void Result::PrintHistograms(const std::string& instruction_path) {
     std::vector<int> freq_vector = ComputeNormalizedFrequencyVector(sample.first);
     PrintHistogramHeader(sample.first);
     MakeHistogramFromVector(freq_vector, min_value);
-    std::cout << std::endl << std::endl;
+    std::cout << "\n\n";
 
     for (const auto& sub_result : sub_results_) {
       sub_result->PrintHistograms(next_instruction_path);
@@ -331,7 +330,7 @@ void Result::PrintStatisticInCsv(std::ostream& csv_stream, const std::string& in
       PrintEmptyMeasurementInCsv(csv_stream);
     }
   }
-  csv_stream << std::endl;  // ending of row
+  csv_stream << '\n';
 
   for (const auto& sub_result : sub_results_) {
     sub_result->PrintStatisticInCsv(csv_stream, next_instruction_path, measurements_names);
@@ -348,7 +347,7 @@ void PrintCsvHeader(std::ostream& csv_stream, const std::set<std::string>& measu
     csv_stream << measurement << " median" << kCsvDelimiter;
     csv_stream << measurement << " SD";
   }
-  csv_stream << std::endl;
+  csv_stream << '\n';
 }
 
 void Result::MakeStatisticsCsv() {
