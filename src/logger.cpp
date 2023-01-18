@@ -47,7 +47,7 @@ LOG_STREAM Logger::GetLogStream() const {
 }
 
 std::string LogLevelToString(LOG_LEVEL log_level) {
-  std::string prefixes[] = {"VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR"};
+  static const std::string prefixes[] = {"VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR"};
   return prefixes[log_level];
 }
 
