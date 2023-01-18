@@ -31,4 +31,8 @@ std::string GetFilePath(SyscallInterface& syscall, int fd) {
   return std::string(file_path);
 }
 
+bool FileExists(SyscallInterface& syscall, const std::string& path_name) {
+  return syscall.Access(path_name, F_OK) != -1;
+}
+
 }  // namespace dittosuite
