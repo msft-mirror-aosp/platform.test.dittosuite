@@ -56,8 +56,8 @@ LogLevel ArgToLogLevel(const std::string_view optarg) {
   return LogLevel::kInfo;  // by default, the log level is info
 }
 
-void PrintHelpAndExit(char **argv) {
-  std::cerr << "Usage: " << argv[0] << " [OPTION]... [FILE]" << std::endl;
+void PrintHelpAndExit(std::string_view program_name) {
+  std::cerr << "Usage: " << program_name << " [OPTION]... [FILE]" << std::endl;
   std::cerr << "Benchmarking tool for generic workloads." << std::endl;
   std::cerr << std::endl;
 
@@ -120,7 +120,7 @@ CmdArguments ParseArguments(int argc, char** argv) {
       case 'h':
         [[fallthrough]];
       default: {
-        PrintHelpAndExit(argv);
+        PrintHelpAndExit(argv[0]);
         break;
       }
     }
@@ -128,7 +128,7 @@ CmdArguments ParseArguments(int argc, char** argv) {
 
   if (optind >= argc) {
     LOGE("Expected .ditto file");
-    PrintHelpAndExit(argv);
+    PrintHelpAndExit(argv[0]);
   }
 
   arguments.file_path = argv[optind];
