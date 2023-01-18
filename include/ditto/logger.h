@@ -42,7 +42,7 @@ class Logger {
   void SetLogStream(LOG_STREAM log_stream);
   LOG_LEVEL GetLogLevel() const;
   LOG_STREAM GetLogStream() const;
-  void WriteLogMessage(const std::string message, LOG_LEVEL log_level);
+  void WriteLogMessage(const std::string& message, LOG_LEVEL log_level);
   void WriteLogErrorMessage(const std::string& message, LOG_LEVEL log_level);
 
  protected:
