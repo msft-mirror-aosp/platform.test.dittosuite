@@ -40,6 +40,25 @@ cc_binary {
     defaults: ["dittobench_defaults"],
 }
 
+cc_benchmark {
+    name: "dittobench_benchmark",
+    srcs: ["dittobench_benchmark.cpp"],
+    static_libs: [
+        "libtestUtil",
+        "libdittosuite",
+        "libc++fs",
+    ],
+    shared_libs: [
+        "libbase",
+        "libcutils",
+        "libutils",
+        "liblog",
+    ],
+    data: ["example/**/*.ditto"],
+    test_suites: ["device-tests"],
+    defaults: ["dittobench_defaults"],
+}
+
 cc_binary {
     name: "dittotrace",
     srcs: ["dittotrace.cpp"],
