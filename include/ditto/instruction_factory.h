@@ -41,6 +41,9 @@ class InstructionFactory {
   static ReadWriteFile::Reseeding ConvertReadWriteReseeding(
       const dittosuiteproto::ReadWriteReseeding& proto_reseeding);
   static ReadWriteFile::Type ConvertReadWriteType(const dittosuiteproto::ReadWriteType& proto_type);
+  static int ConvertReadFAdvise(
+      const ReadWriteFile::Type& type,
+      const dittosuiteproto::InstructionReadFile_ReadFAdvise& proto_fadvise);
 };
 
 } // namespace dittosuite

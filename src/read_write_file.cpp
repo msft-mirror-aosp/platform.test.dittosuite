@@ -123,7 +123,7 @@ void WriteFile::RunSingle() {
 }
 
 ReadFile::ReadFile(int repeat, int64_t size, int64_t block_size, int64_t starting_offset, Type type,
-                   u_int32_t seed, Reseeding reseeding, ReadFAdvise fadvise, int input_fd_key)
+                   u_int32_t seed, Reseeding reseeding, int fadvise, int input_fd_key)
     : ReadWriteFile(kName, repeat, size, block_size, starting_offset, type, seed, reseeding,
                     input_fd_key),
       fadvise_(fadvise) {}
@@ -132,36 +132,7 @@ void ReadFile::SetUpSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
   int64_t file_size = GetFileSize(fd);
 
-  int advise;
-  switch (fadvise_) {
-    case ReadFAdvise::kAutomatic: {
-      switch (type_) {
-        case Type::kSequential: {
-          advise = POSIX_FADV_SEQUENTIAL;
-          break;
-        }
-        case Type::kRandom: {
-          advise = POSIX_FADV_RANDOM;
-          break;
-        }
-      }
-      break;
-    }
-    case ReadFAdvise::kNormal: {
-      advise = POSIX_FADV_NORMAL;
-      break;
-    }
-    case ReadFAdvise::kSequential: {
-      advise = POSIX_FADV_SEQUENTIAL;
-      break;
-    }
-    case ReadFAdvise::kRandom: {
-      advise = POSIX_FADV_RANDOM;
-      break;
-    }
-  }
-
-  if (posix_fadvise64(fd, 0, file_size, advise) != 0) {
+  if (posix_fadvise64(fd, 0, file_size, fadvise_) != 0) {
     LOGE("Error while calling fadvise()");
     exit(EXIT_FAILURE);
   }
