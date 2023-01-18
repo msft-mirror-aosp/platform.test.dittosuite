@@ -12,24 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
-
-#include <string>
-
-#include "instruction.h"
+#include <ditto/instruction_factory.h>
+#include <ditto/create_file.h>
 
 namespace dittosuite {
-
-class CreateFile : public Instruction {
- public:
-  explicit CreateFile(const std::string& file);
-
-  void setup() override;
-  void run() override;
-  void teardown() override;
-
- private:
-  std::string file_;
-};
+  std::unique_ptr<Instruction> InstructionFactory::createFromProtoInstruction(
+      const dittosuiteproto::Instruction& proto_instruction) {
+    switch (proto_instruction.instruction_oneof_case()) {
+        case dittosuiteproto::Instruction::InstructionOneofCase::kInstructionCreateFile:
+          return std::make_unique<CreateFile>(proto_instruction.instruction_create_file().file());
+        case dittosuiteproto::Instruction::InstructionOneofCase::INSTRUCTION_ONEOF_NOT_SET:
+        default:
+          // TODO: LOG() << "Invalid Instruction";
+          return nullptr;
+      }
+  }
 
 } // namespace dittosuite
+

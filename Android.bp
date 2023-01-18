@@ -1,7 +1,13 @@
 cc_defaults {
     name: "dittobench_defaults",
     include_dirs: ["test/dittosuite/include"],
-    srcs: ["src/create_file.cpp"]
+    static_libs: ["dittosuite-proto"],
+    shared_libs: ["libprotobuf-cpp-full"],
+    srcs: [
+      "src/create_file.cpp",
+      "src/instruction_factory.cpp",
+      "src/parser.cpp"
+    ]
 }
 
 cc_binary {
