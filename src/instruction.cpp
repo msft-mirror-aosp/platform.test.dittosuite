@@ -41,8 +41,8 @@ void Instruction::TearDownSingle() {
   time_sampler_.MeasureEnd();
 }
 
-std::unique_ptr<Result> Instruction::CollectResults() {
-  auto result = std::make_unique<Result>(name_, time_sampler_.GetTimeSamples());
+std::unique_ptr<Result> Instruction::CollectResults(const std::string& prefix) {
+  auto result = std::make_unique<Result>(prefix + name_, time_sampler_.GetTimeSamples());
   result->Analyse();
   return result;
 }
