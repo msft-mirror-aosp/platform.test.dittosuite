@@ -76,7 +76,10 @@ void WriteFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
 
   for (const auto& unit : units_) {
-    pwrite(fd, buffer_.get(), unit.count, unit.offset);
+    if (pwrite64(fd, buffer_.get(), unit.count, unit.offset) == -1) {
+      LOGE("Error while calling write()");
+      exit(EXIT_FAILURE);
+    }
   }
 
   if (fsync_ && fsync(fd) != 0) {
