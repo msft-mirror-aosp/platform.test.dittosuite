@@ -71,7 +71,7 @@ void OpenFile::RunSingle() {
   int fd = syscall_.Open(path_name_, open_flags, open_mode);
 
   if (fd == -1) {
-    LOGF("Error while trying to open the file");
+    PLOGF("Cannot open \"" + path_name_ + "\"");
   }
 
   if (output_fd_key_ != -1) {

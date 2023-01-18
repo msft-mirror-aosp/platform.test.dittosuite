@@ -51,8 +51,11 @@ TEST(DittoLogger, SetAndGetStream) {
 
 TEST(DittoLogger, LoggerPError) {
   FILE* pFile;
-  pFile = fopen("nonexistent.txt", "re");
-  if (pFile == NULL) PLOGE("Error at opening file nonexistent.txt");
+  std::string file_name = "nonexistent.txt";
+  pFile = fopen(file_name.c_str(), "re");
+  if (pFile == nullptr) {
+    PLOGE("Cannot open \"" + file_name + "\"");
+  }
 }
 
 }  // namespace dittosuite
