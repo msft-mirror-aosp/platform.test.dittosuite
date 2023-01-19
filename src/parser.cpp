@@ -50,7 +50,7 @@ void Parser::Parse(const std::string& file_path, const std::vector<std::string>&
   std::string file_contents((std::istreambuf_iterator<char>(file)),
                             (std::istreambuf_iterator<char>()));
 
-  for (unsigned int i = 0; i < parameters.size(); i++) {
+  for (std::size_t i = 0; i < parameters.size(); i++) {
     std::string to_replace("$PARAMETER_" + std::to_string(i + 1) + "$");
     auto position = file_contents.find(to_replace);
     if (position == std::string::npos) {
