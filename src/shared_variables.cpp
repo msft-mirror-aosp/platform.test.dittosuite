@@ -36,7 +36,7 @@ int SharedVariables::GetKey(const std::list<int>& thread_ids, const std::string&
   }
 
   // If the key does not exist, create it for the current thread
-  int key = variables_.size();
+  std::size_t key = variables_.size();
   keys_[thread_ids.back()].insert({variable_name, key});
   variables_.resize(variables_.size() + 1);
   return key;

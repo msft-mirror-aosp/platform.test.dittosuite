@@ -89,7 +89,7 @@ std::map<int, std::vector<Syscall>> ProcessLines(
   std::map<int, std::vector<Syscall>> processed_syscalls_by_pid;
 
   for (const auto& [pid, lines] : lines_by_pid) {
-    for (unsigned int i = 0; i < lines.size(); ++i) {
+    for (std::size_t i = 0; i < lines.size(); ++i) {
       auto line = lines[i];
 
       // If only the resumed part of the syscall was found, ignore it
