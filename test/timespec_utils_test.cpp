@@ -26,13 +26,13 @@ std::vector<int64_t> tss_ns = {0,          1,          1000000000, 1000000001,
                                1999999999, 2000000002, 2000000003, 3000000001};
 
 TEST(TimespecUtilsTest, TimespecToNanos) {
-  for (unsigned int i = 0; i < tss.size(); ++i) {
+  for (std::size_t i = 0; i < tss.size(); ++i) {
     ASSERT_EQ(TimespecToNanos(tss[i]), tss_ns[i]);
   }
 }
 
 TEST(TimespecUtilsTest, NanosToTimespec) {
-  for (unsigned int i = 0; i < tss.size(); ++i) {
+  for (std::size_t i = 0; i < tss.size(); ++i) {
     ASSERT_EQ(tss[i], NanosToTimespec(tss_ns[i]));
   }
 }
