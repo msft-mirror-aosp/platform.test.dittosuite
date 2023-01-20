@@ -194,7 +194,7 @@ void Result::PrintHistogramHeader(const std::string& measurement_name) {
 void Result::MakeHistogramFromVector(const std::vector<int>& freq_vector, const int min_value) {
   int sum = 0;
   int max_frequency = *std::max_element(freq_vector.begin(), freq_vector.end());
-  for (unsigned int i = 0; i < freq_vector.size(); i++) {
+  for (std::size_t i = 0; i < freq_vector.size(); i++) {
     std::cout.width(kSampleDisplayWidth);
     std::cout << min_value + bin_size * i << kTableDivider;
 

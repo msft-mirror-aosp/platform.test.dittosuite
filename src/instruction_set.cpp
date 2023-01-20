@@ -66,7 +66,7 @@ void InstructionSet::RunSingle() {
     std::visit(overloaded{[&](const std::vector<std::string>& list) {
                             std::uniform_int_distribution<> uniform_distribution(0,
                                                                                  list.size() - 1);
-                            for (unsigned int i = 0; i < list.size(); ++i) {
+                            for (std::size_t i = 0; i < list.size(); ++i) {
                               switch (access_order_) {
                                 case Order::kSequential: {
                                   SharedVariables::Set(item_key_, list[i]);
@@ -115,7 +115,7 @@ std::unique_ptr<Result> InstructionSet::CollectResults(const std::string& prefix
       duration.resize(samples.size() / repeat);
     }
 
-    for (unsigned int i = 0; i < samples.size() / repeat; ++i) {
+    for (std::size_t i = 0; i < samples.size() / repeat; ++i) {
       for (int j = 0; j < repeat; ++j) {
         duration[i] += samples[i * repeat + j];
       }

@@ -27,6 +27,7 @@ cc_defaults {
       "-Wall",
       "-Werror",
       "-Wextra",
+      "-Wsign-compare",
     ],
     tidy: true,
     /*
