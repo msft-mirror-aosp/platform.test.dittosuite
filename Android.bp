@@ -1,3 +1,19 @@
+package {
+    default_applicable_licenses: ["test_dittosuite_license"],
+}
+
+// See: http://go/android-license-faq
+license {
+    name: "test_dittosuite_license",
+    visibility: [":__subpackages__"],
+    license_kinds: [
+        "SPDX-license-identifier-Apache-2.0",
+    ],
+    license_text: [
+        "LICENSE",
+    ],
+}
+
 cc_defaults {
     name: "dittobench_defaults",
     local_include_dirs: [
@@ -11,6 +27,7 @@ cc_defaults {
       "-Wall",
       "-Werror",
       "-Wextra",
+      "-Wsign-compare",
     ],
     tidy: true,
     /*
