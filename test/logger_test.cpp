@@ -58,4 +58,8 @@ TEST(DittoLogger, LoggerPError) {
   }
 }
 
+TEST(DittoLogger, DefaultVerbosityIsInfo) {
+  ASSERT_EQ(Logger::GetInstance().GetLogLevel(), LogLevel::kInfo);
+}
+
 }  // namespace dittosuite
