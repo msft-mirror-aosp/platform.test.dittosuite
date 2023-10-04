@@ -90,10 +90,12 @@ message ReadDirectory {
 message Thread {
   required Instruction instruction = 1;
   optional int32 spawn = 2 [default = 1];
+  optional string name = 3;
 }
 
 message Multithreading {
   repeated Thread threads = 1;
+  optional bool fork = 2 [default = false];
 }
 
 message InvalidateCache {}
