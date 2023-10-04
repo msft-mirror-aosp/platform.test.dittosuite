@@ -123,8 +123,8 @@ void Multiprocessing::RunSingle() {
   }
 }
 
-void Multiprocessing::TearDownSingle() {
-  Instruction::TearDownSingle();
+void Multiprocessing::TearDownSingle(bool is_last) {
+  Instruction::TearDownSingle(is_last);
 
   if (!is_manager_) {
     instructions_[instruction_id_]->TearDown();

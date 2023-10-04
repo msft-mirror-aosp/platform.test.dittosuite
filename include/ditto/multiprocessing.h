@@ -33,7 +33,7 @@ class Multiprocessing : public Instruction {
  private:
   void SetUpSingle() override;
   void RunSingle() override;
-  void TearDownSingle() override;
+  void TearDownSingle(bool is_last) override;
 
   std::vector<std::unique_ptr<Instruction>> instructions_;
   std::vector<std::string> thread_names_;
