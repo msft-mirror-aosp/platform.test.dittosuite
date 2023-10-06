@@ -23,6 +23,9 @@ ResultsOutput ArgToResultsOutput(const std::string_view optarg) {
   if (optarg == "csv" || optarg == "1") {
     return ResultsOutput::kCsv;
   }
+  if (optarg == "pb" || optarg == "2") {
+    return ResultsOutput::kPb;
+  }
   if (optarg == "null" || optarg == "-1") {
     return ResultsOutput::kNull;
   }
@@ -70,6 +73,7 @@ void PrintHelpAndExit(std::string_view program_name) {
             << "\tresults output format, where FMT can be one of:\n"
             << "\t\t\t  - report (or 0, default): human readable summary;\n"
             << "\t\t\t  - csv (or 1): for comma-separated detailed stats;\n"
+            << "\t\t\t  - pb (or 2): protocol-buffer text;\n"
             << "\t\t\t  - null (-1): do not print.\n"
 
             << "  -p, --param[=PAR]..."

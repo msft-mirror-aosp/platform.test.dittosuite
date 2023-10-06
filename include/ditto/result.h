@@ -14,6 +14,12 @@
 
 #pragma once
 
+#ifdef __ANDROID__
+#include <result.pb.h>
+#else
+#include "schema/result.pb.h"
+#endif
+
 #include <time.h>
 
 #include <map>
@@ -24,10 +30,14 @@
 
 namespace dittosuite {
 
-enum class ResultsOutput { kNull = -1, kReport = 0, kCsv = 1 };
+enum class ResultsOutput { kNull, kReport, kCsv, kPb };
 
 class Result {
  public:
+  struct Statistics {
+    double min, max, mean, median, sd;
+  };
+
   explicit Result(const std::string& name, int repeat);
 
   void AddMeasurement(const std::string& type, const std::vector<double>& samples);
@@ -35,6 +45,11 @@ class Result {
   std::vector<double> GetSamples(const std::string& measurement_name) const;
   int GetRepeat() const;
   void Print(ResultsOutput results_output, const std::string& instruction_path);
+
+  void SetStatistics(const std::string& name, const Statistics& stats);
+
+  dittosuiteproto::Result ToPb();
+  static std::unique_ptr<Result> FromPb(const dittosuiteproto::Result &pb);
 
  private:
   struct TimeUnit {
@@ -47,9 +62,6 @@ class Result {
                           // unit (KB/s) in another one (ex GB/s)
     std::string name;
   };
-  struct Statistics {
-    double min, max, mean, median, sd;
-  };
   TimeUnit time_unit_;
   BandwidthUnit bandwidth_unit_;
   std::string name_;
@@ -61,6 +73,7 @@ class Result {
   void PrintHistograms(const std::string& instruction_path);
   void PrintStatisticsTables();
   void MakeStatisticsCsv();
+  void MakeStatisticsPb();
 
   void AnalyseMeasurement(const std::string& name);
   std::vector<int> ComputeNormalizedFrequencyVector(const std::string& measurement_name);
@@ -76,5 +89,11 @@ class Result {
   TimeUnit GetTimeUnit(int64_t min_value);
   BandwidthUnit GetBandwidthUnit(int64_t min_value);
   void PrintMeasurementStatisticInCsv(std::ostream& csv_stream, const std::string& name);
+
+  void __ToPb(dittosuiteproto::Result* result_pb);
+  void StoreStatisticsInPb(dittosuiteproto::Metrics* metrics, const std::string& name);
 };
+
+void PrintPb(const dittosuiteproto::Result &pb);
+
 }  // namespace dittosuite

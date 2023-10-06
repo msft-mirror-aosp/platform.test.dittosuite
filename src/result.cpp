@@ -16,6 +16,8 @@
 #include <ditto/statistics.h>
 #include <ditto/timespec_utils.h>
 
+#include <google/protobuf/util/json_util.h>
+
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
@@ -77,6 +79,9 @@ void Result::Print(const ResultsOutput results_output, const std::string& instru
       break;
     case ResultsOutput::kCsv:
       MakeStatisticsCsv();
+      break;
+    case ResultsOutput::kPb:
+      PrintPb(ToPb());
       break;
     case ResultsOutput::kNull:
       break;
@@ -159,10 +164,16 @@ void Result::PrintStatisticsTableContent(const std::string& instruction_path,
 
 std::set<std::string> Result::GetMeasurementsNames() {
   std::set<std::string> names;
-  for (const auto& it : samples_) names.insert(it.first);
-  for (const auto& sub_result : sub_results_) {
-    for (const auto& sub_name : sub_result->GetMeasurementsNames()) names.insert(sub_name);
+
+  for (const auto& it : samples_) {
+    names.insert(it.first);
   }
+  for (const auto& sub_result : sub_results_) {
+    for (const auto& sub_name : sub_result->GetMeasurementsNames()) {
+      names.insert(sub_name);
+    }
+  }
+
   return names;
 }
 
@@ -329,7 +340,7 @@ void Result::PrintStatisticInCsv(std::ostream& csv_stream, const std::string& in
   // print one row in csv
   csv_stream << next_instruction_path;
   for (const auto& measurement : measurements_names) {
-    if (samples_.find(measurement) != samples_.end()) {
+    if (statistics_.find(measurement) != statistics_.end()) {
       PrintMeasurementStatisticInCsv(csv_stream, measurement);
     } else {
       PrintEmptyMeasurementInCsv(csv_stream);
@@ -362,6 +373,68 @@ void Result::MakeStatisticsCsv() {
   PrintCsvHeader(csv_stream, measurements_names);
 
   PrintStatisticInCsv(csv_stream, "", measurements_names);
+}
+
+void Result::StoreStatisticsInPb(dittosuiteproto::Metrics* metrics,
+                                           const std::string& name) {
+  metrics->set_name(name);
+  metrics->set_min(statistics_[name].min);
+  metrics->set_max(statistics_[name].max);
+  metrics->set_mean(statistics_[name].mean);
+  metrics->set_median(statistics_[name].median);
+  metrics->set_sd(statistics_[name].sd);
+}
+
+void Result::__ToPb(dittosuiteproto::Result* result_pb) {
+  result_pb->set_name(name_);
+
+
+  for (const auto &stats : statistics_) {
+      StoreStatisticsInPb(result_pb->add_metrics(), stats.first);
+  }
+
+  for (const auto& sub_result : sub_results_) {
+    sub_result->__ToPb(result_pb->add_sub_result());
+  }
+}
+
+dittosuiteproto::Result Result::ToPb() {
+  dittosuiteproto::Result result_pb;
+  std::set<std::string> measurements_names = GetMeasurementsNames();
+
+  __ToPb(&result_pb);
+
+  return result_pb;
+}
+
+void Result::SetStatistics(const std::string& name, const Result::Statistics& statistics) {
+  statistics_[name] = statistics;
+}
+
+void PrintPb(const dittosuiteproto::Result &pb) {
+  std::string json;
+  google::protobuf::util::JsonPrintOptions options;
+
+  options.add_whitespace = true;
+  google::protobuf::util::MessageToJsonString(pb, &json, options);
+
+  std::ostream pb_stream(std::cout.rdbuf());
+  pb_stream << json << std::endl;
+}
+
+std::unique_ptr<Result> Result::FromPb(const dittosuiteproto::Result& pb) {
+  auto result = std::make_unique<Result>(pb.name(), 1);
+
+  for (const auto& m : pb.metrics()) {
+    Result::Statistics stats = {.min = m.min(), .max = m.max(), .median = m.median(), .sd = m.sd()};
+    result->SetStatistics(m.name(), stats);
+  }
+
+  for (const auto& r : pb.sub_result()) {
+    result->AddSubResult(Result::FromPb(r));
+  }
+
+  return result;
 }
 
 }  // namespace dittosuite
