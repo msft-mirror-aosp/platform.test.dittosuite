@@ -19,6 +19,15 @@ enum AccessMode {
   READ_WRITE = 3;
 }
 
+message BinderService {
+  optional string name = 1;
+  optional uint32 threads = 2;
+}
+
+message BinderRequest {
+  optional string service_name = 1;
+}
+
 message OpenFile {
   oneof file {
     string path_name = 1;
@@ -114,6 +123,8 @@ message Instruction {
     ResizeFileRandom resize_file_random = 10;
     Multithreading multithreading = 11;
     InvalidateCache invalidate_cache = 12;
+    BinderRequest binder_request = 13;
+    BinderService binder_service = 14;
   }
 }
 
