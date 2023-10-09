@@ -16,30 +16,61 @@
 
 #if __ANDROID__
 
-#include <cstdint>
-#include <random>
-
+#include <ditto/binder.h>
 #include <ditto/instruction.h>
 
-#include <ditto/binder.h>
+#include <storage/IMountService.h>
+
+#include <random>
+
+#include <cstdint>
 
 namespace dittosuite {
 
 class BinderRequest : public Instruction {
  public:
-  inline static const std::string kName = "binder_request";
+  explicit BinderRequest(SyscallInterface& syscall, const std::string& kName, int repeat,
+                         const std::string& service_name);
 
-  explicit BinderRequest(SyscallInterface& syscall, int repeat, const std::string& service_name);
+ protected:
+  std::string service_name_;
+
+  virtual void RunSingle() = 0;
+  virtual void SetUp() = 0;
+  virtual void TearDownSingle(bool last) = 0;
+};
+
+class BinderRequestDitto : public BinderRequest {
+ public:
+  inline static const std::string kName = "binder_request_ditto";
+
+  explicit BinderRequestDitto(SyscallInterface& syscall, int repeat,
+                              const std::string& service_name);
 
  protected:
   void RunSingle() override;
 
  private:
-  std::string service_name_;
   android::sp<IDittoBinder> service_;
 
   void SetUp() override;
   void TearDownSingle(bool is_last) override;
+};
+
+class BinderRequestMountService : public BinderRequest {
+ public:
+  inline static const std::string kName = "binder_request_ms";
+
+  explicit BinderRequestMountService(SyscallInterface& syscall, int repeat);
+
+ protected:
+  void RunSingle() override;
+
+ private:
+  android::sp<android::IMountService> service_;
+
+  void SetUp() override;
+  void TearDownSingle(bool last) override;
 };
 
 }  // namespace dittosuite
