@@ -17,11 +17,14 @@
 namespace dittosuite {
 
 ResultsOutput ArgToResultsOutput(const std::string_view optarg) {
+  if (optarg == "report" || optarg == "0") {
+    return ResultsOutput::kReport;
+  }
   if (optarg == "csv" || optarg == "1") {
     return ResultsOutput::kCsv;
   }
   if (optarg == "null" || optarg == "-1") {
-    return ResultsOutput::kCsv;
+    return ResultsOutput::kNull;
   }
   return ResultsOutput::kReport;  // by default, the results output is the report (= 0)
 }
