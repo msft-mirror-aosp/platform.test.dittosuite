@@ -40,7 +40,7 @@ class Logger {
                        int line, bool print_errno);
 
  protected:
-  Logger() {}
+  Logger() : log_level_(LogLevel::kInfo) {}
 
  private:
   LogLevel log_level_;
