@@ -28,11 +28,13 @@ TEST_P(DittoResult, ArgParseString) {
 INSTANTIATE_TEST_SUITE_P(String, DittoResult,
                          testing::Values(std::make_tuple(ResultsOutput::kReport, "report"),
                                          std::make_tuple(ResultsOutput::kCsv, "csv"),
+                                         std::make_tuple(ResultsOutput::kPb, "pb"),
                                          std::make_tuple(ResultsOutput::kNull, "null")));
 
 INSTANTIATE_TEST_SUITE_P(Number, DittoResult,
                          testing::Values(std::make_tuple(ResultsOutput::kReport, "0"),
                                          std::make_tuple(ResultsOutput::kCsv, "1"),
+                                         std::make_tuple(ResultsOutput::kPb, "2"),
                                          std::make_tuple(ResultsOutput::kNull, "-1")));
 
 INSTANTIATE_TEST_SUITE_P(Invalid, DittoResult,
