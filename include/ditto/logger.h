@@ -47,6 +47,8 @@ class Logger {
   LogStream log_stream_;
 };
 
+LogLevel ArgToLogLevel(const std::string_view optarg);
+
 }  // namespace dittosuite
 
 #define DITTO_LOGGER dittosuite::Logger::GetInstance()
