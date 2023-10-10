@@ -41,22 +41,22 @@ LogStream ArgToLogStream(const std::string_view optarg) {
 }
 
 LogLevel ArgToLogLevel(const std::string_view optarg) {
-  if (optarg == "VERBOSE" || optarg == "0") {
+  if (optarg == "VERBOSE" || optarg == "5") {
     return LogLevel::kVerbose;
   }
-  if (optarg == "DEBUG" || optarg == "1") {
+  if (optarg == "DEBUG" || optarg == "4") {
     return LogLevel::kDebug;
   }
-  if (optarg == "INFO" || optarg == "2") {
+  if (optarg == "INFO" || optarg == "3") {
     return LogLevel::kInfo;
   }
-  if (optarg == "WARNING" || optarg == "3") {
+  if (optarg == "WARNING" || optarg == "2") {
     return LogLevel::kWarning;
   }
-  if (optarg == "ERROR" || optarg == "4") {
+  if (optarg == "ERROR" || optarg == "1") {
     return LogLevel::kError;
   }
-  if (optarg == "FATAL" || optarg == "5") {
+  if (optarg == "FATAL" || optarg == "0") {
     return LogLevel::kFatal;
   }
   return LogLevel::kInfo;  // by default, the log level is info
