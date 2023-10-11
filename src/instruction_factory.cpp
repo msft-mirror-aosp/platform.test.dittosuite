@@ -19,6 +19,8 @@
 
 #include <random>
 
+#include <ditto/binder_request.h>
+#include <ditto/binder_service.h>
 #include <ditto/close_file.h>
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
@@ -225,6 +227,19 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kInvalidateCache: {
       return std::make_unique<InvalidateCache>(Syscall::GetSyscall(), repeat);
     }
+#if __ANDROID__
+    case InstructionType::kBinderRequest: {
+      const auto& options = proto_instruction.binder_request();
+
+      return std::make_unique<BinderRequest>(Syscall::GetSyscall(), repeat, options.service_name());
+    }
+    case InstructionType::kBinderService: {
+      const auto& options = proto_instruction.binder_service();
+
+      return std::make_unique<BinderService>(Syscall::GetSyscall(), repeat, options.name(),
+                                             options.threads());
+    }
+#endif /*__ANDROID__*/
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");
     }
