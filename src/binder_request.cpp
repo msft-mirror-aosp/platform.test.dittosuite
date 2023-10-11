@@ -14,39 +14,61 @@
 
 #if __ANDROID__
 
-#include <ditto/binder_request.h>
-
 #include <ditto/binder.h>
+#include <ditto/binder_request.h>
 #include <ditto/logger.h>
 
 namespace dittosuite {
 
-BinderRequest::BinderRequest(SyscallInterface& syscall, int repeat, const std::string& service_name)
+BinderRequest::BinderRequest(SyscallInterface& syscall, const std::string& kName, int repeat,
+                             const std::string& service_name)
     : Instruction(syscall, kName, repeat), service_name_(service_name) {}
 
-void BinderRequest::RunSingle() {
+BinderRequestDitto::BinderRequestDitto(SyscallInterface& syscall, int repeat,
+                                       const std::string& service_name)
+    : BinderRequest(syscall, kName, repeat, service_name) {}
+
+void BinderRequestDitto::RunSingle() {
   const char c = 1;
 
   char ret = service_->sync(c);
   if (ret != (~c)) {
-    LOGF("Wrong result, expected: " + std::to_string(~c) +
-         ", but got: " + std::to_string(ret));
+    LOGF("Wrong result, expected: " + std::to_string(~c) + ", but got: " + std::to_string(ret));
   }
+  LOGD("Returned from Binder request: " + std::to_string(ret));
 }
 
-void BinderRequest::SetUp() {
+void BinderRequestDitto::SetUp() {
   LOGD("Starting binder requester for service: " + service_name_);
-  service_ = getBinderService(service_name_);
+  service_ = getBinderService<IDittoBinder>(service_name_);
   service_->start();
   Instruction::SetUp();
 }
 
-void BinderRequest::TearDownSingle(bool is_last) {
+void BinderRequestDitto::TearDownSingle(bool is_last) {
   Instruction::TearDownSingle(is_last);
   if (is_last) {
     LOGD("This is the last, sending termination request");
     service_->end();
   }
+}
+
+BinderRequestMountService::BinderRequestMountService(SyscallInterface& syscall, int repeat)
+    : BinderRequest(syscall, kName, repeat, "mount") {}
+
+void BinderRequestMountService::RunSingle() {
+  bool ret = service_->isUsbMassStorageConnected();
+  LOGD("Returned from Binder request: " + std::to_string(ret));
+}
+
+void BinderRequestMountService::SetUp() {
+  LOGD("Starting binder requester for service: " + service_name_);
+  service_ = getBinderService<android::IMountService>(service_name_);
+  Instruction::SetUp();
+}
+
+void BinderRequestMountService::TearDownSingle(bool last) {
+  Instruction::TearDownSingle(last);
 }
 
 }  // namespace dittosuite
