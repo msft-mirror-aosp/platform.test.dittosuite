@@ -35,7 +35,7 @@ class ReadWriteFile : public Instruction {
  protected:
   virtual void SetUpSingle() override;
   virtual void RunSingle() override;
-  void TearDownSingle() override;
+  void TearDownSingle(bool is_last) override;
 
   BandwidthSampler bandwidth_sampler_;
   int64_t size_;
