@@ -15,15 +15,24 @@
 #include <ditto/instruction.h>
 
 #include <ditto/shared_variables.h>
+#include <ditto/logger.h>
 
 namespace dittosuite {
 
 Instruction::Instruction(const std::string& name, const Params& params)
-    : name_(name), syscall_(params.syscall_), repeat_(params.repeat_) {}
+    : name_(name),
+      syscall_(params.syscall_),
+      repeat_(params.repeat_),
+      period_us_(params.period_us_) {}
 
 void Instruction::SetUp() {}
 
 void Instruction::Run() {
+  if (period_us_) {
+    if (clock_gettime(CLOCK_MONOTONIC, &next_awake_time_)) {
+      PLOGF("Unable to get current time");
+    }
+  }
   for (int i = 0; i < repeat_; i++) {
     SetUpSingle();
     RunSingle();
@@ -48,6 +57,15 @@ void Instruction::SetUpSingle() {
 
 void Instruction::TearDownSingle(bool /*is_last*/) {
   time_sampler_.MeasureEnd();
+
+  if (!period_us_) {
+    return;
+  }
+
+  next_awake_time_ = next_awake_time_ + MicrosToTimespec(period_us_);
+  if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_awake_time_, nullptr)) {
+    PLOGF("Period clock interrupted");
+  }
 }
 
 std::unique_ptr<Result> Instruction::CollectResults(const std::string& prefix) {

@@ -32,9 +32,11 @@ enum class Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
 class Instruction {
  public:
   struct Params {
-    Params(SyscallInterface& syscall, int repeat = 1) : syscall_(syscall), repeat_(repeat) {}
+    Params(SyscallInterface& syscall, int repeat = 1, uint64_t period_us = 0)
+        : syscall_(syscall), repeat_(repeat), period_us_(period_us) {}
     SyscallInterface& syscall_;
     int repeat_;
+    uint64_t period_us_;
   };
 
   explicit Instruction(const std::string& name, const Params& params);
@@ -67,7 +69,11 @@ class Instruction {
   std::string name_;
   SyscallInterface& syscall_;
   int repeat_;
+  uint64_t period_us_;
   TimeSampler time_sampler_;
+
+ private:
+  timespec next_awake_time_;
 };
 
 } // namespace dittosuite

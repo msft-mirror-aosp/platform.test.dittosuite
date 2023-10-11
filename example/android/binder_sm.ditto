@@ -7,8 +7,9 @@ main: {
             running_service: MOUNT_SERVICE,
           },
           repeat: 500,
+          period_us: 1000,
         }
-        spawn: 2000,
+        spawn: 1000,
       }
     ]
   }

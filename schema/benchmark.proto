@@ -131,7 +131,8 @@ message Instruction {
     InvalidateCache invalidate_cache = 12;
     BinderRequest binder_request = 13;
     BinderService binder_service = 14;
-  }
+  };
+  optional uint64 period_us = 15 [default = 0];
 }
 
 message InstructionSet {
