@@ -44,6 +44,13 @@ timespec NanosToTimespec(const int64_t t_ns) {
   return result;
 }
 
+timespec MicrosToTimespec(const int64_t t_us) {
+  timespec result;
+  result.tv_sec = t_us / 1e6;
+  result.tv_nsec = (t_us % static_cast<int64_t>(1e6)) * static_cast<int64_t>(1e3);
+  return result;
+}
+
 bool operator==(const timespec& t1, const timespec& t2) {
   return t1.tv_sec == t2.tv_sec && t1.tv_nsec == t2.tv_nsec;
 }
