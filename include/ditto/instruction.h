@@ -47,7 +47,13 @@ class Instruction {
  protected:
   virtual void SetUpSingle();
   virtual void RunSingle() = 0;
-  virtual void TearDownSingle();
+  /* This function is executed after every RunSingle(). In some cases, for
+   * example in the implementation of a producer-consumer, the consumer should
+   * know at what time it should stop with its execution, and this can be
+   * handled by the producer to send a special message at the last
+   * TearDownSingle. The last iteration of TearDownSingle has the `is_last`
+   * value set to true, false otherwise. */
+  virtual void TearDownSingle(bool is_last);
 
   std::string GetAbsolutePath();
 
