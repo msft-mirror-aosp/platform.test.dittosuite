@@ -25,6 +25,7 @@
 #include <ditto/invalidate_cache.h>
 #include <ditto/logger.h>
 #include <ditto/multithreading.h>
+#include <ditto/multiprocessing.h>
 #include <ditto/open_file.h>
 #include <ditto/read_directory.h>
 #include <ditto/read_write_file.h>
@@ -197,6 +198,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kMultithreading: {
       const auto& options = proto_instruction.multithreading();
 
+      std::vector<std::string> thread_names;
       std::vector<std::unique_ptr<Instruction>> instructions;
       for (const auto& thread : options.threads()) {
         for (int i = 0; i < thread.spawn(); i++) {
@@ -204,11 +206,21 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
           thread_ids_copy.push_back(InstructionFactory::GenerateThreadId());
           instructions.push_back(std::move(InstructionFactory::CreateFromProtoInstruction(
               thread_ids_copy, thread.instruction())));
+          if (thread.has_name()) {
+            thread_names.push_back(thread.name() + "_" + std::to_string(i));
+          } else {
+            thread_names.push_back(std::to_string(i));
+          }
         }
       }
 
-      return std::make_unique<Multithreading>(Syscall::GetSyscall(), repeat,
-                                              std::move(instructions));
+      if (options.fork()) {
+        return std::make_unique<Multiprocessing>(Syscall::GetSyscall(), repeat,
+                                                 std::move(instructions), std::move(thread_names));
+      } else {
+        return std::make_unique<Multithreading>(Syscall::GetSyscall(), repeat,
+                                                std::move(instructions));
+      }
     }
     case InstructionType::kInvalidateCache: {
       return std::make_unique<InvalidateCache>(Syscall::GetSyscall(), repeat);
