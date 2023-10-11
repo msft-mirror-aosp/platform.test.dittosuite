@@ -31,7 +31,12 @@ enum class Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
 
 class Instruction {
  public:
-  explicit Instruction(SyscallInterface& syscall, const std::string& name, int repeat);
+  struct Params {
+    SyscallInterface& syscall;
+    int repeat;
+  };
+
+  explicit Instruction(const std::string& name, const Params& params);
   virtual ~Instruction() = default;
 
   virtual void SetUp();

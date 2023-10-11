@@ -18,8 +18,7 @@
 
 namespace dittosuite {
 
-InvalidateCache::InvalidateCache(SyscallInterface& syscall, int repeat)
-    : Instruction(syscall, kName, repeat) {}
+InvalidateCache::InvalidateCache(const Params& params) : Instruction(kName, params) {}
 
 void InvalidateCache::RunSingle() {
   syscall_.Sync();

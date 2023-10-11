@@ -18,8 +18,8 @@
 
 namespace dittosuite {
 
-Instruction::Instruction(SyscallInterface& syscall, const std::string& name, int repeat)
-    : syscall_(syscall), name_(name), repeat_(repeat) {}
+Instruction::Instruction(const std::string& name, const Params& params)
+    : syscall_(params.syscall), name_(name), repeat_(params.repeat) {}
 
 void Instruction::SetUp() {}
 

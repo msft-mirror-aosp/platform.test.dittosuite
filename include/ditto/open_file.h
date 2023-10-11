@@ -26,12 +26,12 @@ class OpenFile : public Instruction {
   inline static const std::string kName = "open_file";
   enum class AccessMode { kReadOnly, kWriteOnly, kReadWrite };
 
-  explicit OpenFile(SyscallInterface& syscall, int repeat, const std::string& path_name,
-                    bool create, bool direct_io, int output_fd_key, AccessMode access_mode);
-  explicit OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool create,
-                    bool direct_io, int output_fd_key, AccessMode access_mode);
-  explicit OpenFile(SyscallInterface& syscall, int repeat, bool create, bool direct_io,
+  explicit OpenFile(const Params& params, const std::string& path_name, bool create, bool direct_io,
                     int output_fd_key, AccessMode access_mode);
+  explicit OpenFile(const Params& params, int input_key, bool create, bool direct_io,
+                    int output_fd_key, AccessMode access_mode);
+  explicit OpenFile(const Params& params, bool create, bool direct_io, int output_fd_key,
+                    AccessMode access_mode);
 
  private:
   void SetUpSingle() override;

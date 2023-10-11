@@ -16,9 +16,9 @@
 
 namespace dittosuite {
 
-Multithreading::Multithreading(SyscallInterface& syscall, int repeat,
+Multithreading::Multithreading(const Params& params,
                                std::vector<std::unique_ptr<Instruction>> instructions)
-    : Instruction(syscall, kName, repeat), instructions_(std::move(instructions)) {}
+    : Instruction(kName, params), instructions_(std::move(instructions)) {}
 
 void Multithreading::SetUpSingle() {
   for (const auto& instruction : instructions_) {
