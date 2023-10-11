@@ -36,12 +36,12 @@ void Multithreading::RunSingle() {
   }
 }
 
-void Multithreading::TearDownSingle() {
+void Multithreading::TearDownSingle(bool is_last) {
   for (auto& thread : threads_) {
     thread.join();
   }
 
-  Instruction::TearDownSingle();
+  Instruction::TearDownSingle(is_last);
 
   pthread_barrier_destroy(&barrier_);
   for (const auto& instruction : instructions_) {
