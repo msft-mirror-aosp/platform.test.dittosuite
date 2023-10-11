@@ -58,4 +58,32 @@ TEST(DittoLogger, LoggerPError) {
   }
 }
 
+TEST(DittoLogger, DefaultVerbosityIsInfo) {
+  ASSERT_EQ(Logger::GetInstance().GetLogLevel(), LogLevel::kInfo);
+}
+
+TEST(DittoLogger, ArgumentsToLevelString) {
+  ASSERT_EQ(ArgToLogLevel("VERBOSE"), LogLevel::kVerbose);
+  ASSERT_EQ(ArgToLogLevel("DEBUG"), LogLevel::kDebug);
+  ASSERT_EQ(ArgToLogLevel("INFO"), LogLevel::kInfo);
+  ASSERT_EQ(ArgToLogLevel("WARNING"), LogLevel::kWarning);
+  ASSERT_EQ(ArgToLogLevel("ERROR"), LogLevel::kError);
+  ASSERT_EQ(ArgToLogLevel("FATAL"), LogLevel::kFatal);
+}
+
+TEST(DittoLogger, ArgumentsToLevelNumber) {
+  ASSERT_EQ(ArgToLogLevel("5"), LogLevel::kVerbose);
+  ASSERT_EQ(ArgToLogLevel("4"), LogLevel::kDebug);
+  ASSERT_EQ(ArgToLogLevel("3"), LogLevel::kInfo);
+  ASSERT_EQ(ArgToLogLevel("2"), LogLevel::kWarning);
+  ASSERT_EQ(ArgToLogLevel("1"), LogLevel::kError);
+  ASSERT_EQ(ArgToLogLevel("0"), LogLevel::kFatal);
+}
+
+TEST(DittoLogger, ArgumentsToLevelInvalid) {
+  ASSERT_EQ(ArgToLogLevel("6"), LogLevel::kInfo);
+  ASSERT_EQ(ArgToLogLevel(""), LogLevel::kInfo);
+  ASSERT_EQ(ArgToLogLevel("UNKNOWN"), LogLevel::kInfo);
+}
+
 }  // namespace dittosuite
