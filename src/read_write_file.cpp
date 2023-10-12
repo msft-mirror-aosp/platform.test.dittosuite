@@ -160,8 +160,8 @@ void ReadFile::RunSingle() {
   }
 }
 
-void ReadWriteFile::TearDownSingle() {
-  Instruction::TearDownSingle();
+void ReadWriteFile::TearDownSingle(bool is_last) {
+  Instruction::TearDownSingle(is_last);
   bandwidth_sampler_.Measure(size_, time_sampler_.GetSamples().back());
 }
 

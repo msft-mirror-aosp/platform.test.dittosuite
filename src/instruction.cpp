@@ -27,7 +27,7 @@ void Instruction::Run() {
   for (int i = 0; i < repeat_; i++) {
     SetUpSingle();
     RunSingle();
-    TearDownSingle();
+    TearDownSingle(i == repeat_ - 1);
   }
 }
 
@@ -46,7 +46,7 @@ void Instruction::SetUpSingle() {
   time_sampler_.MeasureStart();
 }
 
-void Instruction::TearDownSingle() {
+void Instruction::TearDownSingle(bool /*is_last*/) {
   time_sampler_.MeasureEnd();
 }
 
