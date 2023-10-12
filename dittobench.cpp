@@ -21,11 +21,14 @@
 #include <ditto/arg_parser.h>
 #include <ditto/logger.h>
 #include <ditto/parser.h>
+#include <ditto/tracer.h>
 
 int main(int argc, char** argv) {
   dittosuite::CmdArguments arguments = dittosuite::ParseArguments(argc, argv);
 
-  dittosuite::Parser::GetParser().Parse(arguments.file_path, arguments.parameters);
+  auto benchmark = dittosuite::Parser::GetParser().Parse(arguments.file_path, arguments.parameters);
+  auto &tracer = dittosuite::Tracer::GetTracer();
+  tracer.Start(std::move(benchmark));
 
   auto init = dittosuite::Parser::GetParser().GetInit();
   if (init != nullptr) {
@@ -36,7 +39,9 @@ int main(int argc, char** argv) {
 
   auto main = dittosuite::Parser::GetParser().GetMain();
   main->SetUp();
+  tracer.StartBenchmark();
   main->Run();
+  tracer.EndBenchmark();
   main->TearDown();
 
   auto result = main->CollectResults("");
