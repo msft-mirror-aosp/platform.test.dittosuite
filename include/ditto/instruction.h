@@ -32,8 +32,9 @@ enum class Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
 class Instruction {
  public:
   struct Params {
-    SyscallInterface& syscall;
-    int repeat;
+    Params(SyscallInterface& syscall, int repeat = 1) : syscall_(syscall), repeat_(repeat) {}
+    SyscallInterface& syscall_;
+    int repeat_;
   };
 
   explicit Instruction(const std::string& name, const Params& params);
@@ -62,9 +63,9 @@ class Instruction {
 
   std::string GetAbsolutePath();
 
-  SyscallInterface& syscall_;
   static int absolute_path_key_;
   std::string name_;
+  SyscallInterface& syscall_;
   int repeat_;
   TimeSampler time_sampler_;
 };

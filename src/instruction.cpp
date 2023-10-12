@@ -19,7 +19,7 @@
 namespace dittosuite {
 
 Instruction::Instruction(const std::string& name, const Params& params)
-    : syscall_(params.syscall), name_(name), repeat_(params.repeat) {}
+    : name_(name), syscall_(params.syscall_), repeat_(params.repeat_) {}
 
 void Instruction::SetUp() {}
 
