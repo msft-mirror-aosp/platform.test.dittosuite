@@ -22,6 +22,7 @@
 #include <ditto/binder_request.h>
 #include <ditto/binder_service.h>
 #include <ditto/close_file.h>
+#include <ditto/cpu_work.h>
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
 #include <ditto/invalidate_cache.h>
@@ -38,6 +39,7 @@
 namespace dittosuite {
 typedef dittosuiteproto::Instruction::InstructionOneofCase InstructionType;
 typedef dittosuiteproto::BinderRequest::ServiceOneofCase RequestService;
+typedef dittosuiteproto::CpuWork::TypeCase CpuWorkType;
 
 std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSet(
     const dittosuite::Instruction::Params& instruction_params, const std::list<int>& thread_ids,
@@ -251,6 +253,24 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       return std::make_unique<BinderService>(instruction_params, options.name(), options.threads());
     }
 #endif /*__ANDROID__*/
+    case InstructionType::kCpuWork: {
+      const auto& options = proto_instruction.cpu_work();
+
+      switch (options.type_case()) {
+        case CpuWorkType::kCycles: {
+          return std::make_unique<CpuWorkCycles>(instruction_params, options.cycles());
+          break;
+        }
+        case CpuWorkType::kUtilization: {
+          return std::make_unique<CpuWorkUtilization>(instruction_params, options.utilization());
+          break;
+        }
+        case CpuWorkType::TYPE_NOT_SET: {
+          LOGF("No type specified for CpuWorkload");
+          break;
+        }
+      }
+    }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");
     }
