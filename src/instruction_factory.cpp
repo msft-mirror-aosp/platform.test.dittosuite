@@ -19,12 +19,15 @@
 
 #include <random>
 
+#include <ditto/binder_request.h>
+#include <ditto/binder_service.h>
 #include <ditto/close_file.h>
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
 #include <ditto/invalidate_cache.h>
 #include <ditto/logger.h>
 #include <ditto/multithreading.h>
+#include <ditto/multiprocessing.h>
 #include <ditto/open_file.h>
 #include <ditto/read_directory.h>
 #include <ditto/read_write_file.h>
@@ -34,6 +37,7 @@
 
 namespace dittosuite {
 typedef dittosuiteproto::Instruction::InstructionOneofCase InstructionType;
+typedef dittosuiteproto::BinderRequest::ServiceOneofCase RequestService;
 
 std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSet(
     const std::list<int>& thread_ids, const int repeat,
@@ -197,6 +201,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kMultithreading: {
       const auto& options = proto_instruction.multithreading();
 
+      std::vector<std::string> thread_names;
       std::vector<std::unique_ptr<Instruction>> instructions;
       for (const auto& thread : options.threads()) {
         for (int i = 0; i < thread.spawn(); i++) {
@@ -204,15 +209,52 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
           thread_ids_copy.push_back(InstructionFactory::GenerateThreadId());
           instructions.push_back(std::move(InstructionFactory::CreateFromProtoInstruction(
               thread_ids_copy, thread.instruction())));
+          if (thread.has_name()) {
+            thread_names.push_back(thread.name() + "_" + std::to_string(i));
+          } else {
+            thread_names.push_back(std::to_string(i));
+          }
         }
       }
 
-      return std::make_unique<Multithreading>(Syscall::GetSyscall(), repeat,
-                                              std::move(instructions));
+      if (options.fork()) {
+        return std::make_unique<Multiprocessing>(Syscall::GetSyscall(), repeat,
+                                                 std::move(instructions), std::move(thread_names));
+      } else {
+        return std::make_unique<Multithreading>(Syscall::GetSyscall(), repeat,
+                                                std::move(instructions));
+      }
     }
     case InstructionType::kInvalidateCache: {
       return std::make_unique<InvalidateCache>(Syscall::GetSyscall(), repeat);
     }
+#if __ANDROID__
+    case InstructionType::kBinderRequest: {
+      const auto& binder_request = proto_instruction.binder_request();
+      switch (binder_request.service_oneof_case()) {
+        case RequestService::kServiceName: {
+          const auto& options = proto_instruction.binder_request();
+          return std::make_unique<BinderRequestDitto>(Syscall::GetSyscall(), repeat,
+                                                      options.service_name());
+          break;
+        }
+        case RequestService::kRunningService: {
+          return std::make_unique<BinderRequestMountService>(Syscall::GetSyscall(), repeat);
+          break;
+        }
+        case RequestService::SERVICE_ONEOF_NOT_SET: {
+          LOGF("No service specified for BinderRequest");
+          break;
+        }
+      }
+    }
+    case InstructionType::kBinderService: {
+      const auto& options = proto_instruction.binder_service();
+
+      return std::make_unique<BinderService>(Syscall::GetSyscall(), repeat, options.name(),
+                                             options.threads());
+    }
+#endif /*__ANDROID__*/
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");
     }

@@ -1,0 +1,16 @@
+main: {
+  multithreading: {
+    threads: [
+      {
+        instruction: {
+          binder_request: {
+            running_service: MOUNT_SERVICE,
+          },
+          repeat: 500,
+        }
+        spawn: 2000,
+      }
+    ]
+  }
+},
+global {}
