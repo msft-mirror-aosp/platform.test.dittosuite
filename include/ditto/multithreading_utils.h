@@ -65,13 +65,26 @@ class SchedAttr {
   SchedAttr& operator=(const dittosuiteproto::SchedAttr& pb);
 };
 
+class SchedAffinity {
+  bool initialized_ = false;
+  uint64_t mask_;
+
+ public:
+  void Set() const;
+  bool IsSet() const;
+
+  SchedAffinity& operator=(const uint64_t mask);
+};
+
 
 struct MultithreadingParams {
   const std::string name_;
   SchedAttr sched_attr_;
+  SchedAffinity sched_affinity_;
 
-  MultithreadingParams(const std::string& name, const SchedAttr& sched_attr)
-      : name_(name), sched_attr_(sched_attr) {}
+  MultithreadingParams(const std::string& name, const SchedAttr& sched_attr,
+                       const SchedAffinity &sched_affinity)
+      : name_(name), sched_attr_(sched_attr), sched_affinity_(sched_affinity) {}
 };
 
 }  // namespace dittosuite
