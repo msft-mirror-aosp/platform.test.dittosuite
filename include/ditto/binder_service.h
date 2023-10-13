@@ -1,4 +1,4 @@
-// Copyright (C) 2021 The Android Open Source Project
+// Copyright (C) 2023 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,29 +14,38 @@
 
 #pragma once
 
-#include <pthread.h>
+#if __ANDROID__
+
+#include <cstdint>
+#include <random>
 
 #include <ditto/instruction.h>
 
+#include <ditto/binder.h>
+
 namespace dittosuite {
 
-class Multithreading : public Instruction {
+class BinderService : public Instruction {
  public:
-  inline static const std::string kName = "multithreading";
+  inline static const std::string kName = "binder_service";
 
-  explicit Multithreading(SyscallInterface& syscall, int repeat,
-                          std::vector<std::unique_ptr<Instruction>> instructions);
+  explicit BinderService(SyscallInterface& syscall, int repeat, const std::string& name,
+                         int64_t threads);
 
-  std::unique_ptr<Result> CollectResults(const std::string& prefix) override;
+ protected:
+  int64_t threads_;
+
+  void RunSingle() override;
 
  private:
-  void SetUpSingle() override;
-  void RunSingle() override;
-  void TearDownSingle(bool is_last) override;
+  std::string name_;
+  pthread_mutex_t  s_work_lock;
+  pthread_cond_t   s_work_cond;
 
-  std::vector<std::unique_ptr<Instruction>> instructions_;
-  std::vector<std::thread> threads_;
-  pthread_barrier_t barrier_;
+  void SetUp() override;
+  void TearDown() override;
 };
 
 }  // namespace dittosuite
+
+#endif
