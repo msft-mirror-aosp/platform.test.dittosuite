@@ -22,6 +22,7 @@ double TimespecToDoubleNanos(const timespec& t);
 std::vector<int64_t> TimespecToNanos(const std::vector<timespec>& tv);
 std::vector<double> TimespecToDoubleNanos(const std::vector<timespec>& tv);
 timespec NanosToTimespec(int64_t time_ns);
+timespec MicrosToTimespec(int64_t time_us);
 
 bool operator==(const timespec& t1, const timespec& t2);
 bool operator!=(const timespec& t1, const timespec& t2);
