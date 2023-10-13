@@ -22,10 +22,10 @@
 
 namespace dittosuite {
 
-Multiprocessing::Multiprocessing(SyscallInterface& syscall, int repeat,
+Multiprocessing::Multiprocessing(const Params& params,
                                  std::vector<std::unique_ptr<Instruction>> instructions,
                                  std::vector<std::string> thread_names)
-    : Instruction(syscall, kName, repeat),
+    : Instruction(kName, params),
       instructions_(std::move(instructions)),
       thread_names_(std::move(thread_names)) {}
 
