@@ -202,7 +202,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kMultithreading: {
       const auto& options = proto_instruction.multithreading();
 
-      std::vector<std::string> thread_names;
+      std::vector<MultithreadingParams> thread_params;
       std::vector<std::unique_ptr<Instruction>> instructions;
       for (const auto& thread : options.threads()) {
         for (int i = 0; i < thread.spawn(); i++) {
@@ -210,19 +210,23 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
           thread_ids_copy.push_back(InstructionFactory::GenerateThreadId());
           instructions.push_back(std::move(InstructionFactory::CreateFromProtoInstruction(
               thread_ids_copy, thread.instruction())));
+
+          std::string thread_name;
           if (thread.has_name()) {
-            thread_names.push_back(thread.name() + "_" + std::to_string(i));
+            thread_name = thread.name() + "_" + std::to_string(i);
           } else {
-            thread_names.push_back(std::to_string(i));
+            thread_name = std::to_string(i);
           }
+          thread_params.push_back(MultithreadingParams(thread_name));
         }
       }
 
       if (options.fork()) {
         return std::make_unique<Multiprocessing>(instruction_params, std::move(instructions),
-                                                 std::move(thread_names));
+                                                 std::move(thread_params));
       } else {
-        return std::make_unique<Multithreading>(instruction_params, std::move(instructions));
+        return std::make_unique<Multithreading>(instruction_params, std::move(instructions),
+                                                std::move(thread_params));
       }
     }
     case InstructionType::kInvalidateCache: {
