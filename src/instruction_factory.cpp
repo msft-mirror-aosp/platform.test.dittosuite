@@ -224,7 +224,12 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
             sched_attr = thread.sched_attr();
           }
 
-          thread_params.push_back(MultithreadingParams(thread_name, sched_attr));
+          SchedAffinity sched_affinity = {};
+          if (thread.has_sched_affinity()) {
+            sched_affinity = thread.sched_affinity();
+          }
+
+          thread_params.push_back(MultithreadingParams(thread_name, sched_attr, sched_affinity));
         }
       }
 

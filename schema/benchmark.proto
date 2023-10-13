@@ -114,6 +114,7 @@ message Thread {
   optional int32 spawn = 2 [default = 1];
   optional string name = 3;
   optional SchedAttr sched_attr = 4;
+  optional int64 sched_affinity = 5 [default = -1];
 }
 
 message SchedAttr {

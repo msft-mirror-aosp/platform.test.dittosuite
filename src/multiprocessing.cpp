@@ -104,6 +104,9 @@ void Multiprocessing::SetUpSingle() {
     if (thread_params_[instruction_id_].sched_attr_.IsSet()) {
       thread_params_[instruction_id_].sched_attr_.Set();
     }
+    if (thread_params_[instruction_id_].sched_affinity_.IsSet()) {
+      thread_params_[instruction_id_].sched_affinity_.Set();
+    }
 
     LOGD("Process initializing instruction: " + std::to_string(instruction_id_) +
          " pid: " + std::to_string(getpid()));

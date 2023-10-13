@@ -14,6 +14,8 @@
 
 #include <ditto/multithreading_utils.h>
 
+#include <sched.h>
+
 namespace dittosuite {
 
 std::string to_string(const SchedAttr__& attr) {
@@ -91,6 +93,46 @@ SchedAttr& SchedAttr::operator=(const dittosuiteproto::SchedAttr& pb) {
       break;
   }
 
+  initialized_ = true;
+
+  return *this;
+}
+
+void SchedAffinity::Set() const {
+  if (!initialized_) {
+    LOGF("Setting uninitialized affinity attributes");
+  }
+
+  LOGD("Setting affinity mask [" + std::to_string(mask_) +
+       "] to thread: " + std::to_string(gettid()));
+
+  cpu_set_t mask;
+  CPU_ZERO(&mask);
+  uint64_t tmp_bitset = mask_;
+  for (unsigned int i=0; i<sizeof(mask_) * 8; ++i) {
+    if (tmp_bitset & 1) {
+      LOGD("Enabling on CPU: " + std::to_string(i));
+      CPU_SET(i, &mask);
+    }
+    tmp_bitset >>= 1;
+  }
+
+  int ret = sched_setaffinity(0 /* self */, sizeof(mask), &mask);
+  if (ret) {
+    PLOGF("Failed setting scheduling affinity");
+  }
+}
+
+bool SchedAffinity::IsSet() const {
+  return initialized_;
+}
+
+SchedAffinity& SchedAffinity::operator=(const uint64_t mask) {
+  if (mask == 0) {
+    LOGF("Empty CPU affinity mask");
+  }
+
+  mask_ = mask;
   initialized_ = true;
 
   return *this;
