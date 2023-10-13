@@ -101,6 +101,10 @@ void Multiprocessing::SetUpSingle() {
       PLOGF("Unable to set process name");
     }
 
+    if (thread_params_[instruction_id_].sched_attr_.IsSet()) {
+      thread_params_[instruction_id_].sched_attr_.Set();
+    }
+
     LOGD("Process initializing instruction: " + std::to_string(instruction_id_) +
          " pid: " + std::to_string(getpid()));
     instructions_[instruction_id_]->SetUp();

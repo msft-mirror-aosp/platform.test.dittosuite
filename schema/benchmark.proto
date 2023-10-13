@@ -113,6 +113,42 @@ message Thread {
   required Instruction instruction = 1;
   optional int32 spawn = 2 [default = 1];
   optional string name = 3;
+  optional SchedAttr sched_attr = 4;
+}
+
+message SchedAttr {
+  message SchedOther {
+    enum SchedPolicy {
+      OTHER = 1;
+      BATCH = 2;
+    }
+    required SchedPolicy policy = 1;
+    optional int32 nice = 2 [default = 10];
+  }
+  message SchedRt {
+    enum SchedPolicy {
+      FIFO = 1;
+      RR = 2;
+    }
+    required SchedPolicy policy = 1;
+    required uint32 priority = 2;
+  }
+  message SchedDeadline {
+    enum SchedPolicy {
+      DEADLINE = 1;
+    }
+    required SchedPolicy policy = 1;
+    required uint64 runtime = 2;
+    required uint64 deadline = 3;
+    required uint64 period = 4;
+  }
+
+  optional uint64 flags = 1 [default = 0];
+  oneof attributes {
+    SchedOther other = 2;
+    SchedRt rt = 3;
+    SchedDeadline deadline = 4;
+  }
 }
 
 message Multithreading {

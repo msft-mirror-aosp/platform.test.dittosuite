@@ -14,12 +14,64 @@
 
 #pragma once
 
+#ifdef __ANDROID__
+#include <benchmark.pb.h>
+#else
+#include "schema/benchmark.pb.h"
+#endif
+
+#include <ditto/logger.h>
+
+#include <sys/syscall.h>
+#include <unistd.h>
+
 namespace dittosuite {
+
+enum SchedPolicy {
+  SchedNormal = 0,
+  SchedFifo = 1,
+  SchedRr = 2,
+  SchedBatch = 3,
+  /* SchedIso: reserved but not implemented yet */
+  SchedIdle = 5,
+  SchedDeadline = 6,
+};
+
+struct SchedAttr__ {
+  uint32_t size;         /* Size of this structure */
+  uint32_t sched_policy; /* Policy (SCHED_*) */
+  uint64_t sched_flags;  /* Flags */
+
+  int32_t sched_nice;      /* Nice value (SCHED_OTHER,
+                              SCHED_BATCH) */
+  uint32_t sched_priority; /* Static priority (SCHED_FIFO,
+                              SCHED_RR) */
+  /* Remaining fields are for SCHED_DEADLINE */
+  uint64_t sched_runtime;
+  uint64_t sched_deadline;
+  uint64_t sched_period;
+};
+
+std::string to_string(const SchedAttr__& attr);
+
+class SchedAttr {
+  bool initialized_ = false;
+  SchedAttr__ sched_attr_;
+
+ public:
+  void Set() const;
+  bool IsSet() const;
+
+  SchedAttr& operator=(const dittosuiteproto::SchedAttr& pb);
+};
+
 
 struct MultithreadingParams {
   const std::string name_;
+  SchedAttr sched_attr_;
 
-  MultithreadingParams(const std::string& name) : name_(name) {}
+  MultithreadingParams(const std::string& name, const SchedAttr& sched_attr)
+      : name_(name), sched_attr_(sched_attr) {}
 };
 
 }  // namespace dittosuite
