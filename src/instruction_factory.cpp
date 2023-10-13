@@ -70,10 +70,7 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
 
 std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     const std::list<int>& thread_ids, const dittosuiteproto::Instruction& proto_instruction) {
-  Instruction::Params instruction_params{
-      .syscall = Syscall::GetSyscall(),
-      .repeat = proto_instruction.repeat(),
-  };
+  Instruction::Params instruction_params(Syscall::GetSyscall(), proto_instruction.repeat());
 
   switch (proto_instruction.instruction_oneof_case()) {
     case InstructionType::kInstructionSet: {
