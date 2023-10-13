@@ -20,6 +20,7 @@
 #include <string>
 #include <thread>
 
+#include <ditto/multithreading_utils.h>
 #include <ditto/result.h>
 #include <ditto/sampler.h>
 #include <ditto/syscall.h>
@@ -44,8 +45,8 @@ class Instruction {
 
   virtual void SetUp();
   void Run();
-  void RunSynchronized(pthread_barrier_t* barrier);
-  std::thread SpawnThread(pthread_barrier_t* barrier);
+  void RunSynchronized(pthread_barrier_t* barrier, const MultithreadingParams& params);
+  std::thread SpawnThread(pthread_barrier_t* barrier, const MultithreadingParams& params);
   virtual void TearDown();
 
   virtual std::unique_ptr<Result> CollectResults(const std::string& prefix);
@@ -76,4 +77,4 @@ class Instruction {
   timespec next_awake_time_;
 };
 
-} // namespace dittosuite
+}  // namespace dittosuite
