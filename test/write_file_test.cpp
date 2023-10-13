@@ -19,6 +19,7 @@
 #include <ditto/instruction_set.h>
 #include <ditto/read_write_file.h>
 
+using ::dittosuite::Instruction;
 using ::dittosuite::SharedVariables;
 using ::testing::_;
 using ::testing::InSequence;
@@ -43,18 +44,18 @@ using WriteFileDeathTest = WriteFileTest;
 TEST_F(WriteFileTest, CalledFSync) {
   EXPECT_CALL(syscall_, FSync(fd_));
 
-  auto write_file = dittosuite::WriteFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
-                                          dittosuite::Order::kSequential, 0,
-                                          dittosuite::Reseeding::kOnce, true, input_key_);
+  auto write_file = dittosuite::WriteFile(
+      (Instruction::Params){syscall_, 1}, -1, MockSyscall::kDefaultFileSize, 0,
+      dittosuite::Order::kSequential, 0, dittosuite::Reseeding::kOnce, true, input_key_);
   write_file.Run();
 }
 
 TEST_F(WriteFileTest, WroteSingleBlockSequential) {
   EXPECT_CALL(syscall_, Write(fd_, _, MockSyscall::kDefaultFileSize, 0));
 
-  auto write_file = dittosuite::WriteFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
-                                          dittosuite::Order::kSequential, 0,
-                                          dittosuite::Reseeding::kOnce, false, input_key_);
+  auto write_file = dittosuite::WriteFile(
+      (Instruction::Params){syscall_, 1}, -1, MockSyscall::kDefaultFileSize, 0,
+      dittosuite::Order::kSequential, 0, dittosuite::Reseeding::kOnce, false, input_key_);
   write_file.Run();
 }
 
@@ -62,18 +63,18 @@ TEST_F(WriteFileTest, WroteSingleBlockSequentialRepeated) {
   int repeat = 2;
   EXPECT_CALL(syscall_, Write(fd_, _, MockSyscall::kDefaultFileSize, 0)).Times(repeat);
 
-  auto write_file = dittosuite::WriteFile(syscall_, repeat, -1, MockSyscall::kDefaultFileSize, 0,
-                                          dittosuite::Order::kSequential, 0,
-                                          dittosuite::Reseeding::kOnce, false, input_key_);
+  auto write_file = dittosuite::WriteFile(
+      (Instruction::Params){syscall_, repeat}, -1, MockSyscall::kDefaultFileSize, 0,
+      dittosuite::Order::kSequential, 0, dittosuite::Reseeding::kOnce, false, input_key_);
   write_file.Run();
 }
 
 TEST_F(WriteFileTest, WroteSingleBlockRandom) {
   EXPECT_CALL(syscall_, Write(fd_, _, MockSyscall::kDefaultFileSize, 0));
 
-  auto write_file = dittosuite::WriteFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
-                                          dittosuite::Order::kRandom, 0,
-                                          dittosuite::Reseeding::kOnce, false, input_key_);
+  auto write_file = dittosuite::WriteFile(
+      (Instruction::Params){syscall_, 1}, -1, MockSyscall::kDefaultFileSize, 0,
+      dittosuite::Order::kRandom, 0, dittosuite::Reseeding::kOnce, false, input_key_);
   write_file.Run();
 }
 
@@ -81,9 +82,9 @@ TEST_F(WriteFileTest, WroteSingleBlockRandomRepeated) {
   int repeat = 2;
   EXPECT_CALL(syscall_, Write(fd_, _, MockSyscall::kDefaultFileSize, 0)).Times(repeat);
 
-  auto write_file = dittosuite::WriteFile(syscall_, repeat, -1, MockSyscall::kDefaultFileSize, 0,
-                                          dittosuite::Order::kRandom, 0,
-                                          dittosuite::Reseeding::kOnce, false, input_key_);
+  auto write_file = dittosuite::WriteFile(
+      (Instruction::Params){syscall_, repeat}, -1, MockSyscall::kDefaultFileSize, 0,
+      dittosuite::Order::kRandom, 0, dittosuite::Reseeding::kOnce, false, input_key_);
   write_file.Run();
 }
 
@@ -106,9 +107,9 @@ TEST_F(WriteFileTest, WroteMultipleBlocksSequential) {
     EXPECT_CALL(syscall_, Write(fd_, _, block_size, block_size * 3));
   }
 
-  auto write_file =
-      dittosuite::WriteFile(syscall_, 1, size, block_size, 0, dittosuite::Order::kSequential, 0,
-                            dittosuite::Reseeding::kOnce, false, input_key_);
+  auto write_file = dittosuite::WriteFile((Instruction::Params){syscall_, 1}, size, block_size, 0,
+                                          dittosuite::Order::kSequential, 0,
+                                          dittosuite::Reseeding::kOnce, false, input_key_);
   write_file.Run();
 }
 
@@ -136,9 +137,9 @@ TEST_F(WriteFileTest, WroteMultipleBlocksSequentialRepeated) {
     }
   }
 
-  auto write_file =
-      dittosuite::WriteFile(syscall_, repeat, size, block_size, 0, dittosuite::Order::kSequential,
-                            0, dittosuite::Reseeding::kOnce, false, input_key_);
+  auto write_file = dittosuite::WriteFile((Instruction::Params){syscall_, repeat}, size, block_size,
+                                          0, dittosuite::Order::kSequential, 0,
+                                          dittosuite::Reseeding::kOnce, false, input_key_);
   write_file.Run();
 }
 
@@ -169,11 +170,12 @@ TEST_F(WriteFileTest, WroteMultipleBlocksRandomRepeatedReseededOnce) {
       }));
 
   auto write_file = std::make_unique<dittosuite::WriteFile>(
-      syscall_, repeat, size, block_size, 0, dittosuite::Order::kRandom, 0,
+      (Instruction::Params){syscall_, repeat}, size, block_size, 0, dittosuite::Order::kRandom, 0,
       dittosuite::Reseeding::kOnce, false, input_key_);
   std::vector<std::unique_ptr<dittosuite::Instruction>> instructions;
   instructions.push_back(std::move(write_file));
-  auto instruction_set = dittosuite::InstructionSet(syscall_, repeat, std::move(instructions));
+  auto instruction_set =
+      dittosuite::InstructionSet((Instruction::Params){syscall_, repeat}, std::move(instructions));
   instruction_set.Run();
 
   // Check that the number of unique blocks, that were collected, matches the expected number
@@ -207,11 +209,12 @@ TEST_F(WriteFileTest, WroteMultipleBlocksRandomRepeatedReseededEachRoundOfCycles
       }));
 
   auto write_file = std::make_unique<dittosuite::WriteFile>(
-      syscall_, repeat, size, block_size, 0, dittosuite::Order::kRandom, 0,
+      (Instruction::Params){syscall_, repeat}, size, block_size, 0, dittosuite::Order::kRandom, 0,
       dittosuite::Reseeding::kEachRoundOfCycles, false, input_key_);
   std::vector<std::unique_ptr<dittosuite::Instruction>> instructions;
   instructions.push_back(std::move(write_file));
-  auto instruction_set = dittosuite::InstructionSet(syscall_, repeat, std::move(instructions));
+  auto instruction_set =
+      dittosuite::InstructionSet((Instruction::Params){syscall_, repeat}, std::move(instructions));
   instruction_set.Run();
 
   // Check that the number of unique blocks, that were collected, matches the expected number
@@ -245,11 +248,12 @@ TEST_F(WriteFileTest, WroteMultipleBlocksRandomRepeatedReseededEachCycle) {
       }));
 
   auto write_file = std::make_unique<dittosuite::WriteFile>(
-      syscall_, repeat, size, block_size, 0, dittosuite::Order::kRandom, 0,
+      (Instruction::Params){syscall_, repeat}, size, block_size, 0, dittosuite::Order::kRandom, 0,
       dittosuite::Reseeding::kEachCycle, false, input_key_);
   std::vector<std::unique_ptr<dittosuite::Instruction>> instructions;
   instructions.push_back(std::move(write_file));
-  auto instruction_set = dittosuite::InstructionSet(syscall_, repeat, std::move(instructions));
+  auto instruction_set =
+      dittosuite::InstructionSet((Instruction::Params){syscall_, repeat}, std::move(instructions));
   instruction_set.Run();
 
   // Check that the number of unique blocks, that were collected, matches the expected number
@@ -260,7 +264,8 @@ TEST_F(WriteFileTest, UsedFileSize) {
   // Expect a single Write() with the correct block_size (equal to file size)
   EXPECT_CALL(syscall_, Write(fd_, _, MockSyscall::kDefaultFileSize, _));
 
-  auto write_file = dittosuite::WriteFile(syscall_, 1, -1, -1, 0, dittosuite::Order::kSequential, 0,
+  auto write_file = dittosuite::WriteFile((Instruction::Params){syscall_, 1}, -1, -1, 0,
+                                          dittosuite::Order::kSequential, 0,
                                           dittosuite::Reseeding::kOnce, false, input_key_);
   write_file.Run();
 }
@@ -279,17 +284,17 @@ TEST_F(WriteFileTest, UsedFileSizeRepeated) {
     }
   }
 
-  auto write_file =
-      dittosuite::WriteFile(syscall_, sizes.size(), -1, -1, 0, dittosuite::Order::kSequential, 0,
-                            dittosuite::Reseeding::kOnce, false, input_key_);
+  auto write_file = dittosuite::WriteFile(
+      (Instruction::Params){syscall_, static_cast<int>(sizes.size())}, -1, -1, 0,
+      dittosuite::Order::kSequential, 0, dittosuite::Reseeding::kOnce, false, input_key_);
   write_file.Run();
 }
 
 TEST_F(WriteFileDeathTest, DiedDueToInvalidFd) {
   SharedVariables::Set(input_key_, -1);
-  auto instruction = dittosuite::WriteFile(syscall_, 1, -1, MockSyscall::kDefaultFileSize, 0,
-                                           dittosuite::Order::kRandom, 0,
-                                           dittosuite::Reseeding::kOnce, false, input_key_);
+  auto instruction = dittosuite::WriteFile(
+      (Instruction::Params){syscall_, 1}, -1, MockSyscall::kDefaultFileSize, 0,
+      dittosuite::Order::kRandom, 0, dittosuite::Reseeding::kOnce, false, input_key_);
 
   // Will fail when GetFileSize() is called for an invalid fd during setup
   EXPECT_CALL(syscall_, FStat(-1, _)).WillRepeatedly(Return(-1));
