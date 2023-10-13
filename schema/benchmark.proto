@@ -19,6 +19,13 @@ enum AccessMode {
   READ_WRITE = 3;
 }
 
+message CpuWork {
+  oneof type {
+    uint64 cycles = 1;
+    double utilization = 2;
+  }
+}
+
 message BinderService {
   optional string name = 1;
   optional uint32 threads = 2;
@@ -131,6 +138,7 @@ message Instruction {
     InvalidateCache invalidate_cache = 12;
     BinderRequest binder_request = 13;
     BinderService binder_service = 14;
+    CpuWork cpu_work = 16;
   };
   optional uint64 period_us = 15 [default = 0];
 }
