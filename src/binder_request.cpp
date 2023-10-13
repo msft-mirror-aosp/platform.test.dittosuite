@@ -20,13 +20,12 @@
 
 namespace dittosuite {
 
-BinderRequest::BinderRequest(SyscallInterface& syscall, const std::string& kName, int repeat,
+BinderRequest::BinderRequest(const std::string& kName, const Params& params,
                              const std::string& service_name)
-    : Instruction(syscall, kName, repeat), service_name_(service_name) {}
+    : Instruction(kName, params), service_name_(service_name) {}
 
-BinderRequestDitto::BinderRequestDitto(SyscallInterface& syscall, int repeat,
-                                       const std::string& service_name)
-    : BinderRequest(syscall, kName, repeat, service_name) {}
+BinderRequestDitto::BinderRequestDitto(const Params& params, const std::string& service_name)
+    : BinderRequest(kName, params, service_name) {}
 
 void BinderRequestDitto::RunSingle() {
   const char c = 1;
@@ -53,8 +52,8 @@ void BinderRequestDitto::TearDownSingle(bool is_last) {
   }
 }
 
-BinderRequestMountService::BinderRequestMountService(SyscallInterface& syscall, int repeat)
-    : BinderRequest(syscall, kName, repeat, "mount") {}
+BinderRequestMountService::BinderRequestMountService(const Params& params)
+    : BinderRequest(kName, params, "mount") {}
 
 void BinderRequestMountService::RunSingle() {
   bool ret = service_->isUsbMassStorageConnected();

@@ -29,8 +29,7 @@ class BinderService : public Instruction {
  public:
   inline static const std::string kName = "binder_service";
 
-  explicit BinderService(SyscallInterface& syscall, int repeat, const std::string& name,
-                         int64_t threads);
+  explicit BinderService(const Params& params, const std::string& name, int64_t threads);
 
  protected:
   int64_t threads_;

@@ -20,6 +20,8 @@
 #include <ditto/delete_file.h>
 #include <ditto/syscall.h>
 
+using dittosuite::Instruction;
+
 class DeleteFileTest : public InstructionTest {
  protected:
   std::string file_name = "test";
@@ -35,7 +37,8 @@ class DeleteFileTest : public InstructionTest {
 };
 
 TEST_F(DeleteFileTest, FileDeletedWithPathName) {
-  dittosuite::DeleteFile instruction(dittosuite::Syscall::GetSyscall(), 1, file_name);
+  dittosuite::DeleteFile instruction((Instruction::Params){dittosuite::Syscall::GetSyscall(), 1},
+                                     file_name);
   instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), -1);
@@ -43,7 +46,7 @@ TEST_F(DeleteFileTest, FileDeletedWithPathName) {
 
 TEST_F(DeleteFileTest, FileDeletedWithVariable) {
   dittosuite::SharedVariables::Set(thread_ids, "input", path);
-  dittosuite::DeleteFile instruction(dittosuite::Syscall::GetSyscall(), 1,
+  dittosuite::DeleteFile instruction((Instruction::Params){dittosuite::Syscall::GetSyscall(), 1},
                                      dittosuite::SharedVariables::GetKey(thread_ids, "input"));
   instruction.Run();
 

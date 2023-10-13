@@ -24,7 +24,7 @@ class Multithreading : public Instruction {
  public:
   inline static const std::string kName = "multithreading";
 
-  explicit Multithreading(SyscallInterface& syscall, int repeat,
+  explicit Multithreading(const Params& params,
                           std::vector<std::unique_ptr<Instruction>> instructions);
 
   std::unique_ptr<Result> CollectResults(const std::string& prefix) override;
