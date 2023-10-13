@@ -40,13 +40,23 @@ void Instruction::Run() {
   }
 }
 
-void Instruction::RunSynchronized(pthread_barrier_t* barrier) {
+void Instruction::RunSynchronized(pthread_barrier_t* barrier, const MultithreadingParams& params) {
+  int ret = pthread_setname_np(pthread_self(), params.name_.c_str());
+  if (ret) {
+    if (ret == ERANGE) {
+      LOGF("Name too long for thread, max 15 chars allowed: " + params.name_);
+    } else {
+      LOGF("Error setting thread name: " + std::to_string(ret));
+    }
+  }
+
   pthread_barrier_wait(barrier);
   Instruction::Run();
 }
 
-std::thread Instruction::SpawnThread(pthread_barrier_t* barrier) {
-  return std::thread([=] { RunSynchronized(barrier); });
+std::thread Instruction::SpawnThread(pthread_barrier_t* barrier,
+                                     const MultithreadingParams& params) {
+  return std::thread([=] { RunSynchronized(barrier, params); });
 }
 
 void Instruction::TearDown() {}
