@@ -26,8 +26,8 @@
 #include <ditto/instruction_set.h>
 #include <ditto/invalidate_cache.h>
 #include <ditto/logger.h>
-#include <ditto/multithreading.h>
 #include <ditto/multiprocessing.h>
+#include <ditto/multithreading.h>
 #include <ditto/open_file.h>
 #include <ditto/read_directory.h>
 #include <ditto/read_write_file.h>
@@ -40,7 +40,7 @@ typedef dittosuiteproto::Instruction::InstructionOneofCase InstructionType;
 typedef dittosuiteproto::BinderRequest::ServiceOneofCase RequestService;
 
 std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSet(
-    const std::list<int>& thread_ids, const int repeat,
+    const dittosuite::Instruction::Params& instruction_params, const std::list<int>& thread_ids,
     const dittosuiteproto::InstructionSet& proto_instruction_set) {
   std::vector<std::unique_ptr<Instruction>> instructions;
   for (const auto& instruction : proto_instruction_set.instructions()) {
@@ -61,20 +61,23 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
       seed = time(nullptr);
     }
 
-    return std::make_unique<InstructionSet>(Syscall::GetSyscall(), repeat, std::move(instructions),
-                                            list_key, item_key, access_order, reseeding, seed);
+    return std::make_unique<InstructionSet>(instruction_params, std::move(instructions), list_key,
+                                            item_key, access_order, reseeding, seed);
   } else {
-    return std::make_unique<InstructionSet>(Syscall::GetSyscall(), repeat, std::move(instructions));
+    return std::make_unique<InstructionSet>(instruction_params, std::move(instructions));
   }
 }
 
 std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     const std::list<int>& thread_ids, const dittosuiteproto::Instruction& proto_instruction) {
-  int repeat = proto_instruction.repeat();
+  Instruction::Params instruction_params{
+      .syscall = Syscall::GetSyscall(),
+      .repeat = proto_instruction.repeat(),
+  };
 
   switch (proto_instruction.instruction_oneof_case()) {
     case InstructionType::kInstructionSet: {
-      return InstructionFactory::CreateFromProtoInstructionSet(thread_ids, repeat,
+      return InstructionFactory::CreateFromProtoInstructionSet(instruction_params, thread_ids,
                                                                proto_instruction.instruction_set());
     }
     case InstructionType::kOpenFile: {
@@ -105,16 +108,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       if (options.has_input()) {
         int input_key = SharedVariables::GetKey(thread_ids, options.input());
-        return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, input_key,
-                                          options.create(), options.direct_io(), fd_key,
-                                          access_mode);
-      } else if (options.has_path_name()) {
-        return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.path_name(),
-                                          options.create(), options.direct_io(), fd_key,
-                                          access_mode);
-      } else {
-        return std::make_unique<OpenFile>(Syscall::GetSyscall(), repeat, options.create(),
+        return std::make_unique<OpenFile>(instruction_params, input_key, options.create(),
                                           options.direct_io(), fd_key, access_mode);
+      } else if (options.has_path_name()) {
+        return std::make_unique<OpenFile>(instruction_params, options.path_name(), options.create(),
+                                          options.direct_io(), fd_key, access_mode);
+      } else {
+        return std::make_unique<OpenFile>(instruction_params, options.create(), options.direct_io(),
+                                          fd_key, access_mode);
       }
     }
     case InstructionType::kDeleteFile: {
@@ -122,9 +123,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       if (options.has_input()) {
         int input_key = SharedVariables::GetKey(thread_ids, options.input());
-        return std::make_unique<DeleteFile>(Syscall::GetSyscall(), repeat, input_key);
+        return std::make_unique<DeleteFile>(instruction_params, input_key);
       } else {
-        return std::make_unique<DeleteFile>(Syscall::GetSyscall(), repeat, options.path_name());
+        return std::make_unique<DeleteFile>(instruction_params, options.path_name());
       }
     }
     case InstructionType::kCloseFile: {
@@ -132,14 +133,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
-      return std::make_unique<CloseFile>(Syscall::GetSyscall(), repeat, fd_key);
+      return std::make_unique<CloseFile>(instruction_params, fd_key);
     }
     case InstructionType::kResizeFile: {
       const auto& options = proto_instruction.resize_file();
 
       int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
-      return std::make_unique<ResizeFile>(Syscall::GetSyscall(), repeat, options.size(), fd_key);
+      return std::make_unique<ResizeFile>(instruction_params, options.size(), fd_key);
     }
     case InstructionType::kWriteFile: {
       const auto& options = proto_instruction.write_file();
@@ -154,9 +155,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       auto reseeding = ConvertReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
-      return std::make_unique<WriteFile>(Syscall::GetSyscall(), repeat, options.size(),
-                                         options.block_size(), options.starting_offset(),
-                                         access_order, seed, reseeding, options.fsync(), fd_key);
+      return std::make_unique<WriteFile>(instruction_params, options.size(), options.block_size(),
+                                         options.starting_offset(), access_order, seed, reseeding,
+                                         options.fsync(), fd_key);
     }
     case InstructionType::kReadFile: {
       const auto& options = proto_instruction.read_file();
@@ -172,17 +173,17 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       auto reseeding = ConvertReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
-      return std::make_unique<ReadFile>(Syscall::GetSyscall(), repeat, options.size(),
-                                        options.block_size(), options.starting_offset(),
-                                        access_order, seed, reseeding, fadvise, fd_key);
+      return std::make_unique<ReadFile>(instruction_params, options.size(), options.block_size(),
+                                        options.starting_offset(), access_order, seed, reseeding,
+                                        fadvise, fd_key);
     }
     case InstructionType::kReadDirectory: {
       const auto& options = proto_instruction.read_directory();
 
       int output_key = SharedVariables::GetKey(thread_ids, options.output());
 
-      return std::make_unique<ReadDirectory>(Syscall::GetSyscall(), repeat,
-                                             options.directory_name(), output_key);
+      return std::make_unique<ReadDirectory>(instruction_params, options.directory_name(),
+                                             output_key);
     }
     case InstructionType::kResizeFileRandom: {
       const auto& options = proto_instruction.resize_file_random();
@@ -195,8 +196,8 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       auto reseeding = ConvertReseeding(options.reseeding());
       int fd_key = SharedVariables::GetKey(thread_ids, options.input_fd());
 
-      return std::make_unique<ResizeFileRandom>(Syscall::GetSyscall(), repeat, options.min(),
-                                                options.max(), seed, reseeding, fd_key);
+      return std::make_unique<ResizeFileRandom>(instruction_params, options.min(), options.max(),
+                                                seed, reseeding, fd_key);
     }
     case InstructionType::kMultithreading: {
       const auto& options = proto_instruction.multithreading();
@@ -218,15 +219,14 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       }
 
       if (options.fork()) {
-        return std::make_unique<Multiprocessing>(Syscall::GetSyscall(), repeat,
-                                                 std::move(instructions), std::move(thread_names));
+        return std::make_unique<Multiprocessing>(instruction_params, std::move(instructions),
+                                                 std::move(thread_names));
       } else {
-        return std::make_unique<Multithreading>(Syscall::GetSyscall(), repeat,
-                                                std::move(instructions));
+        return std::make_unique<Multithreading>(instruction_params, std::move(instructions));
       }
     }
     case InstructionType::kInvalidateCache: {
-      return std::make_unique<InvalidateCache>(Syscall::GetSyscall(), repeat);
+      return std::make_unique<InvalidateCache>(instruction_params);
     }
 #if __ANDROID__
     case InstructionType::kBinderRequest: {
@@ -234,12 +234,11 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
       switch (binder_request.service_oneof_case()) {
         case RequestService::kServiceName: {
           const auto& options = proto_instruction.binder_request();
-          return std::make_unique<BinderRequestDitto>(Syscall::GetSyscall(), repeat,
-                                                      options.service_name());
+          return std::make_unique<BinderRequestDitto>(instruction_params, options.service_name());
           break;
         }
         case RequestService::kRunningService: {
-          return std::make_unique<BinderRequestMountService>(Syscall::GetSyscall(), repeat);
+          return std::make_unique<BinderRequestMountService>(instruction_params);
           break;
         }
         case RequestService::SERVICE_ONEOF_NOT_SET: {
@@ -251,8 +250,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     case InstructionType::kBinderService: {
       const auto& options = proto_instruction.binder_service();
 
-      return std::make_unique<BinderService>(Syscall::GetSyscall(), repeat, options.name(),
-                                             options.threads());
+      return std::make_unique<BinderService>(instruction_params, options.name(), options.threads());
     }
 #endif /*__ANDROID__*/
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {

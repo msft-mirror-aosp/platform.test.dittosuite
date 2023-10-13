@@ -25,7 +25,7 @@ class Multiprocessing : public Instruction {
  public:
   inline static const std::string kName = "multiprocessing";
 
-  explicit Multiprocessing(SyscallInterface& syscall, int repeat,
+  explicit Multiprocessing(const Params& params,
                            std::vector<std::unique_ptr<Instruction>> instructions,
                            std::vector<std::string> thread_names);
   std::unique_ptr<Result> CollectResults(const std::string& prefix) override;
