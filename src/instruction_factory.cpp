@@ -29,6 +29,7 @@
 #include <ditto/logger.h>
 #include <ditto/multiprocessing.h>
 #include <ditto/multithreading.h>
+#include <ditto/multithreading_utils.h>
 #include <ditto/open_file.h>
 #include <ditto/read_directory.h>
 #include <ditto/read_write_file.h>
@@ -217,7 +218,13 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
           } else {
             thread_name = std::to_string(i);
           }
-          thread_params.push_back(MultithreadingParams(thread_name));
+
+          SchedAttr sched_attr = {};
+          if (thread.has_sched_attr()) {
+            sched_attr = thread.sched_attr();
+          }
+
+          thread_params.push_back(MultithreadingParams(thread_name, sched_attr));
         }
       }
 
