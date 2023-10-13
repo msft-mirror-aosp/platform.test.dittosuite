@@ -19,6 +19,10 @@ enum AccessMode {
   READ_WRITE = 3;
 }
 
+message MemoryAllocate {
+  optional uint64 size = 1;
+}
+
 message CpuWork {
   oneof type {
     uint64 cycles = 1;
@@ -176,6 +180,7 @@ message Instruction {
     BinderRequest binder_request = 13;
     BinderService binder_service = 14;
     CpuWork cpu_work = 16;
+    MemoryAllocate mem_alloc = 17;
   };
   optional uint64 period_us = 15 [default = 0];
 }

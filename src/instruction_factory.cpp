@@ -27,6 +27,7 @@
 #include <ditto/instruction_set.h>
 #include <ditto/invalidate_cache.h>
 #include <ditto/logger.h>
+#include <ditto/memory_allocation.h>
 #include <ditto/multiprocessing.h>
 #include <ditto/multithreading.h>
 #include <ditto/multithreading_utils.h>
@@ -286,6 +287,11 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
           break;
         }
       }
+    }
+    case InstructionType::kMemAlloc: {
+      const auto& options = proto_instruction.mem_alloc();
+      return std::make_unique<MemoryAllocation>(instruction_params, options.size());
+      break;
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");
