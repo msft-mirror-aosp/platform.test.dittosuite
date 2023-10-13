@@ -22,7 +22,7 @@ class CloseFile : public Instruction {
  public:
   inline static const std::string kName = "close_file";
 
-  explicit CloseFile(SyscallInterface& syscall, int repeat, int input_fd_key);
+  explicit CloseFile(const Params& params, int input_fd_key);
 
  private:
   void RunSingle() override;

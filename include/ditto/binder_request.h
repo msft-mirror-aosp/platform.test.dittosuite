@@ -29,7 +29,7 @@ namespace dittosuite {
 
 class BinderRequest : public Instruction {
  public:
-  explicit BinderRequest(SyscallInterface& syscall, const std::string& kName, int repeat,
+  explicit BinderRequest(const std::string& kName, const Params& params,
                          const std::string& service_name);
 
  protected:
@@ -44,8 +44,7 @@ class BinderRequestDitto : public BinderRequest {
  public:
   inline static const std::string kName = "binder_request_ditto";
 
-  explicit BinderRequestDitto(SyscallInterface& syscall, int repeat,
-                              const std::string& service_name);
+  explicit BinderRequestDitto(const Params& params, const std::string& service_name);
 
  protected:
   void RunSingle() override;
@@ -61,7 +60,7 @@ class BinderRequestMountService : public BinderRequest {
  public:
   inline static const std::string kName = "binder_request_ms";
 
-  explicit BinderRequestMountService(SyscallInterface& syscall, int repeat);
+  explicit BinderRequestMountService(const Params& params);
 
  protected:
   void RunSingle() override;

@@ -17,6 +17,7 @@
 #include <ditto/invalidate_cache.h>
 #include <ditto/syscall.h>
 
+using dittosuite::Instruction;
 using ::testing::_;
 
 class InvalidateCacheTest : public InstructionTest {};
@@ -27,6 +28,6 @@ TEST_F(InvalidateCacheTest, InvalidatedCache) {
   EXPECT_CALL(syscall_, Write(_, _, sizeof(char), 0));
   EXPECT_CALL(syscall_, Close(_));
 
-  dittosuite::InvalidateCache instruction(syscall_, 1);
+  dittosuite::InvalidateCache instruction((Instruction::Params){syscall_, 1});
   instruction.Run();
 }
