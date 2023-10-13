@@ -50,6 +50,10 @@ void Instruction::RunSynchronized(pthread_barrier_t* barrier, const Multithreadi
     }
   }
 
+  if (params.sched_attr_.IsSet()) {
+    params.sched_attr_.Set();
+  }
+
   pthread_barrier_wait(barrier);
   Instruction::Run();
 }

@@ -1,5 +1,6 @@
 main: {
   multithreading: {
+    fork: true;
     threads: [
       {
         name: "Cycles"
