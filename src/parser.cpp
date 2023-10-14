@@ -25,11 +25,6 @@
 
 #include <google/protobuf/text_format.h>
 
-#ifdef __ANDROID__
-#include <benchmark.pb.h>
-#else
-#include "schema/benchmark.pb.h"
-#endif
 
 namespace dittosuite {
 
@@ -38,7 +33,7 @@ Parser& Parser::GetParser() {
   return parser;
 }
 
-void Parser::Parse(const std::string& file_path, const std::vector<std::string>& parameters) {
+std::unique_ptr<dittosuiteproto::Benchmark> Parser::Parse(const std::string& file_path, const std::vector<std::string>& parameters) {
   std::unique_ptr<dittosuiteproto::Benchmark> benchmark =
       std::make_unique<dittosuiteproto::Benchmark>();
 
@@ -78,6 +73,8 @@ void Parser::Parse(const std::string& file_path, const std::vector<std::string>&
   }
 
   SharedVariables::ClearKeys();
+
+  return benchmark;
 }
 
 std::unique_ptr<Instruction> Parser::GetInit() {
