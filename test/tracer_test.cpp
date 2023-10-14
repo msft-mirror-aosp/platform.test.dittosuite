@@ -1,4 +1,4 @@
-// Copyright (C) 2021 The Android Open Source Project
+// Copyright (C) 2023 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
+#include <ditto/tracer.h>
+#include <gtest/gtest.h>
 
-#include <ditto/instruction.h>
+#include <vector>
 
 namespace dittosuite {
 
-class CloseFile : public Instruction {
- public:
-  inline static const std::string kName = "close_file";
+TEST(DittoTracer, OneVar) {
+  ASSERT_EQ(trace_format("ABC"), std::string("ABC"));
+}
 
-  explicit CloseFile(const Params& params, int input_fd_key);
+TEST(DittoTracer, TwoVars) {
+  ASSERT_EQ(trace_format("ABC", "DEF"), std::string("ABC|DEF"));
+}
 
- private:
-  void RunSingle() override;
-
-  int input_fd_key_;
-};
+TEST(DittoTracer, ThreeVar) {
+  ASSERT_EQ(trace_format("ABC", "DEF", "GHI"), std::string("ABC|DEF|GHI"));
+}
 
 }  // namespace dittosuite

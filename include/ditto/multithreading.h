@@ -17,6 +17,7 @@
 #include <pthread.h>
 
 #include <ditto/instruction.h>
+#include <ditto/multithreading_utils.h>
 
 namespace dittosuite {
 
@@ -24,8 +25,9 @@ class Multithreading : public Instruction {
  public:
   inline static const std::string kName = "multithreading";
 
-  explicit Multithreading(SyscallInterface& syscall, int repeat,
-                          std::vector<std::unique_ptr<Instruction>> instructions);
+  explicit Multithreading(const Instruction::Params& params,
+                          std::vector<std::unique_ptr<Instruction>> instructions,
+                          std::vector<MultithreadingParams> thread_params);
 
   std::unique_ptr<Result> CollectResults(const std::string& prefix) override;
 
@@ -36,6 +38,7 @@ class Multithreading : public Instruction {
 
   std::vector<std::unique_ptr<Instruction>> instructions_;
   std::vector<std::thread> threads_;
+  std::vector<MultithreadingParams> thread_params_;
   pthread_barrier_t barrier_;
 };
 

@@ -22,7 +22,7 @@ class InvalidateCache : public Instruction {
  public:
   inline static const std::string kName = "invalidate_cache";
 
-  explicit InvalidateCache(SyscallInterface& syscall, int repeat);
+  explicit InvalidateCache(const Params& params);
 
  private:
   void RunSingle() override;

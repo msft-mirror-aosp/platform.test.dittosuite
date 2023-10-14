@@ -24,8 +24,7 @@ class ReadDirectory : public Instruction {
  public:
   inline static const std::string kName = "read_directory";
 
-  explicit ReadDirectory(SyscallInterface& syscall, int repeat, const std::string& directory_name,
-                         int output_key);
+  explicit ReadDirectory(const Params& params, const std::string& directory_name, int output_key);
 
  private:
   void RunSingle() override;
