@@ -15,8 +15,13 @@
 #pragma once
 
 #include <string>
-
 #include <ditto/instruction_set.h>
+
+#ifdef __ANDROID__
+#include <benchmark.pb.h>
+#else
+#include "schema/benchmark.pb.h"
+#endif
 
 namespace dittosuite {
 
@@ -26,7 +31,7 @@ class Parser {
   void operator=(const Parser&) = delete;
 
   static Parser& GetParser();
-  void Parse(const std::string& file_path, const std::vector<std::string>& parameters);
+  std::unique_ptr<dittosuiteproto::Benchmark> Parse(const std::string& file_path, const std::vector<std::string>& parameters);
   std::unique_ptr<Instruction> GetInit();
   std::unique_ptr<Instruction> GetMain();
   std::unique_ptr<Instruction> GetCleanUp();

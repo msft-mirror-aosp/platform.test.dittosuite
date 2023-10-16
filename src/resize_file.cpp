@@ -21,8 +21,8 @@
 
 namespace dittosuite {
 
-ResizeFile::ResizeFile(SyscallInterface& syscall, int repeat, int64_t size, int input_fd_key)
-    : Instruction(syscall, kName, repeat), size_(size), input_fd_key_(input_fd_key) {}
+ResizeFile::ResizeFile(const Params& params, int64_t size, int input_fd_key)
+    : Instruction(kName, params), size_(size), input_fd_key_(input_fd_key) {}
 
 void ResizeFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));
@@ -39,9 +39,9 @@ void ResizeFile::RunSingle() {
   }
 }
 
-ResizeFileRandom::ResizeFileRandom(SyscallInterface& syscall, int repeat, int64_t min, int64_t max,
-                                   uint64_t seed, Reseeding reseeding, int input_fd_key)
-    : ResizeFile(syscall, repeat, -1, input_fd_key),
+ResizeFileRandom::ResizeFileRandom(const Params& params, int64_t min, int64_t max, uint64_t seed,
+                                   Reseeding reseeding, int input_fd_key)
+    : ResizeFile(params, -1, input_fd_key),
       min_(min),
       max_(max),
       gen_(seed),

@@ -30,5 +30,6 @@ struct CmdArguments {
   std::vector<std::string> parameters;
 };
 CmdArguments ParseArguments(int argc, char** argv);
+ResultsOutput ArgToResultsOutput(const std::string_view optarg);
 
 }  // namespace dittosuite

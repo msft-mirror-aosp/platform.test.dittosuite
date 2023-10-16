@@ -37,6 +37,18 @@ TEST(TimespecUtilsTest, NanosToTimespec) {
   }
 }
 
+class TimeSpecConversion : public testing::TestWithParam<std::tuple<uint64_t, timespec>> {};
+
+TEST_P(TimeSpecConversion, MicrosToTimespec) {
+  auto const& param = GetParam();
+  ASSERT_TRUE(MicrosToTimespec(std::get<0>(param)) == std::get<1>(param));
+}
+
+INSTANTIATE_TEST_CASE_P(TimeSpecConversionParametric, TimeSpecConversion,
+                        ::testing::Values(std::make_tuple(0, (timespec){0, 0}),
+                                          std::make_tuple(1e6, (timespec){1, 0}),
+                                          std::make_tuple(1, (timespec){0, 1000})));
+
 TEST(TimespecUtilsTest, TimespecToNanosInverse) {
   for (const auto& ts0 : tss) {
     ASSERT_EQ(ts0, NanosToTimespec(TimespecToNanos(ts0)));

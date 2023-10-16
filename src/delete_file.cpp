@@ -19,13 +19,11 @@
 
 namespace dittosuite {
 
-DeleteFile::DeleteFile(SyscallInterface& syscall, int repeat, const std::string& path_name)
-    : Instruction(syscall, kName, repeat),
-      path_name_(GetAbsolutePath() + path_name),
-      input_key_(-1) {}
+DeleteFile::DeleteFile(const Params& params, const std::string& path_name)
+    : Instruction(kName, params), path_name_(GetAbsolutePath() + path_name), input_key_(-1) {}
 
-DeleteFile::DeleteFile(SyscallInterface& syscall, int repeat, int input_key)
-    : Instruction(syscall, kName, repeat), input_key_(input_key) {}
+DeleteFile::DeleteFile(const Params& params, int input_key)
+    : Instruction(kName, params), input_key_(input_key) {}
 
 void DeleteFile::SetUpSingle() {
   if (input_key_ != -1) {

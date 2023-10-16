@@ -23,6 +23,8 @@
 #include <ditto/resize_file.h>
 #include <ditto/syscall.h>
 
+using dittosuite::Instruction;
+
 class ResizeFileTest : public InstructionTestWithParam<dittosuite::OpenFile::AccessMode> {
  protected:
   std::string file_name = "test";
@@ -38,14 +40,15 @@ TEST_P(ResizeFileTest, ResizeFileTestRun) {
   dittosuite::OpenFile::AccessMode access_mode = GetParam();
   int fd_key = dittosuite::SharedVariables::GetKey(thread_ids, "test_file");
 
-  dittosuite::OpenFile open_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, file_name,
-                                             true, false, fd_key, access_mode);
+  dittosuite::OpenFile open_file_instruction(
+      (Instruction::Params){dittosuite::Syscall::GetSyscall(), repeat}, file_name, true, false,
+      fd_key, access_mode);
   open_file_instruction.Run();
 
   ASSERT_EQ(access(path.c_str(), F_OK), 0);
 
-  dittosuite::ResizeFile resize_file_instruction(dittosuite::Syscall::GetSyscall(), repeat, size,
-                                                 fd_key);
+  dittosuite::ResizeFile resize_file_instruction(
+      (Instruction::Params){dittosuite::Syscall::GetSyscall(), repeat}, size, fd_key);
   if (access_mode == dittosuite::OpenFile::AccessMode::kReadOnly) {
     ASSERT_DEATH(resize_file_instruction.Run(), ".*");
   } else {

@@ -20,6 +20,7 @@
 #include <string>
 #include <thread>
 
+#include <ditto/multithreading_utils.h>
 #include <ditto/result.h>
 #include <ditto/sampler.h>
 #include <ditto/syscall.h>
@@ -31,13 +32,21 @@ enum class Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
 
 class Instruction {
  public:
-  explicit Instruction(SyscallInterface& syscall, const std::string& name, int repeat);
+  struct Params {
+    Params(SyscallInterface& syscall, int repeat = 1, uint64_t period_us = 0)
+        : syscall_(syscall), repeat_(repeat), period_us_(period_us) {}
+    SyscallInterface& syscall_;
+    int repeat_;
+    uint64_t period_us_;
+  };
+
+  explicit Instruction(const std::string& name, const Params& params);
   virtual ~Instruction() = default;
 
   virtual void SetUp();
   void Run();
-  void RunSynchronized(pthread_barrier_t* barrier);
-  std::thread SpawnThread(pthread_barrier_t* barrier);
+  void RunSynchronized(pthread_barrier_t* barrier, const MultithreadingParams& params);
+  std::thread SpawnThread(pthread_barrier_t* barrier, const MultithreadingParams& params);
   virtual void TearDown();
 
   virtual std::unique_ptr<Result> CollectResults(const std::string& prefix);
@@ -47,15 +56,25 @@ class Instruction {
  protected:
   virtual void SetUpSingle();
   virtual void RunSingle() = 0;
-  virtual void TearDownSingle();
+  /* This function is executed after every RunSingle(). In some cases, for
+   * example in the implementation of a producer-consumer, the consumer should
+   * know at what time it should stop with its execution, and this can be
+   * handled by the producer to send a special message at the last
+   * TearDownSingle. The last iteration of TearDownSingle has the `is_last`
+   * value set to true, false otherwise. */
+  virtual void TearDownSingle(bool is_last);
 
   std::string GetAbsolutePath();
 
-  SyscallInterface& syscall_;
   static int absolute_path_key_;
   std::string name_;
+  SyscallInterface& syscall_;
   int repeat_;
+  uint64_t period_us_;
   TimeSampler time_sampler_;
+
+ private:
+  timespec next_awake_time_;
 };
 
-} // namespace dittosuite
+}  // namespace dittosuite

@@ -27,15 +27,15 @@ namespace dittosuite {
 
 class ReadWriteFile : public Instruction {
  public:
-  explicit ReadWriteFile(SyscallInterface& syscall, const std::string& name, int repeat,
-                         int64_t size, int64_t block_size, int64_t starting_offset,
-                         Order access_order, uint32_t seed, Reseeding reseeding, int input_fd_key);
+  explicit ReadWriteFile(const std::string& name, const Params& params, int64_t size,
+                         int64_t block_size, int64_t starting_offset, Order access_order,
+                         uint32_t seed, Reseeding reseeding, int input_fd_key);
   std::unique_ptr<Result> CollectResults(const std::string& prefix) override;
 
  protected:
   virtual void SetUpSingle() override;
   virtual void RunSingle() override;
-  void TearDownSingle() override;
+  void TearDownSingle(bool is_last) override;
 
   BandwidthSampler bandwidth_sampler_;
   int64_t size_;
@@ -65,7 +65,7 @@ class WriteFile : public ReadWriteFile {
  public:
   inline static const std::string kName = "write_file";
 
-  explicit WriteFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
+  explicit WriteFile(const Params& params, int64_t size, int64_t block_size,
                      int64_t starting_offset, Order access_order, uint32_t seed,
                      Reseeding reseeding, bool fsync, int input_fd_key);
 
@@ -79,9 +79,9 @@ class ReadFile : public ReadWriteFile {
  public:
   inline static const std::string kName = "read_file";
 
-  explicit ReadFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
-                    int64_t starting_offset, Order access_order, uint32_t seed, Reseeding reseeding,
-                    int fadvise, int input_fd_key);
+  explicit ReadFile(const Params& params, int64_t size, int64_t block_size, int64_t starting_offset,
+                    Order access_order, uint32_t seed, Reseeding reseeding, int fadvise,
+                    int input_fd_key);
 
  private:
   void SetUpSingle() override;

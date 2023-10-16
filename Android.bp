@@ -21,8 +21,17 @@ cc_defaults {
         "include",
     ],
     generated_headers: ["dittosuite-proto"],
-    static_libs: ["dittosuite-proto", "libbase_ndk"],
-    shared_libs: ["libprotobuf-cpp-full", "liblog"],
+    static_libs: [
+        "dittosuite-proto",
+        "libbase_ndk",
+        "libstorage",
+    ],
+    shared_libs: [
+        "libbinder",
+        "liblog",
+        "libutils",
+        "libprotobuf-cpp-full",
+    ],
     cflags: [
       "-Wall",
       "-Werror",

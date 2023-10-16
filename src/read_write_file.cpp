@@ -21,11 +21,10 @@
 
 namespace dittosuite {
 
-ReadWriteFile::ReadWriteFile(SyscallInterface& syscall, const std::string& name, int repeat,
-                             int64_t size, int64_t block_size, int64_t starting_offset,
-                             Order access_order, uint32_t seed, Reseeding reseeding,
-                             int input_fd_key)
-    : Instruction(syscall, name, repeat),
+ReadWriteFile::ReadWriteFile(const std::string& name, const Params& params, int64_t size,
+                             int64_t block_size, int64_t starting_offset, Order access_order,
+                             uint32_t seed, Reseeding reseeding, int input_fd_key)
+    : Instruction(name, params),
       size_(size),
       block_size_(block_size),
       starting_offset_(starting_offset),
@@ -112,11 +111,11 @@ void ReadWriteFile::SetUpSingle() {
 
 void ReadWriteFile::RunSingle() {}
 
-WriteFile::WriteFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
+WriteFile::WriteFile(const Params& params, int64_t size, int64_t block_size,
                      int64_t starting_offset, Order access_order, uint32_t seed,
                      Reseeding reseeding, bool fsync, int input_fd_key)
-    : ReadWriteFile(syscall, kName, repeat, size, block_size, starting_offset, access_order, seed,
-                    reseeding, input_fd_key),
+    : ReadWriteFile(kName, params, size, block_size, starting_offset, access_order, seed, reseeding,
+                    input_fd_key),
       fsync_(fsync) {}
 
 void WriteFile::RunSingle() {
@@ -133,11 +132,11 @@ void WriteFile::RunSingle() {
   }
 }
 
-ReadFile::ReadFile(SyscallInterface& syscall, int repeat, int64_t size, int64_t block_size,
-                   int64_t starting_offset, Order access_order, uint32_t seed, Reseeding reseeding,
-                   int fadvise, int input_fd_key)
-    : ReadWriteFile(syscall, kName, repeat, size, block_size, starting_offset, access_order, seed,
-                    reseeding, input_fd_key),
+ReadFile::ReadFile(const Params& params, int64_t size, int64_t block_size, int64_t starting_offset,
+                   Order access_order, uint32_t seed, Reseeding reseeding, int fadvise,
+                   int input_fd_key)
+    : ReadWriteFile(kName, params, size, block_size, starting_offset, access_order, seed, reseeding,
+                    input_fd_key),
       fadvise_(fadvise) {}
 
 void ReadFile::SetUpSingle() {
@@ -160,8 +159,8 @@ void ReadFile::RunSingle() {
   }
 }
 
-void ReadWriteFile::TearDownSingle() {
-  Instruction::TearDownSingle();
+void ReadWriteFile::TearDownSingle(bool is_last) {
+  Instruction::TearDownSingle(is_last);
   bandwidth_sampler_.Measure(size_, time_sampler_.GetSamples().back());
 }
 

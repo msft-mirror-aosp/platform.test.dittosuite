@@ -40,12 +40,14 @@ class Logger {
                        int line, bool print_errno);
 
  protected:
-  Logger() {}
+  Logger() : log_level_(LogLevel::kInfo) {}
 
  private:
   LogLevel log_level_;
   LogStream log_stream_;
 };
+
+LogLevel ArgToLogLevel(const std::string_view optarg);
 
 }  // namespace dittosuite
 
