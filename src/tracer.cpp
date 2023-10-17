@@ -44,12 +44,11 @@ std::string random_string(int len) {
   return ret;
 }
 
-Tracer& Tracer::GetTracer() {
-  static Tracer tracer;
-  return tracer;
-}
+void Tracer::StartSession(std::unique_ptr<dittosuiteproto::Benchmark> benchmark) {
+  if (!trace_marker_.good()) {
+    return;
+  }
 
-void Tracer::Start(std::unique_ptr<dittosuiteproto::Benchmark> benchmark) {
   std::string benchmark_dump;
   google::protobuf::util::JsonPrintOptions options;
 
@@ -61,27 +60,47 @@ void Tracer::Start(std::unique_ptr<dittosuiteproto::Benchmark> benchmark) {
 
   id_ = random_string(16);
 
-  trace_marker_ << trace_format("B", std::to_string(gettid()), "Session", id_, benchmark_dump) << std::endl;
+  trace_marker_ << trace_format("B", std::to_string(getpid()), "Session", benchmark_dump, id_);
+  trace_marker_.write("\0", 1);
+  trace_marker_.flush();
 }
 
-void Tracer::StartBenchmark() {
-  trace_marker_ <<  trace_format("B", std::to_string(gettid()), "Benchmark", id_) << std::endl;
+void Tracer::Start(const std::string& splice) {
+  if (!trace_marker_.good()) {
+    return;
+  }
+
+  trace_marker_ << trace_format("B", std::to_string(getpid()), splice);
+  trace_marker_.write("\0", 1);
+  trace_marker_.flush();
 }
 
-void Tracer::EndBenchmark() {
-  trace_marker_ <<  trace_format("E", std::to_string(gettid())) << std::endl;
-}
+void Tracer::End(const std::string& splice) {
+  if (!trace_marker_.good()) {
+    return;
+  }
 
+  trace_marker_ << trace_format("E", std::to_string(getpid()), splice);
+  trace_marker_.write("\0", 1);
+  trace_marker_.flush();
+}
 
 Tracer::Tracer() {
-  trace_marker_.open("/sys/kernel/tracing/trace_marker", std::ofstream::out);
+  trace_marker_.open("/sys/kernel/tracing/trace_marker",
+                     std::ofstream::out | std::ofstream::binary);
   if (!trace_marker_.good()) {
-    LOGF("Unable to open trace_marker");
+    LOGW("Unable to open trace_marker");
   }
 }
 
 Tracer::~Tracer() {
-  trace_marker_ <<  trace_format("E", std::to_string(gettid())) << std::endl;
+  if (!trace_marker_.good()) {
+    return;
+  }
+
+  trace_marker_ << trace_format("E", std::to_string(getpid()), "Session", id_);
+  trace_marker_.write("\0", 1);
+  trace_marker_.flush();
 
   trace_marker_.close();
 }

@@ -24,11 +24,11 @@
 #include <ditto/tracer.h>
 
 int main(int argc, char** argv) {
+  dittosuite::Tracer tracer;
   dittosuite::CmdArguments arguments = dittosuite::ParseArguments(argc, argv);
 
   auto benchmark = dittosuite::Parser::GetParser().Parse(arguments.file_path, arguments.parameters);
-  auto &tracer = dittosuite::Tracer::GetTracer();
-  tracer.Start(std::move(benchmark));
+  tracer.StartSession(std::move(benchmark));
 
   auto init = dittosuite::Parser::GetParser().GetInit();
   if (init != nullptr) {
@@ -39,9 +39,9 @@ int main(int argc, char** argv) {
 
   auto main = dittosuite::Parser::GetParser().GetMain();
   main->SetUp();
-  tracer.StartBenchmark();
+  tracer.Start("Benchmark");
   main->Run();
-  tracer.EndBenchmark();
+  tracer.End("Benchmark");
   main->TearDown();
 
   auto result = main->CollectResults("");

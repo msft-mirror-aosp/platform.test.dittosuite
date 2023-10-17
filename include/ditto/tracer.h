@@ -28,18 +28,17 @@ namespace dittosuite {
 
 class Tracer {
  public:
+  Tracer();
+  ~Tracer();
   Tracer(Tracer& other) = delete;
-  static Tracer& GetTracer();
-  void Start(std::unique_ptr<dittosuiteproto::Benchmark> benchmark);
-  void StartBenchmark();
-  void EndBenchmark();
+
+  void StartSession(std::unique_ptr<dittosuiteproto::Benchmark> benchmark);
+  void Start(const std::string &splice);
+  void End(const std::string &splice);
 
  private:
   std::ofstream trace_marker_;
   std::string id_;
-
-  Tracer();
-  ~Tracer();
 };
 
 template <class T>
