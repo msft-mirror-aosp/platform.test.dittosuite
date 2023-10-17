@@ -24,6 +24,7 @@
 #include <ditto/result.h>
 #include <ditto/sampler.h>
 #include <ditto/syscall.h>
+#include <ditto/tracer.h>
 
 namespace dittosuite {
 
@@ -72,6 +73,7 @@ class Instruction {
   int repeat_;
   uint64_t period_us_;
   TimeSampler time_sampler_;
+  Tracer tracer_;
 
  private:
   timespec next_awake_time_;
