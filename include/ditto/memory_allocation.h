@@ -1,4 +1,4 @@
-// Copyright (C) 2021 The Android Open Source Project
+// Copyright (C) 2023 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,16 +18,18 @@
 
 namespace dittosuite {
 
-class CloseFile : public Instruction {
+class MemoryAllocation : public Instruction {
  public:
-  inline static const std::string kName = "close_file";
+  inline static const std::string kName = "memory_allocation";
 
-  explicit CloseFile(const Params& params, int input_fd_key);
+  explicit MemoryAllocation(const Params& params, const uint64_t size);
+  ~MemoryAllocation();
 
  private:
-  void RunSingle() override;
+  size_t size_;
+  char* allocated_memory_;
 
-  int input_fd_key_;
+  void RunSingle();
 };
 
 }  // namespace dittosuite

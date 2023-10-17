@@ -20,9 +20,9 @@
 
 namespace dittosuite {
 
-OpenFile::OpenFile(SyscallInterface& syscall, int repeat, const std::string& path_name, bool create,
-                   bool direct_io, int output_fd_key, AccessMode access_mode)
-    : Instruction(syscall, kName, repeat),
+OpenFile::OpenFile(const Params& params, const std::string& path_name, bool create, bool direct_io,
+                   int output_fd_key, AccessMode access_mode)
+    : Instruction(kName, params),
       random_name_(false),
       path_name_(GetAbsolutePath() + path_name),
       create_(create),
@@ -31,9 +31,9 @@ OpenFile::OpenFile(SyscallInterface& syscall, int repeat, const std::string& pat
       output_fd_key_(output_fd_key),
       access_mode_(access_mode) {}
 
-OpenFile::OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool create,
-                   bool direct_io, int output_fd_key, AccessMode access_mode)
-    : Instruction(syscall, kName, repeat),
+OpenFile::OpenFile(const Params& params, int input_key, bool create, bool direct_io,
+                   int output_fd_key, AccessMode access_mode)
+    : Instruction(kName, params),
       random_name_(false),
       create_(create),
       direct_io_(direct_io),
@@ -41,9 +41,9 @@ OpenFile::OpenFile(SyscallInterface& syscall, int repeat, int input_key, bool cr
       output_fd_key_(output_fd_key),
       access_mode_(access_mode) {}
 
-OpenFile::OpenFile(SyscallInterface& syscall, int repeat, bool create, bool direct_io,
-                   int output_fd_key, AccessMode access_mode)
-    : Instruction(syscall, kName, repeat),
+OpenFile::OpenFile(const Params& params, bool create, bool direct_io, int output_fd_key,
+                   AccessMode access_mode)
+    : Instruction(kName, params),
       random_name_(true),
       create_(create),
       direct_io_(direct_io),

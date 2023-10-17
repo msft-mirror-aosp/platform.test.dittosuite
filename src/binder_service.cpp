@@ -29,9 +29,8 @@ using android::defaultServiceManager;
 
 namespace dittosuite {
 
-BinderService::BinderService(SyscallInterface& syscall, int repeat, const std::string& name,
-                             int64_t threads)
-    : Instruction(syscall, kName, repeat), threads_(threads), name_(name) {
+BinderService::BinderService(const Params& params, const std::string& name, int64_t threads)
+    : Instruction(kName, params), threads_(threads), name_(name) {
   pthread_mutex_init(&s_work_lock, nullptr);
   pthread_cond_init(&s_work_cond, nullptr);
 }

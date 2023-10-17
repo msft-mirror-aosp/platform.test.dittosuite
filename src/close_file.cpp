@@ -19,8 +19,8 @@
 
 namespace dittosuite {
 
-CloseFile::CloseFile(SyscallInterface& syscall, int repeat, int input_fd_key)
-    : Instruction(syscall, kName, repeat), input_fd_key_(input_fd_key) {}
+CloseFile::CloseFile(const Params& params, int input_fd_key)
+    : Instruction(kName, params), input_fd_key_(input_fd_key) {}
 
 void CloseFile::RunSingle() {
   int fd = std::get<int>(SharedVariables::Get(input_fd_key_));

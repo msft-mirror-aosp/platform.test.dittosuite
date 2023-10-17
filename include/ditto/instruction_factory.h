@@ -32,7 +32,7 @@ namespace dittosuite {
 class InstructionFactory {
  public:
   static std::unique_ptr<InstructionSet> CreateFromProtoInstructionSet(
-      const std::list<int>& thread_ids, int repeat,
+      const dittosuite::Instruction::Params& params, const std::list<int>& thread_ids,
       const dittosuiteproto::InstructionSet& proto_instruction_set);
   static std::unique_ptr<Instruction> CreateFromProtoInstruction(
       const std::list<int>& thread_ids, const dittosuiteproto::Instruction& proto_instruction);

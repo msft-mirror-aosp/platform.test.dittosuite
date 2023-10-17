@@ -22,12 +22,12 @@
 
 namespace dittosuite {
 
-Multiprocessing::Multiprocessing(SyscallInterface& syscall, int repeat,
+Multiprocessing::Multiprocessing(const Instruction::Params& params,
                                  std::vector<std::unique_ptr<Instruction>> instructions,
-                                 std::vector<std::string> thread_names)
-    : Instruction(syscall, kName, repeat),
+                                 std::vector<MultithreadingParams> thread_params)
+    : Instruction(kName, params),
       instructions_(std::move(instructions)),
-      thread_names_(std::move(thread_names)) {}
+      thread_params_(std::move(thread_params)) {}
 
 void Multiprocessing::SetUpSingle() {
   pthread_barrierattr_t barrier_attr;
@@ -96,8 +96,16 @@ void Multiprocessing::SetUpSingle() {
   if (!is_manager_) {
     pthread_mutex_lock(initialization_mutex_);
     LOGD("Trying to set the name for: " + std::to_string(instruction_id_));
-    if (prctl(PR_SET_NAME, static_cast<const char*>(thread_names_[instruction_id_].c_str())) < 0) {
+    if (prctl(PR_SET_NAME,
+              static_cast<const char*>(thread_params_[instruction_id_].name_.c_str())) < 0) {
       PLOGF("Unable to set process name");
+    }
+
+    if (thread_params_[instruction_id_].sched_attr_.IsSet()) {
+      thread_params_[instruction_id_].sched_attr_.Set();
+    }
+    if (thread_params_[instruction_id_].sched_affinity_.IsSet()) {
+      thread_params_[instruction_id_].sched_affinity_.Set();
     }
 
     LOGD("Process initializing instruction: " + std::to_string(instruction_id_) +

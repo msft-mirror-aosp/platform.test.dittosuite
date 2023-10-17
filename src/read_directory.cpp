@@ -20,9 +20,9 @@
 
 namespace dittosuite {
 
-ReadDirectory::ReadDirectory(SyscallInterface& syscall, int repeat,
-                             const std::string& directory_name, int output_key)
-    : Instruction(syscall, kName, repeat),
+ReadDirectory::ReadDirectory(const Params& params, const std::string& directory_name,
+                             int output_key)
+    : Instruction(kName, params),
       directory_name_(GetAbsolutePath() + directory_name),
       output_key_(output_key) {}
 

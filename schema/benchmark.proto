@@ -19,6 +19,17 @@ enum AccessMode {
   READ_WRITE = 3;
 }
 
+message MemoryAllocate {
+  optional uint64 size = 1;
+}
+
+message CpuWork {
+  oneof type {
+    uint64 cycles = 1;
+    double utilization = 2;
+  }
+}
+
 message BinderService {
   optional string name = 1;
   optional uint32 threads = 2;
@@ -106,6 +117,43 @@ message Thread {
   required Instruction instruction = 1;
   optional int32 spawn = 2 [default = 1];
   optional string name = 3;
+  optional SchedAttr sched_attr = 4;
+  optional int64 sched_affinity = 5 [default = -1];
+}
+
+message SchedAttr {
+  message SchedOther {
+    enum SchedPolicy {
+      OTHER = 1;
+      BATCH = 2;
+    }
+    required SchedPolicy policy = 1;
+    optional int32 nice = 2 [default = 10];
+  }
+  message SchedRt {
+    enum SchedPolicy {
+      FIFO = 1;
+      RR = 2;
+    }
+    required SchedPolicy policy = 1;
+    required uint32 priority = 2;
+  }
+  message SchedDeadline {
+    enum SchedPolicy {
+      DEADLINE = 1;
+    }
+    required SchedPolicy policy = 1;
+    required uint64 runtime = 2;
+    required uint64 deadline = 3;
+    required uint64 period = 4;
+  }
+
+  optional uint64 flags = 1 [default = 0];
+  oneof attributes {
+    SchedOther other = 2;
+    SchedRt rt = 3;
+    SchedDeadline deadline = 4;
+  }
 }
 
 message Multithreading {
@@ -131,7 +179,10 @@ message Instruction {
     InvalidateCache invalidate_cache = 12;
     BinderRequest binder_request = 13;
     BinderService binder_service = 14;
-  }
+    CpuWork cpu_work = 16;
+    MemoryAllocate mem_alloc = 17;
+  };
+  optional uint64 period_us = 15 [default = 0];
 }
 
 message InstructionSet {

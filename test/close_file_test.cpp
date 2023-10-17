@@ -17,6 +17,7 @@
 #include <ditto/close_file.h>
 #include <ditto/syscall.h>
 
+using ::dittosuite::Instruction;
 using ::dittosuite::SharedVariables;
 using ::testing::_;
 using ::testing::Return;
@@ -39,7 +40,7 @@ using CloseFileDeathTest = CloseFileTest;
 TEST_F(CloseFileTest, ClosedFile) {
   EXPECT_CALL(syscall_, Close(fd_));
 
-  dittosuite::CloseFile instruction(syscall_, 1, input_key_);
+  dittosuite::CloseFile instruction((Instruction::Params){syscall_, 1}, input_key_);
   instruction.Run();
 }
 
@@ -47,6 +48,6 @@ TEST_F(CloseFileDeathTest, DiedDueToInvalidFd) {
   SharedVariables::Set(input_key_, -1);
   EXPECT_CALL(syscall_, Close(_)).WillRepeatedly(Return(-1));
 
-  dittosuite::CloseFile instruction(syscall_, 1, input_key_);
+  dittosuite::CloseFile instruction((Instruction::Params){syscall_, 1}, input_key_);
   EXPECT_DEATH(instruction.Run(), _);
 }

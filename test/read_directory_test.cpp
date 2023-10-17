@@ -20,6 +20,8 @@
 #include <ditto/read_directory.h>
 #include <ditto/syscall.h>
 
+using dittosuite::Instruction;
+
 class ReadDirectoryTest : public InstructionTest {
  protected:
   std::string directory_name = "test_directory";
@@ -46,8 +48,8 @@ class ReadDirectoryTest : public InstructionTest {
 TEST_F(ReadDirectoryTest, ReadDirectoryTestRun) {
   auto output_key = dittosuite::SharedVariables::GetKey(thread_ids, "file_list");
 
-  dittosuite::ReadDirectory instruction(dittosuite::Syscall::GetSyscall(), 1, directory_name,
-                                        output_key);
+  dittosuite::ReadDirectory instruction((Instruction::Params){dittosuite::Syscall::GetSyscall(), 1},
+                                        directory_name, output_key);
   instruction.Run();
 
   auto output = std::get<std::vector<std::string>>(dittosuite::SharedVariables::Get(output_key));

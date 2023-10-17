@@ -1,4 +1,4 @@
-// Copyright (C) 2021 The Android Open Source Project
+// Copyright (C) 2023 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,16 +18,38 @@
 
 namespace dittosuite {
 
-class CloseFile : public Instruction {
+class CpuWork : public Instruction {
  public:
-  inline static const std::string kName = "close_file";
+  inline static const std::string kName;
 
-  explicit CloseFile(const Params& params, int input_fd_key);
+  explicit CpuWork(const std::string &name, const Params& params);
 
  private:
-  void RunSingle() override;
+  virtual void RunSingle() = 0;
+};
 
-  int input_fd_key_;
+class CpuWorkCycles : public CpuWork {
+ public:
+  inline static const std::string kName = "cpu_work_cycles";
+
+  explicit CpuWorkCycles(const Params& params, uint64_t cycles);
+
+ private:
+  uint64_t cycles_;
+
+  void RunSingle() override;
+};
+
+class CpuWorkUtilization : public CpuWork {
+ public:
+  inline static const std::string kName = "cpu_work_utilization";
+
+  explicit CpuWorkUtilization(const Params& params, double utilization);
+
+ private:
+  double utilization_;
+
+  void RunSingle() override;
 };
 
 }  // namespace dittosuite

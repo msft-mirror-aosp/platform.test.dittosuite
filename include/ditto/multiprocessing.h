@@ -14,10 +14,12 @@
 
 #pragma once
 
-#include <pthread.h>
-
 #include <ditto/instruction.h>
+#include <ditto/multithreading_utils.h>
+
 #include <array>
+
+#include <pthread.h>
 
 namespace dittosuite {
 
@@ -25,9 +27,9 @@ class Multiprocessing : public Instruction {
  public:
   inline static const std::string kName = "multiprocessing";
 
-  explicit Multiprocessing(SyscallInterface& syscall, int repeat,
+  explicit Multiprocessing(const Params& params,
                            std::vector<std::unique_ptr<Instruction>> instructions,
-                           std::vector<std::string> thread_names);
+                           std::vector<MultithreadingParams> thread_params);
   std::unique_ptr<Result> CollectResults(const std::string& prefix) override;
 
  private:
@@ -36,7 +38,7 @@ class Multiprocessing : public Instruction {
   void TearDownSingle(bool is_last) override;
 
   std::vector<std::unique_ptr<Instruction>> instructions_;
-  std::vector<std::string> thread_names_;
+  std::vector<MultithreadingParams> thread_params_;
   std::vector<std::array<int, 2>> pipe_fds_;
   unsigned int instruction_id_;
   pthread_barrier_t* barrier_execution_;

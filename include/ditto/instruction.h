@@ -20,9 +20,11 @@
 #include <string>
 #include <thread>
 
+#include <ditto/multithreading_utils.h>
 #include <ditto/result.h>
 #include <ditto/sampler.h>
 #include <ditto/syscall.h>
+#include <ditto/tracer.h>
 
 namespace dittosuite {
 
@@ -31,13 +33,21 @@ enum class Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
 
 class Instruction {
  public:
-  explicit Instruction(SyscallInterface& syscall, const std::string& name, int repeat);
+  struct Params {
+    Params(SyscallInterface& syscall, int repeat = 1, uint64_t period_us = 0)
+        : syscall_(syscall), repeat_(repeat), period_us_(period_us) {}
+    SyscallInterface& syscall_;
+    int repeat_;
+    uint64_t period_us_;
+  };
+
+  explicit Instruction(const std::string& name, const Params& params);
   virtual ~Instruction() = default;
 
   virtual void SetUp();
   void Run();
-  void RunSynchronized(pthread_barrier_t* barrier);
-  std::thread SpawnThread(pthread_barrier_t* barrier);
+  void RunSynchronized(pthread_barrier_t* barrier, const MultithreadingParams& params);
+  std::thread SpawnThread(pthread_barrier_t* barrier, const MultithreadingParams& params);
   virtual void TearDown();
 
   virtual std::unique_ptr<Result> CollectResults(const std::string& prefix);
@@ -57,11 +67,16 @@ class Instruction {
 
   std::string GetAbsolutePath();
 
-  SyscallInterface& syscall_;
   static int absolute_path_key_;
   std::string name_;
+  SyscallInterface& syscall_;
   int repeat_;
+  uint64_t period_us_;
   TimeSampler time_sampler_;
+  Tracer tracer_;
+
+ private:
+  timespec next_awake_time_;
 };
 
-} // namespace dittosuite
+}  // namespace dittosuite

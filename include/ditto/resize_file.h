@@ -25,7 +25,7 @@ class ResizeFile : public Instruction {
  public:
   inline static const std::string kName = "resize_file";
 
-  explicit ResizeFile(SyscallInterface& syscall, int repeat, int64_t size, int input_fd_key);
+  explicit ResizeFile(const Params& params, int64_t size, int input_fd_key);
 
  protected:
   void RunSingle() override;
@@ -36,8 +36,8 @@ class ResizeFile : public Instruction {
 
 class ResizeFileRandom : public ResizeFile {
  public:
-  explicit ResizeFileRandom(SyscallInterface& syscall, int repeat, int64_t min, int64_t max,
-                            uint64_t seed, Reseeding reseeding, int input_fd_key);
+  explicit ResizeFileRandom(const Params& params, int64_t min, int64_t max, uint64_t seed,
+                            Reseeding reseeding, int input_fd_key);
 
  private:
   void SetUp() override;

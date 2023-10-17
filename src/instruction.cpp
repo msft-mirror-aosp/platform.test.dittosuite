@@ -15,15 +15,25 @@
 #include <ditto/instruction.h>
 
 #include <ditto/shared_variables.h>
+#include <ditto/logger.h>
+#include <ditto/tracer.h>
 
 namespace dittosuite {
 
-Instruction::Instruction(SyscallInterface& syscall, const std::string& name, int repeat)
-    : syscall_(syscall), name_(name), repeat_(repeat) {}
+Instruction::Instruction(const std::string& name, const Params& params)
+    : name_(name),
+      syscall_(params.syscall_),
+      repeat_(params.repeat_),
+      period_us_(params.period_us_) {}
 
 void Instruction::SetUp() {}
 
 void Instruction::Run() {
+  if (period_us_) {
+    if (clock_gettime(CLOCK_MONOTONIC, &next_awake_time_)) {
+      PLOGF("Unable to get current time");
+    }
+  }
   for (int i = 0; i < repeat_; i++) {
     SetUpSingle();
     RunSingle();
@@ -31,23 +41,51 @@ void Instruction::Run() {
   }
 }
 
-void Instruction::RunSynchronized(pthread_barrier_t* barrier) {
+void Instruction::RunSynchronized(pthread_barrier_t* barrier, const MultithreadingParams& params) {
+  int ret = pthread_setname_np(pthread_self(), params.name_.c_str());
+  if (ret) {
+    if (ret == ERANGE) {
+      LOGF("Name too long for thread, max 15 chars allowed: " + params.name_);
+    } else {
+      LOGF("Error setting thread name: " + std::to_string(ret));
+    }
+  }
+
+  if (params.sched_attr_.IsSet()) {
+    params.sched_attr_.Set();
+  }
+  if (params.sched_affinity_.IsSet()) {
+    params.sched_affinity_.Set();
+  }
+
   pthread_barrier_wait(barrier);
   Instruction::Run();
 }
 
-std::thread Instruction::SpawnThread(pthread_barrier_t* barrier) {
-  return std::thread([=] { RunSynchronized(barrier); });
+std::thread Instruction::SpawnThread(pthread_barrier_t* barrier,
+                                     const MultithreadingParams& params) {
+  return std::thread([=] { RunSynchronized(barrier, params); });
 }
 
 void Instruction::TearDown() {}
 
 void Instruction::SetUpSingle() {
+  tracer_.Start(name_);
   time_sampler_.MeasureStart();
 }
 
 void Instruction::TearDownSingle(bool /*is_last*/) {
   time_sampler_.MeasureEnd();
+  tracer_.End(name_);
+
+  if (!period_us_) {
+    return;
+  }
+
+  next_awake_time_ = next_awake_time_ + MicrosToTimespec(period_us_);
+  if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_awake_time_, nullptr)) {
+    PLOGF("Period clock interrupted");
+  }
 }
 
 std::unique_ptr<Result> Instruction::CollectResults(const std::string& prefix) {
