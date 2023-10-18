@@ -15,6 +15,7 @@
 #include <ditto/multithreading_utils.h>
 
 #include <sched.h>
+#include <unistd.h>
 
 namespace dittosuite {
 
@@ -136,6 +137,99 @@ SchedAffinity& SchedAffinity::operator=(const uint64_t mask) {
   initialized_ = true;
 
   return *this;
+}
+
+/*
+ * Create a copy of environ and return the new argv[0] size
+ *
+ * The stack looks pretty much as follows:
+ *
+ * | [...]
+ * |
+ * | argc
+ * | argv[0] (pointer)
+ * | argv[1] (pointer)
+ * | ...
+ * | NULL
+ * | environ[0] (pointer)
+ * | environ[1] (pointer)
+ * | ...
+ * | NULL
+ * |
+ * | [...]
+ * |
+ * | *argv[0] (string)
+ * | *argv[1] (string)
+ * | ...
+ * | *environ[0] (string)
+ * | *environ[1] (string)
+ * | ...
+ *
+ * After this function is call, all the *environ[*] strings will be moved in
+ * dynamic memory, and the old environ strings space in the stack can be used
+ * to extend *argv[*].
+ */
+int move_environ(int argc, char**argv) {
+  // Count the number of items in environ
+  int env_last_id = -1;
+  if (environ) {
+    while (environ[++env_last_id])
+      ;
+  }
+
+  unsigned int argv_strings_size;
+  if (env_last_id > 0) {
+    // If there is something in environ (it exists and there is something more
+    // than the terminating NULL), size is the total size that will be usable
+    // for argv after environ is moved.  In fact, this would be the size of all
+    // the argv strings, plus the size of all the current environ strings.
+    // More specifically, this is:
+    // - the address of the last element of environ,
+    // - plus its content size, so now we have the very last byte of environ,
+    // - subtracted the address of the first string of argv.
+    argv_strings_size = environ[env_last_id - 1] + strlen(environ[env_last_id - 1]) - argv[0];
+  } else {
+    // Otherwise, this is just the size of all the argv strings.
+    argv_strings_size = argv[argc - 1] + strlen(argv[argc - 1]) - argv[0];
+  }
+
+  if (environ) {
+    // Create a copy of environ in dynamic memory
+    char** new_environ = static_cast<char**>(malloc(env_last_id * sizeof(char*)));
+
+    // Create a copy in dynamic memory for all the environ strings
+    unsigned int i = -1;
+    while (environ[++i]) {
+      new_environ[i] = strdup(environ[i]);
+    }
+
+    // Also, update the environ pointer
+    environ = new_environ;
+  }
+
+  return argv_strings_size;
+}
+
+/*
+ * Update the title of the calling process by updating argv[0] (may be
+ * destructive for the following argv[1..])
+ *
+ * If the length of the new title is larger than the previously allocated
+ * argv[0] in the stack, then this function will overwrite the next argv
+ * strings.
+ * If the length of the new title is larger than all the argv strings, this
+ * function will move environ and use its reclaimed space.
+ */
+void setproctitle(int argc, char** argv, const char* title) {
+  size_t available_size = strlen(argv[0]);
+  size_t argv_size = argv[argc - 1] + strlen(argv[argc - 1]) - argv[0];
+
+  if (available_size < argv_size) {
+    available_size = move_environ(argc, argv);
+  }
+
+  memset(argv[0], 0, available_size);
+  snprintf(argv[0], available_size - 1, "%s", title);
 }
 
 }  // namespace dittosuite

@@ -18,6 +18,7 @@
 
 #include <sys/mman.h>
 #include <sys/prctl.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 namespace dittosuite {
@@ -95,11 +96,10 @@ void Multiprocessing::SetUpSingle() {
 
   if (!is_manager_) {
     pthread_mutex_lock(initialization_mutex_);
-    LOGD("Trying to set the name for: " + std::to_string(instruction_id_));
-    if (prctl(PR_SET_NAME,
-              static_cast<const char*>(thread_params_[instruction_id_].name_.c_str())) < 0) {
-      PLOGF("Unable to set process name");
-    }
+    LOGD("Trying to set the name for instruction: " + std::to_string(instruction_id_) +
+         "; process: " + std::to_string(getpid()) +
+         "; new name: " + thread_params_[instruction_id_].name_);
+    setproctitle(argc_, argv_, (thread_params_[instruction_id_].name_.c_str()));
 
     if (thread_params_[instruction_id_].sched_attr_.IsSet()) {
       thread_params_[instruction_id_].sched_attr_.Set();

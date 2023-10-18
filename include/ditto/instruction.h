@@ -53,6 +53,8 @@ class Instruction {
   virtual std::unique_ptr<Result> CollectResults(const std::string& prefix);
 
   static void SetAbsolutePathKey(int absolute_path_key);
+  static void SetArgv(char** argv);
+  static void SetArgc(int argc);
 
  protected:
   virtual void SetUpSingle();
@@ -68,6 +70,8 @@ class Instruction {
   std::string GetAbsolutePath();
 
   static int absolute_path_key_;
+  static char **argv_;
+  static int argc_;
   std::string name_;
   SyscallInterface& syscall_;
   int repeat_;
