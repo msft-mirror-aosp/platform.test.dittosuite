@@ -87,4 +87,6 @@ struct MultithreadingParams {
       : name_(name), sched_attr_(sched_attr), sched_affinity_(sched_affinity) {}
 };
 
+void setproctitle(int argc, char** argv, const char* title);
+
 }  // namespace dittosuite
