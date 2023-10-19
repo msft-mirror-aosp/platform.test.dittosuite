@@ -20,6 +20,7 @@
 
 namespace dittosuite {
 
+
 Instruction::Instruction(const std::string& name, const Params& params)
     : name_(name),
       syscall_(params.syscall_),
@@ -98,10 +99,20 @@ void Instruction::SetAbsolutePathKey(int absolute_path_key) {
   absolute_path_key_ = absolute_path_key;
 }
 
+void Instruction::SetArgv(char** argv) {
+  argv_ = argv;
+}
+
+void Instruction::SetArgc(int argc) {
+  argc_ = argc;
+}
+
 std::string Instruction::GetAbsolutePath() {
   return std::get<std::string>(SharedVariables::Get(absolute_path_key_));
 }
 
 int Instruction::absolute_path_key_;
+char** Instruction::argv_;
+int Instruction::argc_;
 
 }  // namespace dittosuite
