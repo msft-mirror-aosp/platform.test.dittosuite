@@ -24,6 +24,7 @@
 #include <ditto/result.h>
 #include <ditto/sampler.h>
 #include <ditto/syscall.h>
+#include <ditto/tracer.h>
 
 namespace dittosuite {
 
@@ -52,6 +53,8 @@ class Instruction {
   virtual std::unique_ptr<Result> CollectResults(const std::string& prefix);
 
   static void SetAbsolutePathKey(int absolute_path_key);
+  static void SetArgv(char** argv);
+  static void SetArgc(int argc);
 
  protected:
   virtual void SetUpSingle();
@@ -67,11 +70,14 @@ class Instruction {
   std::string GetAbsolutePath();
 
   static int absolute_path_key_;
+  static char **argv_;
+  static int argc_;
   std::string name_;
   SyscallInterface& syscall_;
   int repeat_;
   uint64_t period_us_;
   TimeSampler time_sampler_;
+  Tracer tracer_;
 
  private:
   timespec next_awake_time_;

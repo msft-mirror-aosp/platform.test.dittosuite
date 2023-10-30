@@ -16,8 +16,10 @@
 
 #include <ditto/shared_variables.h>
 #include <ditto/logger.h>
+#include <ditto/tracer.h>
 
 namespace dittosuite {
+
 
 Instruction::Instruction(const std::string& name, const Params& params)
     : name_(name),
@@ -69,11 +71,13 @@ std::thread Instruction::SpawnThread(pthread_barrier_t* barrier,
 void Instruction::TearDown() {}
 
 void Instruction::SetUpSingle() {
+  tracer_.Start(name_);
   time_sampler_.MeasureStart();
 }
 
 void Instruction::TearDownSingle(bool /*is_last*/) {
   time_sampler_.MeasureEnd();
+  tracer_.End(name_);
 
   if (!period_us_) {
     return;
@@ -95,10 +99,20 @@ void Instruction::SetAbsolutePathKey(int absolute_path_key) {
   absolute_path_key_ = absolute_path_key;
 }
 
+void Instruction::SetArgv(char** argv) {
+  argv_ = argv;
+}
+
+void Instruction::SetArgc(int argc) {
+  argc_ = argc;
+}
+
 std::string Instruction::GetAbsolutePath() {
   return std::get<std::string>(SharedVariables::Get(absolute_path_key_));
 }
 
 int Instruction::absolute_path_key_;
+char** Instruction::argv_;
+int Instruction::argc_;
 
 }  // namespace dittosuite
