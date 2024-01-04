@@ -28,9 +28,9 @@ BinderRequestDitto::BinderRequestDitto(const Params& params, const std::string& 
     : BinderRequest(kName, params, service_name) {}
 
 void BinderRequestDitto::RunSingle() {
-  const char c = 1;
+  const int8_t c = 1;
 
-  char ret = service_->sync(c);
+  int8_t ret = service_->sync(c);
   if (ret != (~c)) {
     LOGF("Wrong result, expected: " + std::to_string(~c) + ", but got: " + std::to_string(ret));
   }
