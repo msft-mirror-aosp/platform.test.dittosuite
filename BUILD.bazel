@@ -56,3 +56,18 @@ cc_binary(
         ":libditto",
     ],
 )
+
+cc_test(
+    name = "dittobench_test",
+    srcs = glob([
+        "test/*.cpp",
+        "test/include/*.h",
+    ]),
+    data = glob([
+        "example/*",
+    ]),
+    deps = [
+        "libditto",
+        "@googletest//:gtest_main",
+    ],
+)
