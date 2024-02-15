@@ -72,6 +72,24 @@ class BinderRequestMountService : public BinderRequest {
   void TearDownSingle(bool last) override;
 };
 
+class GenericBinderRequest : public BinderRequest {
+ public:
+  inline static const std::string kName = "binder_request_generic";
+  explicit GenericBinderRequest(const Params& params,
+      std::string service_name,  int32_t code,
+      const google::protobuf::RepeatedPtrField<dittosuiteproto::BinderRequest_GenericService_ParcelInput> parcel_input);
+
+ protected:
+  void RunSingle() override;
+  const google::protobuf::RepeatedPtrField<dittosuiteproto::BinderRequest_GenericService_ParcelInput> parcel_input_;
+  std::string service_name_;
+  int32_t code_;
+  android::sp<android::IBinder> service_;
+
+ private:
+  void SetUp() override;
+  void TearDownSingle(bool is_last) override;
+};
 }  // namespace dittosuite
 
 #endif
