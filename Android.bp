@@ -1,4 +1,5 @@
 package {
+    default_team: "trendy_team_android_kernel",
     default_applicable_licenses: ["test_dittosuite_license"],
 }
 
@@ -21,13 +22,22 @@ cc_defaults {
         "include",
     ],
     generated_headers: ["dittosuite-proto"],
-    static_libs: ["dittosuite-proto", "libbase_ndk"],
-    shared_libs: ["libprotobuf-cpp-full", "liblog"],
+    static_libs: [
+        "dittosuite-proto",
+        "libbase_ndk",
+        "libstorage",
+    ],
+    shared_libs: [
+        "libbinder",
+        "liblog",
+        "libutils",
+        "libprotobuf-cpp-full",
+    ],
     cflags: [
-      "-Wall",
-      "-Werror",
-      "-Wextra",
-      "-Wsign-compare",
+        "-Wall",
+        "-Werror",
+        "-Wextra",
+        "-Wsign-compare",
     ],
     tidy: true,
     /*
@@ -35,17 +45,17 @@ cc_defaults {
       schema/benchmark.pb.h.
     */
     tidy_checks: [
-      "-bugprone-unhandled-self-assignment",
-      "-cert-msc32-c",
-      "-cert-msc51-cpp",
-      "-cert-oop54-cpp",
+        "-bugprone-unhandled-self-assignment",
+        "-cert-msc32-c",
+        "-cert-msc51-cpp",
+        "-cert-oop54-cpp",
     ],
 }
 
 cc_library {
     name: "libdittosuite",
     srcs: [
-      "src/*.cpp",
+        "src/*.cpp",
     ],
     defaults: ["dittobench_defaults"],
 }
@@ -86,9 +96,12 @@ cc_binary {
 cc_test {
     name: "dittobench_test",
     srcs: [
-      "test/*.cpp",
+        "test/*.cpp",
     ],
-    static_libs: ["libdittosuite", "libgmock"],
+    static_libs: [
+        "libdittosuite",
+        "libgmock",
+    ],
     defaults: ["dittobench_defaults"],
     data: ["example/*"],
 }
