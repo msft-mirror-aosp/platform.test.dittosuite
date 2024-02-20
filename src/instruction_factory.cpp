@@ -258,11 +258,17 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
           return std::make_unique<BinderRequestMountService>(instruction_params);
           break;
         }
+        case RequestService::kGenericService: {
+          const auto& options = proto_instruction.binder_request();
+          const auto& generic_service = options.generic_service();
+          return std::make_unique<GenericBinderRequest>(instruction_params, generic_service.name(), generic_service.code(), generic_service.parcel_input());
+        }
         case RequestService::SERVICE_ONEOF_NOT_SET: {
           LOGF("No service specified for BinderRequest");
           break;
         }
       }
+      break;
     }
     case InstructionType::kBinderService: {
       const auto& options = proto_instruction.binder_service();
@@ -295,6 +301,7 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
       LOGF("Instruction was not set in .ditto file");
+      break;
     }
     default: {
       LOGF("Invalid instruction was set in .ditto file");
