@@ -65,7 +65,7 @@ void Instruction::RunSynchronized(pthread_barrier_t* barrier, const Multithreadi
 
 std::thread Instruction::SpawnThread(pthread_barrier_t* barrier,
                                      const MultithreadingParams& params) {
-  return std::thread([=] { RunSynchronized(barrier, params); });
+  return std::thread([=, this] { RunSynchronized(barrier, params); });
 }
 
 void Instruction::TearDown() {}
