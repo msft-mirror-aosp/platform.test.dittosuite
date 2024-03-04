@@ -14,11 +14,7 @@
 
 #pragma once
 
-#ifdef __ANDROID__
 #include <benchmark.pb.h>
-#else
-#include "schema/benchmark.pb.h"
-#endif
 
 #include <ditto/logger.h>
 #include <ditto/syscall.h>
