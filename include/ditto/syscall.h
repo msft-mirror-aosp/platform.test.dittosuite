@@ -25,6 +25,23 @@
 
 namespace dittosuite {
 
+struct SchedAttr__ {
+  uint32_t size;         /* Size of this structure */
+  uint32_t sched_policy; /* Policy (SCHED_*) */
+  uint64_t sched_flags;  /* Flags */
+
+  int32_t sched_nice;      /* Nice value (SCHED_OTHER,
+                                    SCHED_BATCH) */
+  uint32_t sched_priority; /* Static priority (SCHED_FIFO,
+                                          SCHED_RR) */
+  /* Remaining fields are for SCHED_DEADLINE */
+  uint64_t sched_runtime;
+  uint64_t sched_deadline;
+  uint64_t sched_period;
+};
+
+std::string to_string(const SchedAttr__& attr);
+
 class SyscallInterface {
  public:
   virtual ~SyscallInterface() {}

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <sstream>
+
 #include <ditto/syscall.h>
 
 namespace dittosuite {
@@ -83,6 +85,15 @@ int Syscall::Unlink(const std::string& path_name) {
 
 int64_t Syscall::Write(int fd, char* buf, int64_t count, int64_t offset) {
   return pwrite64(fd, buf, count, offset);
+}
+
+std::string to_string(const SchedAttr__& attr) {
+  std::stringstream ss;
+  ss << "size: " << attr.size << ", policy: " << attr.sched_policy
+     << ", flags: " << attr.sched_flags << ", nice: " << attr.sched_nice
+     << ", priority: " << attr.sched_priority << ", runtime: " << attr.sched_runtime
+     << ", deadline: " << attr.sched_deadline << ", period: " << attr.sched_period;
+  return ss.str();
 }
 
 }  // namespace dittosuite

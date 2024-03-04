@@ -19,21 +19,6 @@
 
 namespace dittosuite {
 
-std::string to_string(const SchedAttr__& attr) {
-  std::string ret;
-
-  ret += "size: " + std::to_string(attr.size);
-  ret += ", policy: " + std::to_string(attr.sched_policy);
-  ret += ", flags: " + std::to_string(attr.sched_flags);
-  ret += ", nice: " + std::to_string(attr.sched_nice);
-  ret += ", priority: " + std::to_string(attr.sched_priority);
-  ret += ", runtime: " + std::to_string(attr.sched_runtime);
-  ret += ", deadline: " + std::to_string(attr.sched_deadline);
-  ret += ", period: " + std::to_string(attr.sched_period);
-
-  return ret;
-}
-
 bool SchedAttr::IsSet() const { return initialized_; }
 
 void SchedAttr::Set() const {
