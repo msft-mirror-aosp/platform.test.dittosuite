@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <sys/syscall.h>
+
 #include <sstream>
 
+#include <ditto/logger.h>
 #include <ditto/syscall.h>
 
 namespace dittosuite {
@@ -55,6 +58,14 @@ int Syscall::FSync(int fd) {
   return fsync(fd);
 }
 
+pid_t Syscall::GetTid() {
+  long ret = syscall(SYS_gettid);
+  if (ret == -1) {
+    PLOGF("Error calling syscall(SYS_gettid)");
+  }
+  return ret;
+}
+
 int Syscall::Open(const std::string& path_name, int flags, int mode) {
   return open(path_name.c_str(), flags, mode);
 }
@@ -73,6 +84,51 @@ struct dirent* Syscall::ReadDir(DIR* dirp) {
 
 int64_t Syscall::ReadLink(const std::string& path_name, char* buf, int64_t bufsiz) {
   return readlink(path_name.c_str(), buf, bufsiz);
+}
+
+#ifndef __NR_sched_setattr
+
+/* Define all the __NR_sched_setattr syscall numbers for every architecture */
+
+#ifdef __x86_64__
+#define __NR_sched_setattr 314
+#endif
+
+#ifdef __i386__
+#define __NR_sched_setattr 351
+#endif
+
+#ifdef __arm__
+#define __NR_sched_setattr 380
+#endif
+
+/* If none of the architecture above have been matched, then use the
+ * asm-generic/unistd.h definition 274, which also matches the aarch64
+ * definition of __NR_sched_setattr. */
+#ifndef __NR_sched_setattr
+#define __NR_sched_setattr 274
+#endif
+
+#else /* __NR_sched_setattr */
+
+/* Make sure the __NR_sched_setattr syscall numbers are consistent with the
+Linux implementation */
+
+#if ((defined(__x86_64__) && __NR_sched_setattr != 314) || \
+     (defined(__i386__) && __NR_sched_setattr != 351) ||   \
+     (defined(__arm__) && __NR_sched_setattr != 380)) &&   \
+    __NR_sched_setattr != 274 /* aarch64 and asm-generic/unistd.h */
+#error "Wrong definition of __NR_sched_setattr"
+#endif
+
+#endif /* __NR_sched_setattr */
+
+int Syscall::SchedSetattr(pid_t pid, const SchedAttr__& attr, unsigned int flags) {
+  long ret = syscall(__NR_sched_setattr, pid, &attr, flags);
+  if (ret == -1) {
+    PLOGF("Error calling syscall(__NR_sched_setattr)");
+  }
+  return ret;
 }
 
 void Syscall::Sync() {

@@ -27,9 +27,9 @@ void SchedAttr::Set() const {
   }
 
   LOGD("Setting scheduling policy [" + std::to_string(sched_attr_.sched_policy) +
-       "] to thread: " + std::to_string(gettid()));
+       "] to thread: " + std::to_string(syscall_.GetTid()));
 
-  int ret = syscall(SYS_sched_setattr, 0 /* self */, &sched_attr_, 0 /* still not implemented */);
+  int ret = syscall_.SchedSetattr(0 /* self */, sched_attr_, 0 /* still not implemented */);
   if (ret) {
     PLOGF("Failed setting scheduling attributes \n" + to_string(sched_attr_) + "\n");
   }
@@ -90,7 +90,7 @@ void SchedAffinity::Set() const {
   }
 
   LOGD("Setting affinity mask [" + std::to_string(mask_) +
-       "] to thread: " + std::to_string(gettid()));
+       "] to thread: " + std::to_string(syscall_.GetTid()));
 
   cpu_set_t mask;
   CPU_ZERO(&mask);

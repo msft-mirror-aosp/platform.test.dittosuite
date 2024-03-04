@@ -39,10 +39,13 @@ enum SchedPolicy {
 };
 
 class SchedAttr {
+  SyscallInterface& syscall_;
   bool initialized_ = false;
   SchedAttr__ sched_attr_;
 
  public:
+  SchedAttr(SyscallInterface& syscall) : syscall_(syscall) {}
+
   void Set() const;
   bool IsSet() const;
 
@@ -50,10 +53,13 @@ class SchedAttr {
 };
 
 class SchedAffinity {
+  SyscallInterface& syscall_;
   bool initialized_ = false;
   uint64_t mask_;
 
  public:
+  SchedAffinity(SyscallInterface& syscall) : syscall_(syscall) {}
+
   void Set() const;
   bool IsSet() const;
 
