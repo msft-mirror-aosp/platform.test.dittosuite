@@ -39,12 +39,15 @@ class MockSyscall : public dittosuite::SyscallInterface {
           return 0;
         }));
     ON_CALL(*this, FSync(::testing::_)).WillByDefault(::testing::Return(0));
+    ON_CALL(*this, GetTid()).WillByDefault(::testing::Return(0));
     ON_CALL(*this, Open(::testing::_, ::testing::_, ::testing::_))
         .WillByDefault(::testing::Return(kDefaultFileDescriptor));
     ON_CALL(*this, Read(::testing::_, ::testing::_, ::testing::_, ::testing::_))
         .WillByDefault(::testing::ReturnArg<2>());
     ON_CALL(*this, ReadLink(::testing::_, ::testing::_, ::testing::_))
         .WillByDefault(::testing::ReturnArg<2>());
+    ON_CALL(*this, SchedSetattr(::testing::_, ::testing::_, ::testing::_))
+        .WillByDefault(::testing::Return(0));
     ON_CALL(*this, Unlink(::testing::_)).WillByDefault(::testing::Return(0));
     ON_CALL(*this, Write(::testing::_, ::testing::_, ::testing::_, ::testing::_))
         .WillByDefault(::testing::ReturnArg<2>());
@@ -58,9 +61,12 @@ class MockSyscall : public dittosuite::SyscallInterface {
   MOCK_METHOD(int, FTruncate, (int fd, int64_t length), (override));
   MOCK_METHOD(int, FStat, (int filedes, struct stat64* buf), (override));
   MOCK_METHOD(int, FSync, (int fd), (override));
+  MOCK_METHOD(pid_t, GetTid, (), (override));
   MOCK_METHOD(int, Open, (const std::string& path_name, int flags, int mode), (override));
   MOCK_METHOD(DIR*, OpenDir, (const std::string& name), (override));
   MOCK_METHOD(int64_t, Read, (int fd, char* buf, int64_t count, int64_t offset), (override));
+  MOCK_METHOD(int, SchedSetattr,
+              (pid_t pid, const dittosuite::SchedAttr__& attr, unsigned int flags), (override));
   MOCK_METHOD(struct dirent*, ReadDir, (DIR * dirp), (override));
   MOCK_METHOD(int64_t, ReadLink, (const std::string& path_name, char* buf, int64_t bufsiz),
               (override));

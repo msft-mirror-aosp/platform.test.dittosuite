@@ -14,11 +14,7 @@
 
 #pragma once
 
-#ifdef __ANDROID__
 #include <result.pb.h>
-#else
-#include "schema/result.pb.h"
-#endif
 
 #include <time.h>
 

@@ -19,21 +19,6 @@
 
 namespace dittosuite {
 
-std::string to_string(const SchedAttr__& attr) {
-  std::string ret;
-
-  ret += "size: " + std::to_string(attr.size);
-  ret += ", policy: " + std::to_string(attr.sched_policy);
-  ret += ", flags: " + std::to_string(attr.sched_flags);
-  ret += ", nice: " + std::to_string(attr.sched_nice);
-  ret += ", priority: " + std::to_string(attr.sched_priority);
-  ret += ", runtime: " + std::to_string(attr.sched_runtime);
-  ret += ", deadline: " + std::to_string(attr.sched_deadline);
-  ret += ", period: " + std::to_string(attr.sched_period);
-
-  return ret;
-}
-
 bool SchedAttr::IsSet() const { return initialized_; }
 
 void SchedAttr::Set() const {
@@ -42,9 +27,9 @@ void SchedAttr::Set() const {
   }
 
   LOGD("Setting scheduling policy [" + std::to_string(sched_attr_.sched_policy) +
-       "] to thread: " + std::to_string(gettid()));
+       "] to thread: " + std::to_string(syscall_.GetTid()));
 
-  int ret = syscall(SYS_sched_setattr, 0 /* self */, &sched_attr_, 0 /* still not implemented */);
+  int ret = syscall_.SchedSetattr(0 /* self */, sched_attr_, 0 /* still not implemented */);
   if (ret) {
     PLOGF("Failed setting scheduling attributes \n" + to_string(sched_attr_) + "\n");
   }
@@ -105,7 +90,7 @@ void SchedAffinity::Set() const {
   }
 
   LOGD("Setting affinity mask [" + std::to_string(mask_) +
-       "] to thread: " + std::to_string(gettid()));
+       "] to thread: " + std::to_string(syscall_.GetTid()));
 
   cpu_set_t mask;
   CPU_ZERO(&mask);
