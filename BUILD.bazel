@@ -41,7 +41,10 @@ cc_library(
     hdrs = glob([
         "include/ditto/*.h",
     ]),
-    includes = ["include"],
+    includes = [
+        "include",
+        "schema",
+    ],
     deps = [
         ":dittosuite_cc_proto",
     ],

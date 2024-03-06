@@ -17,11 +17,7 @@
 #include <memory>
 #include <fstream>
 
-#ifdef __ANDROID__
 #include <benchmark.pb.h>
-#else
-#include "schema/benchmark.pb.h"
-#endif
 
 
 namespace dittosuite {
