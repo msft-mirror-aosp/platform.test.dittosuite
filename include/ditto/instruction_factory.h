@@ -21,11 +21,7 @@
 #include <ditto/instruction_set.h>
 #include <ditto/read_write_file.h>
 
-#ifdef __ANDROID__
 #include <benchmark.pb.h>
-#else
-#include "schema/benchmark.pb.h"
-#endif
 
 namespace dittosuite {
 

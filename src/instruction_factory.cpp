@@ -220,12 +220,12 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
             thread_name = std::to_string(i);
           }
 
-          SchedAttr sched_attr = {};
+          SchedAttr sched_attr(Syscall::GetSyscall());
           if (thread.has_sched_attr()) {
             sched_attr = thread.sched_attr();
           }
 
-          SchedAffinity sched_affinity = {};
+          SchedAffinity sched_affinity(Syscall::GetSyscall());
           if (thread.has_sched_affinity()) {
             sched_affinity = thread.sched_affinity();
           }
