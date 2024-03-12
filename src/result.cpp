@@ -426,7 +426,8 @@ std::unique_ptr<Result> Result::FromPb(const dittosuiteproto::Result& pb) {
   auto result = std::make_unique<Result>(pb.name(), 1);
 
   for (const auto& m : pb.metrics()) {
-    Result::Statistics stats = {.min = m.min(), .max = m.max(), .median = m.median(), .sd = m.sd()};
+    Result::Statistics stats = {
+        .min = m.min(), .max = m.max(), .mean = m.mean(), .median = m.median(), .sd = m.sd()};
     result->SetStatistics(m.name(), stats);
   }
 
