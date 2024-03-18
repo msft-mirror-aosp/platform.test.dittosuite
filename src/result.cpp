@@ -416,10 +416,11 @@ void PrintPb(const dittosuiteproto::Result &pb) {
   google::protobuf::util::JsonPrintOptions options;
 
   options.add_whitespace = true;
-  google::protobuf::util::MessageToJsonString(pb, &json, options);
-
-  std::ostream pb_stream(std::cout.rdbuf());
-  pb_stream << json << std::endl;
+  auto status = google::protobuf::util::MessageToJsonString(pb, &json, options);
+  if (status.ok()) {
+    std::ostream pb_stream(std::cout.rdbuf());
+    pb_stream << json << std::endl;
+  }
 }
 
 std::unique_ptr<Result> Result::FromPb(const dittosuiteproto::Result& pb) {
