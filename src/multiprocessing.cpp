@@ -179,8 +179,8 @@ std::unique_ptr<Result> Multiprocessing::CollectResults(const std::string& prefi
     }
   } else {
     LOGD("Child writing... " + std::to_string(getpid()));
-    result->AddSubResult(
-        instructions_[instruction_id_]->CollectResults(std::to_string(instruction_id_) + "/"));
+    std::string child_name = thread_params_[instruction_id_].name_;
+    result->AddSubResult(instructions_[instruction_id_]->CollectResults(child_name + "/"));
 
     result_pb = result->ToPb();
 
