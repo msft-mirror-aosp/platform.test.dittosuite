@@ -56,7 +56,8 @@ std::unique_ptr<Result> Multithreading::CollectResults(const std::string& prefix
   auto result = std::make_unique<Result>(prefix + name_, repeat_);
   result->AddMeasurement("duration", TimespecToDoubleNanos(time_sampler_.GetSamples()));
   for (std::size_t i = 0; i < instructions_.size(); ++i) {
-    result->AddSubResult(instructions_[i]->CollectResults(std::to_string(i) + "/"));
+    std::string child_name = thread_params_[i].name_;
+    result->AddSubResult(instructions_[i]->CollectResults(child_name + "/"));
   }
   return result;
 }
