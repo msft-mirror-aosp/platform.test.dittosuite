@@ -181,6 +181,23 @@ int ParseParcelString(const google::protobuf::RepeatedPtrField
         }
         break;
       }
+      case dittosuiteproto::BinderRequest_GenericService_ParcelInput_Type_PARCEL: {
+        int res = 0;
+        auto inputs = it.nested_parcel().parcel_inputs();
+        if (inputs.size() == 0) {
+          //  Null parcelable flag.
+          res = parcel.writeInt32(0);
+        } else {
+          //  Non-Null parcelable flag.
+          res = parcel.writeInt32(1);
+          if (res < 0) return res;
+          res = ParseParcelString(it.nested_parcel().parcel_inputs(), parcel);
+        }
+        if (res < 0) {
+          return res;
+        }
+        break;
+      }
       default:
         break;
     }
