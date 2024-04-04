@@ -1,0 +1,28 @@
+main: {
+  binder_request: {
+    generic_service: {
+      name: "package",
+      # getServiceInfo
+      code: 14,
+      # component
+      parcel_input: [{
+        type: PARCEL,
+        nested_parcel : {
+          parcel_inputs: [
+          # package name
+          {
+            type: STRING_16,
+            data: "com.google.android.apps.wallpaper"
+          },
+          # class name
+          {
+            type: STRING_16,
+            data: "com.google.android.apps.wallpaper.backdrop.BackdropRotationTask"
+          }
+          ]
+        }
+      }]
+    },
+  }
+},
+global {}
