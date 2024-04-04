@@ -41,6 +41,9 @@ message BinderRequest {
   };
   message GenericService {
     message ParcelInput {
+      message NestedParcel {
+        repeated ParcelInput parcel_inputs = 1;
+      }
       enum Type {
         // Write the 32-bit integer into the send parcel.
         I32 = 0;
@@ -58,17 +61,20 @@ message BinderRequest {
         // Write a file descriptor for the file with given path into the send
         // parcel.
         FD_PATH = 6;
-        // Data: FD number
-        // Write the file descriptor into the send parcel.
-        FD = 8;
         // Data: File name
         // Write an ashmem file descriptor for a region containing the data
         // from file the given path into the send parcel.
         ASHMEM_FD_PATH = 7;
+        // Data: FD number
+        // Write the file descriptor into the send parcel.
+        FD = 8;
+        // Parcel input that is nested inside.
+        PARCEL = 9;
       }
       optional Type type = 1;
       oneof data_oneof {
         string data = 2;
+        NestedParcel nested_parcel = 3;
       }
     }
     optional string name = 1;
