@@ -75,7 +75,8 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
 std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     const std::list<int>& thread_ids, const dittosuiteproto::Instruction& proto_instruction) {
   Instruction::Params instruction_params(Syscall::GetSyscall(), proto_instruction.repeat(),
-                                         proto_instruction.period_us());
+                                         proto_instruction.period_us(),
+                                         proto_instruction.offset_us());
 
   switch (proto_instruction.instruction_oneof_case()) {
     case InstructionType::kInstructionSet: {
