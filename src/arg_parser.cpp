@@ -17,11 +17,17 @@
 namespace dittosuite {
 
 ResultsOutput ArgToResultsOutput(const std::string_view optarg) {
+  if (optarg == "report" || optarg == "0") {
+    return ResultsOutput::kReport;
+  }
   if (optarg == "csv" || optarg == "1") {
     return ResultsOutput::kCsv;
   }
+  if (optarg == "pb" || optarg == "2") {
+    return ResultsOutput::kPb;
+  }
   if (optarg == "null" || optarg == "-1") {
-    return ResultsOutput::kCsv;
+    return ResultsOutput::kNull;
   }
   return ResultsOutput::kReport;  // by default, the results output is the report (= 0)
 }
@@ -38,22 +44,22 @@ LogStream ArgToLogStream(const std::string_view optarg) {
 }
 
 LogLevel ArgToLogLevel(const std::string_view optarg) {
-  if (optarg == "VERBOSE" || optarg == "0") {
+  if (optarg == "VERBOSE" || optarg == "5") {
     return LogLevel::kVerbose;
   }
-  if (optarg == "DEBUG" || optarg == "1") {
+  if (optarg == "DEBUG" || optarg == "4") {
     return LogLevel::kDebug;
   }
-  if (optarg == "INFO" || optarg == "2") {
+  if (optarg == "INFO" || optarg == "3") {
     return LogLevel::kInfo;
   }
-  if (optarg == "WARNING" || optarg == "3") {
+  if (optarg == "WARNING" || optarg == "2") {
     return LogLevel::kWarning;
   }
-  if (optarg == "ERROR" || optarg == "4") {
+  if (optarg == "ERROR" || optarg == "1") {
     return LogLevel::kError;
   }
-  if (optarg == "FATAL" || optarg == "5") {
+  if (optarg == "FATAL" || optarg == "0") {
     return LogLevel::kFatal;
   }
   return LogLevel::kInfo;  // by default, the log level is info
@@ -67,6 +73,7 @@ void PrintHelpAndExit(std::string_view program_name) {
             << "\tresults output format, where FMT can be one of:\n"
             << "\t\t\t  - report (or 0, default): human readable summary;\n"
             << "\t\t\t  - csv (or 1): for comma-separated detailed stats;\n"
+            << "\t\t\t  - pb (or 2): protocol-buffer text;\n"
             << "\t\t\t  - null (-1): do not print.\n"
 
             << "  -p, --param[=PAR]..."

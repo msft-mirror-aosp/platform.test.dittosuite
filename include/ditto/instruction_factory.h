@@ -21,18 +21,14 @@
 #include <ditto/instruction_set.h>
 #include <ditto/read_write_file.h>
 
-#ifdef __ANDROID__
 #include <benchmark.pb.h>
-#else
-#include "schema/benchmark.pb.h"
-#endif
 
 namespace dittosuite {
 
 class InstructionFactory {
  public:
   static std::unique_ptr<InstructionSet> CreateFromProtoInstructionSet(
-      const std::list<int>& thread_ids, int repeat,
+      const dittosuite::Instruction::Params& params, const std::list<int>& thread_ids,
       const dittosuiteproto::InstructionSet& proto_instruction_set);
   static std::unique_ptr<Instruction> CreateFromProtoInstruction(
       const std::list<int>& thread_ids, const dittosuiteproto::Instruction& proto_instruction);
