@@ -299,7 +299,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     }
     case InstructionType::kMemAlloc: {
       const auto& options = proto_instruction.mem_alloc();
-      return std::make_unique<MemoryAllocation>(instruction_params, options.size());
+
+      dittosuite::FreePolicy free_policy = ConvertFreePolicy(options.free_policy());
+      return std::make_unique<MemoryAllocation>(instruction_params, options.size(), free_policy);
       break;
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
@@ -373,6 +375,20 @@ int InstructionFactory::ConvertReadFAdvise(
     }
     default: {
       LOGF("Invalid ReadFAdvise was provided");
+    }
+  }
+}
+
+FreePolicy InstructionFactory::ConvertFreePolicy(const dittosuiteproto::FreePolicy proto_policy) {
+  switch (proto_policy) {
+    case dittosuiteproto::FreePolicy::FREE_POLICY_EVERY_PERIOD:
+      return FreePolicy::kFreeEveryPeriod;
+    case dittosuiteproto::FreePolicy::FREE_POLICY_LAST_PERIOD:
+      return FreePolicy::kFreeLastPeriod;
+    case dittosuiteproto::FreePolicy::FREE_POLICY_KEEP:
+      return FreePolicy::kKeep;
+    default: {
+      LOGF("Invalid FreePolicy");
     }
   }
 }
