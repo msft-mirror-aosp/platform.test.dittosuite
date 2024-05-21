@@ -31,7 +31,7 @@ void Instruction::SetUp() {}
 
 void Instruction::Run() {
   if (period_us_) {
-    if (clock_gettime(CLOCK_MONOTONIC, &next_awake_time_)) {
+    if (clock_gettime(CLOCK_MONOTONIC, &next_wakeup_)) {
       PLOGF("Unable to get current time");
     }
   }
@@ -83,8 +83,8 @@ void Instruction::TearDownSingle(bool /*is_last*/) {
     return;
   }
 
-  next_awake_time_ = next_awake_time_ + MicrosToTimespec(period_us_);
-  if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_awake_time_, nullptr)) {
+  next_wakeup_ = next_wakeup_ + MicrosToTimespec(period_us_);
+  if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_wakeup_, nullptr)) {
     PLOGF("Period clock interrupted");
   }
 }
