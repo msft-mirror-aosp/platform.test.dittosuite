@@ -8,6 +8,7 @@ main: {
           mem_alloc: {
             size: 5000000000
           }
+          offset_us: 5000000
         }
       },
       {
