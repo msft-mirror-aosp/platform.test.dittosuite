@@ -80,7 +80,7 @@ class Instruction {
   Tracer tracer_;
 
  private:
-  timespec next_awake_time_;
+  timespec next_wakeup_;
 };
 
 }  // namespace dittosuite
