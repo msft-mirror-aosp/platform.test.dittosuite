@@ -19,8 +19,16 @@ enum AccessMode {
   READ_WRITE = 3;
 }
 
+enum FreePolicy {
+  FREE_POLICY_UNSPECIFIED = 0;
+  FREE_POLICY_EVERY_PERIOD = 1;
+  FREE_POLICY_LAST_PERIOD = 2;
+  FREE_POLICY_KEEP = 3;
+}
+
 message MemoryAllocate {
   optional uint64 size = 1;
+  optional FreePolicy free_policy = 2 [default = FREE_POLICY_KEEP];
 }
 
 message CpuWork {

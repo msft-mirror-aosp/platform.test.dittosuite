@@ -30,6 +30,7 @@ namespace dittosuite {
 
 enum class Order { kSequential, kRandom };
 enum class Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
+enum class FreePolicy { kKeep, kFreeLastPeriod, kFreeEveryPeriod };
 
 class Instruction {
  public:

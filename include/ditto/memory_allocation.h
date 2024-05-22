@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <stack>
+
 #include <ditto/instruction.h>
 
 namespace dittosuite {
@@ -22,14 +24,17 @@ class MemoryAllocation : public Instruction {
  public:
   inline static const std::string kName = "memory_allocation";
 
-  explicit MemoryAllocation(const Params& params, const uint64_t size);
+  explicit MemoryAllocation(const Params& params, const uint64_t size,
+                            const FreePolicy free_policy);
   ~MemoryAllocation();
 
  private:
   size_t size_;
-  char* allocated_memory_;
+  dittosuite::FreePolicy free_policy_;
+  std::stack<void*> allocated_addresses_;
 
   void RunSingle();
+  void TearDownSingle(bool is_last);
 };
 
 }  // namespace dittosuite
