@@ -1,0 +1,26 @@
+main: {
+  multithreading: {
+    fork: true,
+    threads: [
+      {
+        name: "MemGrow"
+        instruction: {
+          instruction_set: {
+            instructions: [
+              {
+                  mem_alloc: {
+                    size: 40000000
+                    free_policy: FREE_POLICY_LAST_PERIOD
+                  }
+                  repeat: 10,
+                  period_us: 1000000
+              }
+            ]
+          }
+          repeat: 3
+        }
+      }
+    ]
+  }
+}
+global: {}

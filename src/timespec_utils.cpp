@@ -115,3 +115,9 @@ timespec operator/(const timespec& t1, uint64_t t2_ns) {
 timespec operator/(const timespec& t1, const timespec& t2) {
   return t1 / TimespecToNanos(t2);
 }
+
+std::string TimespecToString(const timespec& ts) {
+  std::stringstream ss;
+  ss << ts.tv_sec << '.' << std::setfill('0') << std::setw(9) << ts.tv_nsec;
+  return ss.str();
+}

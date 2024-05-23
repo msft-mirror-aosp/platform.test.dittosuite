@@ -75,7 +75,8 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
 std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     const std::list<int>& thread_ids, const dittosuiteproto::Instruction& proto_instruction) {
   Instruction::Params instruction_params(Syscall::GetSyscall(), proto_instruction.repeat(),
-                                         proto_instruction.period_us());
+                                         proto_instruction.period_us(),
+                                         proto_instruction.offset_us());
 
   switch (proto_instruction.instruction_oneof_case()) {
     case InstructionType::kInstructionSet: {
@@ -298,7 +299,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
     }
     case InstructionType::kMemAlloc: {
       const auto& options = proto_instruction.mem_alloc();
-      return std::make_unique<MemoryAllocation>(instruction_params, options.size());
+
+      dittosuite::FreePolicy free_policy = ConvertFreePolicy(options.free_policy());
+      return std::make_unique<MemoryAllocation>(instruction_params, options.size(), free_policy);
       break;
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
@@ -372,6 +375,20 @@ int InstructionFactory::ConvertReadFAdvise(
     }
     default: {
       LOGF("Invalid ReadFAdvise was provided");
+    }
+  }
+}
+
+FreePolicy InstructionFactory::ConvertFreePolicy(const dittosuiteproto::FreePolicy proto_policy) {
+  switch (proto_policy) {
+    case dittosuiteproto::FreePolicy::FREE_POLICY_EVERY_PERIOD:
+      return FreePolicy::kFreeEveryPeriod;
+    case dittosuiteproto::FreePolicy::FREE_POLICY_LAST_PERIOD:
+      return FreePolicy::kFreeLastPeriod;
+    case dittosuiteproto::FreePolicy::FREE_POLICY_KEEP:
+      return FreePolicy::kKeep;
+    default: {
+      LOGF("Invalid FreePolicy");
     }
   }
 }
