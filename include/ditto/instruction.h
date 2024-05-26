@@ -30,15 +30,18 @@ namespace dittosuite {
 
 enum class Order { kSequential, kRandom };
 enum class Reseeding { kOnce, kEachRoundOfCycles, kEachCycle };
+enum class FreePolicy { kKeep, kFreeLastPeriod, kFreeEveryPeriod };
 
 class Instruction {
  public:
   struct Params {
-    Params(SyscallInterface& syscall, int repeat = 1, uint64_t period_us = 0)
-        : syscall_(syscall), repeat_(repeat), period_us_(period_us) {}
+    Params(SyscallInterface& syscall, int repeat = 1, uint64_t period_us = 0,
+           uint64_t offset_us = 0)
+        : syscall_(syscall), repeat_(repeat), period_us_(period_us), offset_us_(offset_us) {}
     SyscallInterface& syscall_;
     int repeat_;
     uint64_t period_us_;
+    uint64_t offset_us_;
   };
 
   explicit Instruction(const std::string& name, const Params& params);
@@ -76,11 +79,12 @@ class Instruction {
   SyscallInterface& syscall_;
   int repeat_;
   uint64_t period_us_;
+  uint64_t offset_us_;
   TimeSampler time_sampler_;
   Tracer tracer_;
 
  private:
-  timespec next_awake_time_;
+  timespec next_wakeup_;
 };
 
 }  // namespace dittosuite

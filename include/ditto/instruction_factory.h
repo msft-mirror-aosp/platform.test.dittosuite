@@ -41,6 +41,7 @@ class InstructionFactory {
   static Order ConvertOrder(dittosuiteproto::Order proto_order);
   static int ConvertReadFAdvise(Order access_order,
                                 dittosuiteproto::ReadFile_ReadFAdvise proto_fadvise);
+  static FreePolicy ConvertFreePolicy(const dittosuiteproto::FreePolicy proto_policy);
 
   static int current_thread_id_;
 };
