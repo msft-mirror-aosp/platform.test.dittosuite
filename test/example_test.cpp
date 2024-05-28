@@ -84,7 +84,7 @@ TEST_P(ExampleTest, IsParsable) {
 #else
   EXPECT_EXIT(
       {
-        dittosuite::Parser::GetParser().Parse(file_path, {});
+        dittosuite::Parser::GetParser().ParseFile(file_path, {});
         exit(0);
       },
       testing::ExitedWithCode(0), "");
