@@ -16,7 +16,19 @@ file(GLOB libditto_src
 	src/*.cpp
 )
 
-add_library(libdittosuite STATIC ${libditto_src})
+file(GLOB_RECURSE ditto_benchmarks
+	example/*.ditto
+)
+
+add_custom_command(
+	OUTPUT embedded_benchmarks.cpp
+	COMMAND ${PROJECT_SOURCE_DIR}/ditto2cpp.py
+		-o embedded_benchmarks.cpp
+		-s ${ditto_benchmarks}
+	VERBATIM
+)
+
+add_library(libdittosuite STATIC ${libditto_src} embedded_benchmarks.cpp)
 
 target_link_libraries(libdittosuite
 	benchmark_proto
