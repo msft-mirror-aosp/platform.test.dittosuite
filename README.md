@@ -10,6 +10,15 @@ the goodness of a solution.
 Specularly, Dittobench interprets the Dittolang operations and executes them on
 a real device, tracking the behavior and measuring the performance.
 
+# Doxygen documentation
+
+In addition to this readme, the project includes a Doxygen configuration, which
+can be generated with the following command:
+
+```
+$ doxygen
+```
+
 # How to run
 
 ```
