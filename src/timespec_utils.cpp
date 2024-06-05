@@ -44,6 +44,13 @@ timespec NanosToTimespec(const int64_t t_ns) {
   return result;
 }
 
+timespec MicrosToTimespec(const int64_t t_us) {
+  timespec result;
+  result.tv_sec = t_us / 1e6;
+  result.tv_nsec = (t_us % static_cast<int64_t>(1e6)) * static_cast<int64_t>(1e3);
+  return result;
+}
+
 bool operator==(const timespec& t1, const timespec& t2) {
   return t1.tv_sec == t2.tv_sec && t1.tv_nsec == t2.tv_nsec;
 }
@@ -107,4 +114,10 @@ timespec operator/(const timespec& t1, uint64_t t2_ns) {
 
 timespec operator/(const timespec& t1, const timespec& t2) {
   return t1 / TimespecToNanos(t2);
+}
+
+std::string TimespecToString(const timespec& ts) {
+  std::stringstream ss;
+  ss << ts.tv_sec << '.' << std::setfill('0') << std::setw(9) << ts.tv_nsec;
+  return ss.str();
 }

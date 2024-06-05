@@ -19,6 +19,18 @@
 
 namespace dittosuite {
 
+class TestLogger : public Logger {};
+
+TEST(DittoLogger, DefaultVerbosityIsInfo) {
+  TestLogger logger;
+
+  LogLevel log_level = logger.GetLogLevel();
+
+  ASSERT_EQ(LogLevel::kInfo, log_level);
+}
+
+/* TODO this test should be properly refactored (split and mocked) to make sure
+the strings are written to the logs. */
 TEST(DittoLogger, SimpleLog) {
   for (int i = 10; i <= 11; i++) {
     Logger::GetInstance().SetLogLevel(LogLevel::kError);
@@ -34,28 +46,68 @@ TEST(DittoLogger, SimpleLog) {
   }
 }
 
-TEST(DittoLogger, SetAndGetLevel) {
-  for (const auto l : {LogLevel::kVerbose, LogLevel::kDebug, LogLevel::kInfo, LogLevel::kWarning,
-                       LogLevel::kError}) {
-    Logger::GetInstance().SetLogLevel(l);
-    ASSERT_EQ(Logger::GetInstance().GetLogLevel(), l);
-  }
-}
-
-TEST(DittoLogger, SetAndGetStream) {
-  for (const auto s : {LogStream::kStdout, LogStream::kLogcat}) {
-    Logger::GetInstance().SetLogStream(s);
-    ASSERT_EQ(Logger::GetInstance().GetLogStream(), s);
-  }
-}
-
 TEST(DittoLogger, LoggerPError) {
-  FILE* pFile;
-  std::string file_name = "nonexistent.txt";
-  pFile = fopen(file_name.c_str(), "re");
-  if (pFile == nullptr) {
-    PLOGE("Cannot open \"" + file_name + "\"");
-  }
+  TestLogger logger;
+
+  FILE* pFile = fopen("nonexistent.txt", "re");
+
+  ASSERT_EQ(nullptr, pFile);
 }
+
+class DittoLoggerStreamUpdate : public testing::TestWithParam<dittosuite::LogStream> {};
+
+TEST_P(DittoLoggerStreamUpdate, SetStream) {
+  TestLogger logger;
+
+  logger.SetLogStream(GetParam());
+  LogStream log_stream = logger.GetLogStream();
+
+  ASSERT_EQ(GetParam(), log_stream);
+}
+
+INSTANTIATE_TEST_SUITE_P(Streams, DittoLoggerStreamUpdate,
+                         testing::Values(LogStream::kStdout, LogStream::kLogcat));
+
+class DittoLoggerLevelUpdate : public testing::TestWithParam<dittosuite::LogLevel> {};
+
+TEST_P(DittoLoggerLevelUpdate, SetLevel) {
+  TestLogger logger;
+
+  logger.SetLogLevel(GetParam());
+  LogLevel log_level = logger.GetLogLevel();
+
+  ASSERT_EQ(GetParam(), log_level);
+}
+
+INSTANTIATE_TEST_SUITE_P(Levels, DittoLoggerLevelUpdate,
+                         testing::Values(LogLevel::kInfo, LogLevel::kWarning, LogLevel::kError,
+                                         LogLevel::kFatal, LogLevel::kVerbose, LogLevel::kDebug));
+
+class DittoLoggerLevel
+    : public testing::TestWithParam<std::pair<std::string_view, dittosuite::LogLevel>> {};
+
+TEST_P(DittoLoggerLevel, ArgumentsToLevelStringParam) {
+  TestLogger logger;
+
+  LogLevel log_level = ArgToLogLevel(GetParam().first);
+
+  ASSERT_EQ(GetParam().second, log_level);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    StringMatchesPB, DittoLoggerLevel,
+    testing::Values(
+        std::make_pair("VERBOSE", LogLevel::kVerbose), std::make_pair("DEBUG", LogLevel::kDebug),
+        std::make_pair("INFO", LogLevel::kInfo), std::make_pair("WARNING", LogLevel::kWarning),
+        std::make_pair("ERROR", LogLevel::kError), std::make_pair("FATAL", LogLevel::kFatal),
+        std::make_pair("5", LogLevel::kVerbose), std::make_pair("4", LogLevel::kDebug),
+        std::make_pair("3", LogLevel::kInfo), std::make_pair("2", LogLevel::kWarning),
+        std::make_pair("1", LogLevel::kError), std::make_pair("0", LogLevel::kFatal)));
+
+INSTANTIATE_TEST_SUITE_P(StringMatchesNoPBReturnsInfo, DittoLoggerLevel,
+                         testing::Values(std::make_pair("6", LogLevel::kInfo),
+                                         std::make_pair("-1", LogLevel::kInfo),
+                                         std::make_pair("UNKNOWN", LogLevel::kInfo),
+                                         std::make_pair("", LogLevel::kInfo)));
 
 }  // namespace dittosuite

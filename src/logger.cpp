@@ -19,13 +19,10 @@
 
 #include <ditto/logger.h>
 
-#include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 
-#include <iostream>
-#include <sstream>
-#include <vector>
+#include <chrono>
+#include <iomanip>
 
 namespace dittosuite {
 
@@ -76,8 +73,24 @@ android::base::LogSeverity LogLevelToAndroidLogLevel(const LogLevel log_level) {
 
 void Logger::WriteLogMessage(const LogLevel log_level, const std::string& message,
                              const std::string& file_name, int line, bool print_errno) {
+  using namespace std::chrono;
+
   std::stringstream ss;
-  ss << file_name << ":" << line << ": " << LogLevelToString(log_level) << ": " << message;
+
+  auto now = system_clock::now();
+  auto ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
+  auto timer = system_clock::to_time_t(now);
+  std::tm bt = *std::localtime(&timer);
+
+  // Date/time
+  ss << '[' << std::put_time(&bt, "%F %T") << '.' << std::setfill('0') << std::setw(3) << ms.count()
+     << ']';
+  // Log level
+  ss << " " << LogLevelToString(log_level);
+  // File and line
+  ss << ' ' << file_name << ":" << line;
+  // Message and errno
+  ss << " " << message;
   if (print_errno) {
     ss << ": " << strerror(errno);
   }
@@ -90,7 +103,7 @@ void Logger::WriteLogMessage(const LogLevel log_level, const std::string& messag
       [[fallthrough]];
 #endif
     case LogStream::kStdout:
-      std::cout << ss.str() << '\n';
+      std::cout << ss.str() << std::endl;
       break;
   }
 }

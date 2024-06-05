@@ -10,6 +10,7 @@ add_subdirectory(schema)
 
 include_directories(include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR}/schema)
 
 file(GLOB libditto_src
 	src/*.cpp
