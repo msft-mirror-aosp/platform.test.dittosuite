@@ -18,15 +18,11 @@
 #include <ditto/parser.h>
 #include <ditto/result.h>
 
-#include <getopt.h>
-#include <unistd.h>
-
-#include <cstring>
-
 namespace dittosuite {
 struct CmdArguments {
   ResultsOutput results_output = ResultsOutput::kReport;
   std::string file_path;
+  std::string embedded_benchmark;
   std::vector<std::string> parameters;
 };
 CmdArguments ParseArguments(int argc, char** argv);
