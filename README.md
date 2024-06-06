@@ -354,6 +354,32 @@ cd test
 ctest
 ```
 
+### Coverage
+
+As an extension to testing, coverage is not a metric that guarantees good
+quality testing, but at least shows what is not been tested yet.
+
+One way of getting coverage data is to rely on `llvm` to build the code with
+extra flags to generate coverage information, `llvm-cov` to extract coverage
+data, and `lcov` to aggregate and export all the coverage information into a
+human-readable format.
+
+```
+mkdir build
+cd build
+CC=/usr/bin/clang CXX=/usr/bin/clang++ cmake -DCMAKE_BUILD_TYPE=Debug ..
+make
+ctest --test-dir test
+lcov -d ./CMakeFiles/ -b . --gcov-tool $PWD/../test/llvm-gcov.sh --capture -o cov.info
+genhtml cov.info -o coverage_html
+```
+
+> **_NOTE:_**  lcov version 2.* has issues such as `geninfo: ERROR: "XXX:
+function YYY found on line but no corresponding 'line' coverage data point.
+Cannot derive function end line.`. This can be solved by downgrading to version
+1.6. The lcov repository already has a binary, so PATH can be updated with its
+`bin` folder.
+
 
 # Use cases
 

@@ -4,7 +4,8 @@ project(DittoSuite)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
+set(CMAKE_C_FLAGS_DEBUG   "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
 
 add_subdirectory(schema)
 
