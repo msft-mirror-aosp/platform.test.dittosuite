@@ -18,38 +18,77 @@
 
 #include <ditto/parser.h>
 
-class ExampleTest : public ::testing::Test {
- protected:
-  std::string path;
-
-  // Set path of the example folder
-  void SetUp() override {
-    if (absolute_path.empty()) {
-      path = "example";
-    } else {
-      path = absolute_path + "/example";
-    }
+bool string_has_suffix(const std::string& input, const std::string& suffix) {
+  if (input.length() < suffix.length()) {
+    return false;
   }
-};
+  return (!input.compare(input.length() - suffix.length(), suffix.length(), suffix));
+}
 
-// Test each .ditto file inside example/ folder to make sure that all of them follow the schema
-// If .ditto is parsed successfully, exit with code 0 is expected
-TEST_F(ExampleTest, ExampleDittoFilesAreCorrect) {
-  DIR* directory = opendir(path.c_str());
-
+/**
+ * For compatibility with C++ versions prior to C++17 that do not support
+ * `recursive_directory_iterator`, recurse the directory manually.
+ */
+void __ditto_files_paths(std::vector<std::string>* ditto_paths, const std::string& base_path) {
   struct dirent* entry;
-  while ((entry = readdir(directory)) != nullptr) {
-    if (entry->d_type == DT_REG) {
-      std::string file = path + "/" + entry->d_name;
+  DIR* directory = opendir(base_path.c_str());
 
-      EXPECT_EXIT(
-          {
-            dittosuite::Parser::GetParser().Parse(file, {});
-            exit(0);
-          },
-          testing::ExitedWithCode(0), "");
+  std::cout << "Recursing in: " << base_path << std::endl;
+  while ((entry = readdir(directory)) != nullptr) {
+    std::string path = base_path + "/" + entry->d_name;
+    std::cout << "Found: " << path << std::endl;
+    switch (entry->d_type) {
+      case DT_REG: {
+        if (string_has_suffix(entry->d_name, ".ditto")) {
+          ditto_paths->push_back(path);
+        }
+        break;
+      }
+      case DT_DIR: {
+        if (std::string(".").compare(entry->d_name) && std::string("..").compare(entry->d_name)) {
+          __ditto_files_paths(ditto_paths, path);
+        }
+        break;
+      }
     }
   }
 
   closedir(directory);
 }
+
+std::vector<std::string> ditto_files_paths() {
+  std::string base_path;
+  std::vector<std::string> paths;
+
+  if (absolute_path.empty()) {
+    base_path = "example";
+  } else {
+    base_path = absolute_path + "/example";
+  }
+
+  __ditto_files_paths(&paths, base_path);
+  return paths;
+}
+
+class ExampleTest : public testing::TestWithParam<std::string> {};
+
+// Test each .ditto file inside example/ folder to make sure that all of them follow the schema
+// If .ditto is parsed successfully, exit with code 0 is expected
+TEST_P(ExampleTest, IsParsable) {
+  std::string file_path = GetParam();
+  std::cout << "Testing file path: " << GetParam() << std::endl;
+#ifndef __ANDROID__
+  if (std::string::npos != file_path.rfind("example/android/")) {
+    GTEST_SKIP();
+  }
+#else
+  EXPECT_EXIT(
+      {
+        dittosuite::Parser::GetParser().Parse(file_path, {});
+        exit(0);
+      },
+      testing::ExitedWithCode(0), "");
+#endif
+}
+
+INSTANTIATE_TEST_SUITE_P(DittoFile, ExampleTest, testing::ValuesIn(ditto_files_paths()));
