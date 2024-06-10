@@ -19,12 +19,12 @@
 #include <cstdlib>
 #include <fstream>
 
+#include <ditto/embedded_benchmarks.h>
 #include <ditto/instruction_factory.h>
 #include <ditto/logger.h>
 #include <ditto/shared_variables.h>
 
 #include <google/protobuf/text_format.h>
-
 
 namespace dittosuite {
 
@@ -33,29 +33,24 @@ Parser& Parser::GetParser() {
   return parser;
 }
 
-std::unique_ptr<dittosuiteproto::Benchmark> Parser::Parse(const std::string& file_path, const std::vector<std::string>& parameters) {
+std::unique_ptr<dittosuiteproto::Benchmark> Parser::__Parse(
+    std::string json_benchmark, const std::vector<std::string>& parameters)
+
+{
   std::unique_ptr<dittosuiteproto::Benchmark> benchmark =
       std::make_unique<dittosuiteproto::Benchmark>();
 
-  std::ifstream file(file_path);
-  if (!file.is_open()) {
-    LOGF("Provided .ditto file was not found: " + file_path);
-  }
-
-  std::string file_contents((std::istreambuf_iterator<char>(file)),
-                            (std::istreambuf_iterator<char>()));
-
   for (std::size_t i = 0; i < parameters.size(); i++) {
     std::string to_replace("$PARAMETER_" + std::to_string(i + 1) + "$");
-    auto position = file_contents.find(to_replace);
+    auto position = json_benchmark.find(to_replace);
     if (position == std::string::npos) {
       LOGW(to_replace + " does not exist in .ditto file");
       continue;
     }
-    file_contents.replace(position, to_replace.size(), parameters[i]);
+    json_benchmark.replace(position, to_replace.size(), parameters[i]);
   }
 
-  if (!google::protobuf::TextFormat::ParseFromString(file_contents, benchmark.get())) {
+  if (!google::protobuf::TextFormat::ParseFromString(json_benchmark, benchmark.get())) {
     LOGF("Error while parsing .ditto file");
   }
 
@@ -75,6 +70,29 @@ std::unique_ptr<dittosuiteproto::Benchmark> Parser::Parse(const std::string& fil
   SharedVariables::ClearKeys();
 
   return benchmark;
+}
+
+std::unique_ptr<dittosuiteproto::Benchmark> Parser::ParseEmbedded(
+    const std::string& embedded_benchmark, const std::vector<std::string>& parameters) {
+  auto json_benchmark_it = ditto_static_config.find(embedded_benchmark);
+  if (json_benchmark_it == ditto_static_config.end()) {
+    LOGF("The requested benchmark is invalid: " + embedded_benchmark);
+  }
+
+  return __Parse(json_benchmark_it->second, parameters);
+}
+
+std::unique_ptr<dittosuiteproto::Benchmark> Parser::ParseFile(
+    const std::string& file_path, const std::vector<std::string>& parameters) {
+  std::ifstream file(file_path);
+  if (!file.is_open()) {
+    LOGF("Provided .ditto file was not found: " + file_path);
+  }
+
+  std::string json_benchmark((std::istreambuf_iterator<char>(file)),
+                             (std::istreambuf_iterator<char>()));
+
+  return __Parse(json_benchmark, parameters);
 }
 
 std::unique_ptr<Instruction> Parser::GetInit() {
