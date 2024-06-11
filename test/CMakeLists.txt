@@ -3,7 +3,8 @@ enable_testing()
 include(FetchContent)
 FetchContent_Declare(
 	GoogleTest
-	URL https://github.com/google/googletest/archive/e2239ee6043f73722e7aa812a459f54a28552929.zip
+	GIT_REPOSITORY https://github.com/google/googletest.git
+	GIT_TAG        f8d7d77c06936315286eb55f8de22cd23c188571 # release v1.14.0
 )
 FetchContent_MakeAvailable(GoogleTest)
 include(GoogleTest)
