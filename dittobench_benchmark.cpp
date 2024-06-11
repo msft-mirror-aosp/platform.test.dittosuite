@@ -41,7 +41,7 @@ void BM_DittoBench(benchmark::State& state, Args&&... args) {
     dittosuite::CmdArguments arguments = {.results_output = dittosuite::ResultsOutput::kNull,
                                           .file_path = ditto_path};
 
-    dittosuite::Parser::GetParser().Parse(arguments.file_path, arguments.parameters);
+    dittosuite::Parser::GetParser().ParseFile(arguments.file_path, arguments.parameters);
 
     auto init = dittosuite::Parser::GetParser().GetInit();
     if (init) {
