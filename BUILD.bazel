@@ -33,11 +33,19 @@ cc_proto_library(
     ],
 )
 
+genrule(
+    name = "dittobench_gen_embedded_benchmarks",
+    srcs = glob(["example/**/*.ditto"]),
+    outs = ["generated/embedded_benchmarks.cpp"],
+    cmd = "./$(location ditto2cpp.py) -s $(SRCS) -o $@",
+    tools = ["ditto2cpp.py"],
+)
+
 cc_library(
     name = "libditto",
     srcs = glob([
         "src/*.cpp",
-    ]),
+    ]) + [":dittobench_gen_embedded_benchmarks"],
     hdrs = glob([
         "include/ditto/*.h",
     ]),
