@@ -1,4 +1,4 @@
-// Copyright (C) 2021 The Android Open Source Project
+// Copyright (C) 2024 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,19 +13,6 @@
 // limitations under the License.
 
 #pragma once
-
-#include <ditto/logger.h>
-#include <ditto/parser.h>
-#include <ditto/result.h>
-
-namespace dittosuite {
-struct CmdArguments {
-  ResultsOutput results_output = ResultsOutput::kReport;
-  std::string file_path;
-  std::string embedded_benchmark;
-  std::vector<std::string> parameters;
-};
-CmdArguments ParseArguments(int argc, char** argv);
-ResultsOutput ArgToResultsOutput(const std::string_view optarg);
-
-}  // namespace dittosuite
+#include <map>
+#include <string>
+extern const std::map<std::string, std::string> ditto_static_config;
