@@ -29,8 +29,11 @@ int main(int argc, char** argv) {
   dittosuite::CmdArguments arguments = dittosuite::ParseArguments(argc, argv);
   dittosuite::Instruction::SetArgv(argv);
   dittosuite::Instruction::SetArgc(argc);
+  auto& parser = dittosuite::Parser::GetParser();
 
-  auto benchmark = dittosuite::Parser::GetParser().Parse(arguments.file_path, arguments.parameters);
+  auto benchmark = arguments.embedded_benchmark.size()
+                       ? parser.ParseEmbedded(arguments.embedded_benchmark, arguments.parameters)
+                       : parser.ParseFile(arguments.file_path, arguments.parameters);
   tracer.StartSession(std::move(benchmark));
 
   auto init = dittosuite::Parser::GetParser().GetInit();
