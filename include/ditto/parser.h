@@ -27,17 +27,22 @@ class Parser {
   void operator=(const Parser&) = delete;
 
   static Parser& GetParser();
-  std::unique_ptr<dittosuiteproto::Benchmark> Parse(const std::string& file_path, const std::vector<std::string>& parameters);
+  std::unique_ptr<dittosuiteproto::Benchmark> ParseFile(const std::string& file_path,
+                                                        const std::vector<std::string>& parameters);
+  std::unique_ptr<dittosuiteproto::Benchmark> ParseEmbedded(
+      const std::string& embedded_benchmark, const std::vector<std::string>& parameters);
   std::unique_ptr<Instruction> GetInit();
   std::unique_ptr<Instruction> GetMain();
   std::unique_ptr<Instruction> GetCleanUp();
 
  private:
-  Parser(){};
-
   std::unique_ptr<Instruction> init_;
   std::unique_ptr<Instruction> main_;
   std::unique_ptr<Instruction> clean_up_;
+
+  Parser() {};
+  std::unique_ptr<dittosuiteproto::Benchmark> __Parse(std::string json_benchmark,
+                                                      const std::vector<std::string>& parameters);
 };
 
 } // namespace dittosuite
