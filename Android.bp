@@ -98,7 +98,6 @@ cc_benchmark {
     static_libs: [
         "libtestUtil",
         "libdittosuite",
-        "libc++fs",
     ],
     shared_libs: [
         "libbase",
