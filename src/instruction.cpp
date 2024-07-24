@@ -14,27 +14,32 @@
 
 #include <ditto/instruction.h>
 
-#include <ditto/shared_variables.h>
 #include <ditto/logger.h>
+#include <ditto/shared_variables.h>
+#include <ditto/timespec_utils.h>
 #include <ditto/tracer.h>
 
 namespace dittosuite {
-
 
 Instruction::Instruction(const std::string& name, const Params& params)
     : name_(name),
       syscall_(params.syscall_),
       repeat_(params.repeat_),
-      period_us_(params.period_us_) {}
+      period_us_(params.period_us_),
+      offset_us_(params.offset_us_),
+      next_wakeup_() {}
 
-void Instruction::SetUp() {}
-
-void Instruction::Run() {
-  if (period_us_) {
-    if (clock_gettime(CLOCK_MONOTONIC, &next_awake_time_)) {
-      PLOGF("Unable to get current time");
+void Instruction::SetUp() {
+  if (period_us_ || offset_us_) {
+    clock_gettime(CLOCK_MONOTONIC, &next_wakeup_);
+    LOGD("Instruction::SetUp, next wakeup at: " + TimespecToString(next_wakeup_));
+    if (offset_us_) {
+      next_wakeup_ = next_wakeup_ + MicrosToTimespec(offset_us_);
     }
   }
+}
+
+void Instruction::Run() {
   for (int i = 0; i < repeat_; i++) {
     SetUpSingle();
     RunSingle();
@@ -71,6 +76,12 @@ std::thread Instruction::SpawnThread(pthread_barrier_t* barrier,
 void Instruction::TearDown() {}
 
 void Instruction::SetUpSingle() {
+  if (period_us_ || offset_us_) {
+    if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_wakeup_, nullptr)) {
+      PLOGF("Offset clock interrupted");
+    }
+    next_wakeup_ = next_wakeup_ + MicrosToTimespec(period_us_);
+  }
   tracer_.Start(name_);
   time_sampler_.MeasureStart();
 }
@@ -78,15 +89,6 @@ void Instruction::SetUpSingle() {
 void Instruction::TearDownSingle(bool /*is_last*/) {
   time_sampler_.MeasureEnd();
   tracer_.End(name_);
-
-  if (!period_us_) {
-    return;
-  }
-
-  next_awake_time_ = next_awake_time_ + MicrosToTimespec(period_us_);
-  if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_awake_time_, nullptr)) {
-    PLOGF("Period clock interrupted");
-  }
 }
 
 std::unique_ptr<Result> Instruction::CollectResults(const std::string& prefix) {

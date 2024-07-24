@@ -25,6 +25,23 @@
 
 namespace dittosuite {
 
+struct SchedAttr__ {
+  uint32_t size;         /* Size of this structure */
+  uint32_t sched_policy; /* Policy (SCHED_*) */
+  uint64_t sched_flags;  /* Flags */
+
+  int32_t sched_nice;      /* Nice value (SCHED_OTHER,
+                                    SCHED_BATCH) */
+  uint32_t sched_priority; /* Static priority (SCHED_FIFO,
+                                          SCHED_RR) */
+  /* Remaining fields are for SCHED_DEADLINE */
+  uint64_t sched_runtime;
+  uint64_t sched_deadline;
+  uint64_t sched_period;
+};
+
+std::string to_string(const SchedAttr__& attr);
+
 class SyscallInterface {
  public:
   virtual ~SyscallInterface() {}
@@ -37,9 +54,11 @@ class SyscallInterface {
   virtual int FTruncate(int fd, int64_t length) = 0;
   virtual int FStat(int filedes, struct stat64* buf) = 0;
   virtual int FSync(int fd) = 0;
+  virtual pid_t GetTid() = 0;
   virtual int Open(const std::string& path_name, int flags, int mode) = 0;
   virtual DIR* OpenDir(const std::string& name) = 0;
   virtual int64_t Read(int fd, char* buf, int64_t count, int64_t offset) = 0;
+  virtual int SchedSetattr(pid_t pid, const SchedAttr__& attr, unsigned int flags) = 0;
   virtual struct dirent* ReadDir(DIR* dirp) = 0;
   virtual int64_t ReadLink(const std::string& path_name, char* buf, int64_t bufsiz) = 0;
   virtual void Sync() = 0;
@@ -62,9 +81,11 @@ class Syscall : public SyscallInterface {
   int FTruncate(int fd, int64_t length) override;
   int FStat(int filedes, struct stat64* buf) override;
   int FSync(int fd) override;
+  pid_t GetTid() override;
   int Open(const std::string& path_name, int flags, int mode) override;
   DIR* OpenDir(const std::string& name) override;
   int64_t Read(int fd, char* buf, int64_t count, int64_t offset) override;
+  int SchedSetattr(pid_t pid, const SchedAttr__& attr, unsigned int flags) override;
   struct dirent* ReadDir(DIR* dirp) override;
   int64_t ReadLink(const std::string& path_name, char* buf, int64_t bufsiz) override;
   void Sync() override;

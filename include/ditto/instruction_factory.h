@@ -21,11 +21,7 @@
 #include <ditto/instruction_set.h>
 #include <ditto/read_write_file.h>
 
-#ifdef __ANDROID__
 #include <benchmark.pb.h>
-#else
-#include "schema/benchmark.pb.h"
-#endif
 
 namespace dittosuite {
 
@@ -45,6 +41,7 @@ class InstructionFactory {
   static Order ConvertOrder(dittosuiteproto::Order proto_order);
   static int ConvertReadFAdvise(Order access_order,
                                 dittosuiteproto::ReadFile_ReadFAdvise proto_fadvise);
+  static FreePolicy ConvertFreePolicy(const dittosuiteproto::FreePolicy proto_policy);
 
   static int current_thread_id_;
 };

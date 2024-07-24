@@ -16,23 +16,59 @@
 
 #include <ditto/logger.h>
 
-#include <unistd.h>
+#include <sys/mman.h>
 
 namespace dittosuite {
 
-MemoryAllocation::MemoryAllocation(const Params& params, const uint64_t size)
-    : Instruction(kName, params), size_(size), allocated_memory_(nullptr) {}
+void allocate_memory(std::stack<void*>* addresses, size_t size) {
+  const int protection = PROT_READ | PROT_WRITE;
+  const int flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_LOCKED;
+  void* addr = nullptr;
+
+  addr = mmap(NULL, size, protection, flags, -1, 0);
+  if (addr == MAP_FAILED) {
+    PLOGF("mmap failed");
+  }
+
+  addresses->push(addr);
+  LOGD("mmap successful, stack size: " + std::to_string(addresses->size()));
+}
+
+void deallocate_memory(std::stack<void*>* addresses, size_t size) {
+  while (!addresses->empty()) {
+    void* addr = addresses->top();
+    addresses->pop();
+    if (munmap(addr, size) == -1) {
+      PLOGF("munmap failed");
+    }
+    LOGD("munmap successful, stack size: " + std::to_string(addresses->size()));
+  }
+}
+
+MemoryAllocation::MemoryAllocation(const Params& params, const uint64_t size,
+                                   const FreePolicy free_policy)
+    : Instruction(kName, params), size_(size), free_policy_(free_policy) {}
 
 MemoryAllocation::~MemoryAllocation() {
-  free(allocated_memory_);
+  deallocate_memory(&allocated_addresses_, size_);
 }
 
 void MemoryAllocation::RunSingle() {
-  int page_size = getpagesize();
-  allocated_memory_ = static_cast<char*>(malloc(size_));
+  allocate_memory(&allocated_addresses_, size_);
+}
 
-  for (size_t i = 0; i < size_; i += page_size) {
-    allocated_memory_[i] = 1;
+void MemoryAllocation::TearDownSingle(bool is_last) {
+  switch (free_policy_) {
+    case dittosuite::FreePolicy::kKeep:
+      break;
+    case dittosuite::FreePolicy::kFreeEveryPeriod:
+      deallocate_memory(&allocated_addresses_, size_);
+      break;
+    case dittosuite::FreePolicy::kFreeLastPeriod:
+      if (is_last) {
+        deallocate_memory(&allocated_addresses_, size_);
+      }
+      break;
   }
 }
 
