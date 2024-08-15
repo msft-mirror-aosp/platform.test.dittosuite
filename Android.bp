@@ -53,10 +53,34 @@ cc_defaults {
     ],
 }
 
+filegroup {
+    name: "dittobench_benchmark_files",
+    srcs: [
+        "example/**/*.ditto",
+    ],
+}
+
+genrule {
+    name: "dittobench_gen_embedded_benchmarks",
+    cmd: "python3 $(location ditto2cpp.py) -o $(out) -s $(in)",
+    tool_files: [
+        "ditto2cpp.py",
+    ],
+    srcs: [
+        ":dittobench_benchmark_files",
+    ],
+    out: [
+        "generated/embedded_benchmarks.cpp",
+    ],
+}
+
 cc_library {
     name: "libdittosuite",
     srcs: [
         "src/*.cpp",
+    ],
+    generated_sources: [
+        "dittobench_gen_embedded_benchmarks",
     ],
     defaults: ["dittobench_defaults"],
 }
@@ -74,7 +98,6 @@ cc_benchmark {
     static_libs: [
         "libtestUtil",
         "libdittosuite",
-        "libc++fs",
     ],
     shared_libs: [
         "libbase",
