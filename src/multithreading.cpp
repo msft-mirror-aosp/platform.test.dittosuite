@@ -35,7 +35,7 @@ void Multithreading::SetUpSingle() {
 void Multithreading::RunSingle() {
   pthread_barrier_init(&barrier_, NULL, instructions_.size());
   for (size_t i = 0; i < instructions_.size(); ++i) {
-    threads_.push_back(std::move(instructions_[i]->SpawnThread(&barrier_, thread_params_[i])));
+    threads_.push_back(instructions_[i]->SpawnThread(&barrier_, thread_params_[i]));
   }
 }
 
