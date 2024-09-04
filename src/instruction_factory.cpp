@@ -49,7 +49,7 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
   std::vector<std::unique_ptr<Instruction>> instructions;
   for (const auto& instruction : proto_instruction_set.instructions()) {
     instructions.push_back(
-        std::move(InstructionFactory::CreateFromProtoInstruction(thread_ids, instruction)));
+        InstructionFactory::CreateFromProtoInstruction(thread_ids, instruction));
   }
 
   if (proto_instruction_set.has_iterate_options()) {
@@ -213,8 +213,8 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         for (int i = 0; i < thread.spawn(); i++) {
           auto thread_ids_copy = thread_ids;
           thread_ids_copy.push_back(InstructionFactory::GenerateThreadId());
-          instructions.push_back(std::move(InstructionFactory::CreateFromProtoInstruction(
-              thread_ids_copy, thread.instruction())));
+          instructions.push_back(InstructionFactory::CreateFromProtoInstruction(
+              thread_ids_copy, thread.instruction()));
 
           std::string thread_name;
           if (thread.has_name()) {
