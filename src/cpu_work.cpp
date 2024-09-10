@@ -42,7 +42,7 @@ CpuWorkUtilization::CpuWorkUtilization(const Params& params, double utilization)
   work_time_ = MicrosToTimespec(period_us_ * utilization);
 }
 
-inline void threadWaitAbsoluteTime(const timespec &work_time) {
+inline void threadWaitAbsoluteTime(const timespec& work_time) {
   timespec time_now, time_end;
 
   if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &time_now)) {
