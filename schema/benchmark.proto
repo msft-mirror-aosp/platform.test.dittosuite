@@ -35,6 +35,7 @@ message CpuWork {
   oneof type {
     uint64 cycles = 1;
     double utilization = 2;
+    uint64 duration_us = 3;
   }
 }
 
