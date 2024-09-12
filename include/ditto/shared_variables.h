@@ -26,8 +26,10 @@ class SharedVariables {
  public:
   typedef std::variant<int, std::string, std::vector<std::string>> Variant;
 
+  static bool Exists(const std::list<int>& thread_ids, const std::string& variable_name);
   static int GetKey(const std::list<int>& thread_ids, const std::string& variable_name);
   static Variant Get(int key);
+  static Variant* GetPointer(int key);
   static Variant Get(const std::list<int>& thread_ids, const std::string& variable_name);
   static void Set(int key, const Variant& value);
   static void Set(const std::list<int>& thread_ids, const std::string& variable_name,
