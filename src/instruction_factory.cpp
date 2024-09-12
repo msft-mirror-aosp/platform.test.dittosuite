@@ -291,6 +291,10 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
           return std::make_unique<CpuWorkUtilization>(instruction_params, options.utilization());
           break;
         }
+        case CpuWorkType::kDurationUs: {
+          return std::make_unique<CpuWorkDurationUs>(instruction_params, options.duration_us());
+          break;
+        }
         case CpuWorkType::TYPE_NOT_SET: {
           LOGF("No type specified for CpuWorkload");
           break;
