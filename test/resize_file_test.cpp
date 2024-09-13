@@ -60,7 +60,7 @@ TEST_P(ResizeFileTest, ResizeFileTestRun) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(ResizeFileTestParametric, ResizeFileTest,
-                        ::testing::Values(dittosuite::OpenFile::AccessMode::kReadOnly,
-                                          dittosuite::OpenFile::AccessMode::kWriteOnly,
-                                          dittosuite::OpenFile::AccessMode::kReadWrite));
+INSTANTIATE_TEST_SUITE_P(ResizeFileTestParametric, ResizeFileTest,
+                         ::testing::Values(dittosuite::OpenFile::AccessMode::kReadOnly,
+                                           dittosuite::OpenFile::AccessMode::kWriteOnly,
+                                           dittosuite::OpenFile::AccessMode::kReadWrite));
