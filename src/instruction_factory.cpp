@@ -26,6 +26,7 @@
 #include <ditto/delete_file.h>
 #include <ditto/instruction_set.h>
 #include <ditto/invalidate_cache.h>
+#include <ditto/lock.h>
 #include <ditto/logger.h>
 #include <ditto/memory_allocation.h>
 #include <ditto/multiprocessing.h>
@@ -49,7 +50,7 @@ std::unique_ptr<InstructionSet> InstructionFactory::CreateFromProtoInstructionSe
   std::vector<std::unique_ptr<Instruction>> instructions;
   for (const auto& instruction : proto_instruction_set.instructions()) {
     instructions.push_back(
-        std::move(InstructionFactory::CreateFromProtoInstruction(thread_ids, instruction)));
+        InstructionFactory::CreateFromProtoInstruction(thread_ids, instruction));
   }
 
   if (proto_instruction_set.has_iterate_options()) {
@@ -213,8 +214,8 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
         for (int i = 0; i < thread.spawn(); i++) {
           auto thread_ids_copy = thread_ids;
           thread_ids_copy.push_back(InstructionFactory::GenerateThreadId());
-          instructions.push_back(std::move(InstructionFactory::CreateFromProtoInstruction(
-              thread_ids_copy, thread.instruction())));
+          instructions.push_back(InstructionFactory::CreateFromProtoInstruction(
+              thread_ids_copy, thread.instruction()));
 
           std::string thread_name;
           if (thread.has_name()) {
@@ -291,6 +292,10 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
           return std::make_unique<CpuWorkUtilization>(instruction_params, options.utilization());
           break;
         }
+        case CpuWorkType::kDurationUs: {
+          return std::make_unique<CpuWorkDurationUs>(instruction_params, options.duration_us());
+          break;
+        }
         case CpuWorkType::TYPE_NOT_SET: {
           LOGF("No type specified for CpuWorkload");
           break;
@@ -302,6 +307,43 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       dittosuite::FreePolicy free_policy = ConvertFreePolicy(options.free_policy());
       return std::make_unique<MemoryAllocation>(instruction_params, options.size(), free_policy);
+      break;
+    }
+    case InstructionType::kLock: {
+      const auto& options = proto_instruction.lock();
+
+      if (!options.has_mutex() || !options.mutex().has_name()) {
+        LOGF("Locking instruction must have a mutex and the mutex must be named");
+      }
+      if (!SharedVariables::Exists(thread_ids, options.mutex().name())) {
+        LOGF(
+            "Could not find mutex declaration. Mutexes must be declared in the global section of "
+            "the .ditto file");
+      }
+
+      auto mux_key = SharedVariables::GetKey(thread_ids, options.mutex().name());
+      auto mux = std::get_if<pthread_mutex_t>(SharedVariables::GetPointer(mux_key));
+
+      return std::make_unique<Lock>(instruction_params, mux);
+      break;
+    }
+    case InstructionType::kUnlock: {
+      const auto& options = proto_instruction.unlock();
+
+      if (!options.has_mutex() || !options.mutex().has_name()) {
+        LOGF("Locking instruction must have a mutex and the mutex must be named");
+      }
+
+      if (!SharedVariables::Exists(thread_ids, options.mutex().name())) {
+        LOGF(
+            "Could not find mutex declaration. Mutexes must be declared in the global section of "
+            "the .ditto file");
+      }
+
+      auto mux_key = SharedVariables::GetKey(thread_ids, options.mutex().name());
+      auto mux = std::get_if<pthread_mutex_t>(SharedVariables::GetPointer(mux_key));
+
+      return std::make_unique<Unlock>(instruction_params, mux);
       break;
     }
     case InstructionType::INSTRUCTION_ONEOF_NOT_SET: {
