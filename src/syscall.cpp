@@ -143,6 +143,14 @@ int64_t Syscall::Write(int fd, char* buf, int64_t count, int64_t offset) {
   return pwrite64(fd, buf, count, offset);
 }
 
+int Syscall::LockMutex(pthread_mutex_t* mutex) {
+  return pthread_mutex_lock(mutex);
+}
+
+int Syscall::UnlockMutex(pthread_mutex_t* mutex) {
+  return pthread_mutex_unlock(mutex);
+}
+
 std::string to_string(const SchedAttr__& attr) {
   std::stringstream ss;
   ss << "size: " << attr.size << ", policy: " << attr.sched_policy

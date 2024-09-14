@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <ditto/utils.h>
-
+#include <ditto/logger.h>
 #include <sys/param.h>
 #include <sys/stat.h>
+#include <cstring>
 
-#include <ditto/logger.h>
+#include <ditto/utils.h>
+
+bool operator==(const pthread_mutex_t& a, const pthread_mutex_t& b) {
+  return 0 == memcmp(&a, &b, sizeof(pthread_mutex_t));
+}
 
 namespace dittosuite {
 
