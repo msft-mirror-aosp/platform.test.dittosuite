@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 
 #include <ditto/shared_variables.h>
+#include <ditto/utils.h>
 
 using dittosuite::SharedVariables;
 

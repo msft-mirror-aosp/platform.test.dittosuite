@@ -59,6 +59,15 @@ std::unique_ptr<dittosuiteproto::Benchmark> Parser::__Parse(
   SharedVariables::Set(absolute_path_key, benchmark->global().absolute_path());
   Instruction::SetAbsolutePathKey(absolute_path_key);
 
+  if (benchmark->global().has_mutex()) {
+    pthread_mutex_t mux_orig;
+
+    auto mutex_key = SharedVariables::GetKey(thread_ids, benchmark->global().mutex().name());
+    SharedVariables::Set(mutex_key, mux_orig);
+    pthread_mutex_t* mux = std::get_if<pthread_mutex_t>(SharedVariables::GetPointer(mutex_key));
+    pthread_mutex_init(mux, nullptr);
+  }
+
   if (benchmark->has_init()) {
     init_ = InstructionFactory::CreateFromProtoInstruction(thread_ids, benchmark->init());
   }
