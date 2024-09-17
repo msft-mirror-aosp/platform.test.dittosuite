@@ -128,4 +128,5 @@ cc_test {
     ],
     defaults: ["dittobench_defaults"],
     data: ["example/*"],
+    auto_gen_config: true,
 }
