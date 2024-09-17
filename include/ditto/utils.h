@@ -19,6 +19,8 @@
 
 #include <ditto/syscall.h>
 
+bool operator==(const pthread_mutex_t& a, const pthread_mutex_t& b);
+
 namespace dittosuite {
 
 int64_t GetFileSize(SyscallInterface& syscall, int fd);
