@@ -1,0 +1,101 @@
+main: {
+  multithreading: {
+    threads: [
+      {
+        name: "High"
+        instruction: {
+          instruction_set: {
+            instructions: [
+              {
+                lock: {
+                  mutex { name: "lock1" }
+                }
+              },
+              {
+                cpu_work: {
+                  duration_us: 2000
+                }
+              },
+              {
+                unlock: {
+                  mutex { name: "lock1" }
+                }
+              }
+            ]
+          }
+          repeat: 100
+          period_us: 50000
+          offset_us: 1000
+        }
+        sched_affinity: 1
+        sched_attr: {
+          rt: {
+            policy: FIFO
+            priority: 99
+          }
+        }
+      },
+      {
+        name: "Mid"
+        instruction: {
+          instruction_set: {
+            instructions: [
+              {
+                cpu_work: {
+                  duration_us: 10000
+                }
+              }
+            ]
+          }
+          repeat: 100
+          period_us: 30000
+          offset_us: 1500
+        }
+        sched_affinity: 1
+        sched_attr: {
+          rt: {
+            policy: FIFO
+            priority: 98
+          }
+        }
+      },
+      {
+        name: "Low"
+        instruction: {
+          instruction_set: {
+            instructions: [
+              {
+                lock: {
+                  mutex { name: "lock1" }
+                }
+              },
+              {
+                cpu_work: {
+                  duration_us: 5000
+                }
+              },
+              {
+                unlock: {
+                  mutex { name: "lock1" }
+                }
+              }
+            ]
+          }
+          repeat: 100
+          period_us: 20000
+          offset_us: 0
+        }
+        sched_affinity: 1
+        sched_attr: {
+          rt: {
+            policy: FIFO
+            priority: 97
+          }
+        }
+      }
+    ]
+  }
+}
+global: {
+  mutex { name: "lock1" }
+}
