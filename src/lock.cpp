@@ -1,0 +1,51 @@
+// Copyright (C) 2024 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <ditto/logger.h>
+#include <ditto/shared_variables.h>
+#include <ditto/utils.h>
+
+#include <ditto/lock.h>
+
+namespace dittosuite {
+
+LockInterface::LockInterface(const std::string& name, const Params& params, pthread_mutex_t* mutex)
+    : Instruction(name, params), mutex_(mutex) {}
+
+Lock::Lock(const Params& params, pthread_mutex_t* mutex) : LockInterface(kName, params, mutex) {}
+
+void Lock::SetUpSingle() {
+  Instruction::SetUpSingle();
+}
+
+void Lock::RunSingle() {
+  if (syscall_.LockMutex(mutex_)) {
+    PLOGF("Cannot lock mutex");
+  }
+}
+
+Unlock::Unlock(const Params& params, pthread_mutex_t* mutex)
+    : LockInterface(kName, params, mutex) {}
+
+void Unlock::SetUpSingle() {
+  Instruction::SetUpSingle();
+}
+
+void Unlock::RunSingle() {
+  if (syscall_.UnlockMutex(mutex_)) {
+    PLOGF("Cannot unlock mutex");
+  }
+}
+
+}  // namespace dittosuite
