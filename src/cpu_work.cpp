@@ -20,19 +20,30 @@ namespace dittosuite {
 
 CpuWork::CpuWork(const std::string& name, const Params& params) : Instruction(name, params) {}
 
+CpuWorkCycles::CpuWorkCycles(const Params& params, uint64_t cycles)
+    : CpuWork(kName, params), cycles_(cycles) {}
+
+void CpuWorkCycles::RunSingle() {
+  volatile int target = -1;
+
+  for (uint64_t counter = 0; counter < cycles_; ++counter) {
+    target = ~target;
+  }
+}
+
 CpuWorkUtilization::CpuWorkUtilization(const Params& params, double utilization)
-    : CpuWork(kName, params), utilization_(utilization) {
+    : CpuWork(kName, params) {
   if (utilization < 0 || utilization > 1) {
     LOGF("Utilization value must be in the range [0,1]");
   }
   if (params.period_us_ <= 0) {
     LOGF("The period of the instruction must be greater than 0");
   }
+  work_time_ = MicrosToTimespec(period_us_ * utilization);
 }
 
-void CpuWorkUtilization::RunSingle() {
-  timespec time_now, time_end, work_time;
-  work_time = MicrosToTimespec(period_us_ * utilization_);
+inline void threadWaitAbsoluteTime(const timespec& work_time) {
+  timespec time_now, time_end;
 
   if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &time_now)) {
     LOGF("Error getting current time");
@@ -47,15 +58,17 @@ void CpuWorkUtilization::RunSingle() {
   } while (time_now < time_end);
 }
 
-CpuWorkCycles::CpuWorkCycles(const Params& params, uint64_t cycles)
-    : CpuWork(kName, params), cycles_(cycles) {}
+void CpuWorkUtilization::RunSingle() {
+  threadWaitAbsoluteTime(work_time_);
+}
 
-void CpuWorkCycles::RunSingle() {
-  volatile int target = -1;
+CpuWorkDurationUs::CpuWorkDurationUs(const Params& params, uint64_t duration_us)
+    : CpuWork(kName, params) {
+  work_time_ = MicrosToTimespec(duration_us);
+}
 
-  for (uint64_t counter = 0; counter < cycles_; ++counter) {
-    target = ~target;
-  }
+void CpuWorkDurationUs::RunSingle() {
+  threadWaitAbsoluteTime(work_time_);
 }
 
 }  // namespace dittosuite
