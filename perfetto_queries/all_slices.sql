@@ -1,0 +1,6 @@
+SELECT
+  *
+FROM
+  slice
+WHERE 1=1
+LIMIT 1000
