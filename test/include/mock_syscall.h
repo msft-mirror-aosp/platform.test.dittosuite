@@ -73,4 +73,6 @@ class MockSyscall : public dittosuite::SyscallInterface {
   MOCK_METHOD(void, Sync, (), (override));
   MOCK_METHOD(int, Unlink, (const std::string& path_name), (override));
   MOCK_METHOD(int64_t, Write, (int fd, char* buf, int64_t count, int64_t offset), (override));
+  MOCK_METHOD(int, LockMutex, (pthread_mutex_t*), (override));
+  MOCK_METHOD(int, UnlockMutex, (pthread_mutex_t*), (override));
 };

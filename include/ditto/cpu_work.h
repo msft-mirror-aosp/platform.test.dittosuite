@@ -40,6 +40,18 @@ class CpuWorkCycles : public CpuWork {
   void RunSingle() override;
 };
 
+class CpuWorkDurationUs : public CpuWork {
+ public:
+  inline static const std::string kName = "cpu_work_duration";
+
+  explicit CpuWorkDurationUs(const Params& params, uint64_t duration_us);
+
+ private:
+  timespec work_time_;
+
+  void RunSingle() override;
+};
+
 class CpuWorkUtilization : public CpuWork {
  public:
   inline static const std::string kName = "cpu_work_utilization";
@@ -47,7 +59,7 @@ class CpuWorkUtilization : public CpuWork {
   explicit CpuWorkUtilization(const Params& params, double utilization);
 
  private:
-  double utilization_;
+  timespec work_time_;
 
   void RunSingle() override;
 };

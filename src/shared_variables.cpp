@@ -18,6 +18,16 @@
 
 namespace dittosuite {
 
+bool SharedVariables::Exists(const std::list<int>& thread_ids, const std::string& variable_name) {
+  for (auto it = thread_ids.rbegin(); it != thread_ids.rend(); ++it) {
+    if (keys_.find(*it) == keys_.end() || keys_[*it].find(variable_name) == keys_[*it].end()) {
+      continue;
+    }
+    return true;
+  }
+  return false;
+}
+
 // Matches variable_name to the integer key value.
 //
 // If variable_name already exists in the map for the current thread or parent threads,
@@ -40,6 +50,13 @@ int SharedVariables::GetKey(const std::list<int>& thread_ids, const std::string&
   keys_[thread_ids.back()].insert({variable_name, key});
   variables_.resize(variables_.size() + 1);
   return key;
+}
+
+SharedVariables::Variant* SharedVariables::GetPointer(int key) {
+  if (key < 0 || static_cast<unsigned int>(key) >= variables_.size()) {
+    LOGF("Shared variable with the provided key does not exist");
+  }
+  return &variables_[key];
 }
 
 SharedVariables::Variant SharedVariables::Get(int key) {
