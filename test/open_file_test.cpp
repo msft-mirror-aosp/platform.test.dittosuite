@@ -48,7 +48,7 @@ TEST_P(OpenFileTest, FileCreatedWithVariable) {
   ASSERT_EQ(access(path.c_str(), F_OK), 0);
 }
 
-INSTANTIATE_TEST_CASE_P(OpenFileTestParametric, OpenFileTest,
-                        ::testing::Values(dittosuite::OpenFile::AccessMode::kReadOnly,
-                                          dittosuite::OpenFile::AccessMode::kWriteOnly,
-                                          dittosuite::OpenFile::AccessMode::kReadWrite));
+INSTANTIATE_TEST_SUITE_P(OpenFileTestParametric, OpenFileTest,
+                         ::testing::Values(dittosuite::OpenFile::AccessMode::kReadOnly,
+                                           dittosuite::OpenFile::AccessMode::kWriteOnly,
+                                           dittosuite::OpenFile::AccessMode::kReadWrite));
