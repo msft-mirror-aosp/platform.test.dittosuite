@@ -26,6 +26,7 @@ add_custom_command(
 	COMMAND ${PROJECT_SOURCE_DIR}/ditto2cpp.py
 		-o embedded_benchmarks.cpp
 		-s ${ditto_benchmarks}
+	DEPENDS ${ditto_benchmarks}
 	VERBATIM
 )
 

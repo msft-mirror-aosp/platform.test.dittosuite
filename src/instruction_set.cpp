@@ -84,6 +84,10 @@ void InstructionSet::RunSingle() {
                             LOGE("Input for InstructionSet is not iterable.");
                             exit(EXIT_FAILURE);
                           },
+                          [](pthread_mutex_t) {
+                            LOGE("Input for InstructionSet is not iterable.");
+                            exit(EXIT_FAILURE);
+                          },
                           [](const std::string&) {
                             LOGE("Input for InstructionSet is not iterable.");
                             exit(EXIT_FAILURE);
